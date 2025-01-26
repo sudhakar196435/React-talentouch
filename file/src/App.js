@@ -16,6 +16,10 @@ import UserDetail from './Components/UserDetail';
 import Email from './Components/Email';
 import AdminQuestions from "./Components/AdminQuestions";
 import AddQuestions from "./Components/AdminQuestions";
+import UserActs from './Components/UserActs';
+import { doc, getDocs, collection, onSnapshot } from "firebase/firestore"; // Add onSnapshot here
+import UserAudit from './Components/UserAudit';
+
 const App = () => {
   return (
     <Router>
@@ -40,7 +44,8 @@ const App = () => {
      <Route path="/users/:userId" element={<UserDetail />} />
      <Route path="/act/:id/questions" element={<AdminQuestions />} />
      <Route path="/act/:id/add-question" element={<AddQuestions />} />
-
+     <Route path="/UserActs" element={<UserActs/>} />
+     <Route path="/useraudit/:id" element={<UserAudit />}/>
         </Routes>
       </div>
     </Router>

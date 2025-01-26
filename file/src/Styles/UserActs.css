@@ -1,0 +1,28 @@
+.user-acts-page {
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #0f0e0e;
+}
+
+.acts-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.acts-table th,
+.acts-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #0f0e0e;
+}
+
+.acts-table th {
+    background-color: #050404;
+}
+
+.acts-table tbody tr:hover {
+    background-color: #0a0909;
+}
