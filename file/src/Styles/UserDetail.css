@@ -1,0 +1,126 @@
+
+  
+  
+  /* User Detail Container */
+  .user-detail-container {
+    margin: 20px;
+    
+    background-color: rgb(247, 255, 255);
+    border-radius: 10px;
+  }
+  
+  .user-info p {
+    font-size: 16px;
+    margin: 10px 0;
+    font-family: 'Lato', sans-serif;
+    color: #555;
+  }
+  
+  .user-info p strong {
+    color: #333;
+  }
+  
+  /* Acts Section */
+  .acts-section {
+    margin-top: 30px;
+  }
+  
+  .acts-section h3 {
+    margin-bottom: 20px;
+    color: #4A90E2;
+    font-size: 20px;
+  }
+  
+  /* Acts Table */
+  .acts-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .acts-table th, .acts-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #e1e4e8;
+  }
+  
+  .acts-table th {
+    background-color: #4A90E2;
+    color: #ffffff;
+    font-weight: 500;
+  }
+  
+  .acts-table tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  
+  .acts-table td input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+  
+  /* Save Button */
+  .save-btn {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .save-btn:hover {
+    background-color: #45a049;
+  }
+  
+  .save-btn:active {
+    background-color: #388e3c;
+  }
+  
+  /* Loading Spinner */
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .user-detail-container {
+      padding: 15px;
+      margin: 20px;
+    }
+  
+    .acts-section {
+      margin-top: 20px;
+    }
+  
+    .acts-table th, .acts-table td {
+      font-size: 14px;
+      padding: 10px;
+    }
+  
+    .save-btn {
+      width: 100%;
+    }
+  }
+  

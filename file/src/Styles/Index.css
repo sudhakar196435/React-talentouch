@@ -1,0 +1,125 @@
+/* Global styling */
+.index-container {
+    padding: 40px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    background-color: #f4f4f4;  /* Light background color */
+  }
+  
+  /* Full-width card styling */
+  .full-width-card {
+    width: 100%;
+    padding: 40px;
+    background-color: #ffffff;  /* Clean white background */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    text-align: center;
+  }
+  
+  .card-content {
+    max-width: 1200px;  /* Max width to prevent card from getting too wide */
+    margin: 0 auto;
+  }
+  
+  /* Title Styling */
+  .card-title {
+    font-size: 36px;
+    font-weight: 600;
+    color: #2c3e50; /* Dark gray color */
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+  
+  /* Description Styling */
+  .card-description {
+    font-size: 20px;
+    color: #7f8c8d; /* Lighter gray for description */
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+  
+  /* About Section Styling */
+  .card-details {
+    text-align: left;
+    margin-bottom: 30px;
+  }
+  
+  .card-details h2 {
+    font-size: 26px;
+    font-weight: 600;
+    color: #34495e; /* Slightly darker gray */
+    margin-bottom: 15px;
+  }
+  
+  .about-description {
+    font-size: 18px;
+    color: #95a5a6; /* Gray for text */
+    line-height: 1.6;
+    margin-bottom: 15px;
+  }
+  
+  /* Service List Styling */
+  .services-list {
+    list-style-type: none;
+    padding: 0;
+    font-size: 18px;
+    color: #34495e; /* Dark gray for the list text */
+    margin-left: 30px; /* Indent the list slightly */
+  }
+  
+  .services-list li {
+    position: relative;
+    margin-bottom: 12px;
+  }
+  
+  /* Custom Bullet Points */
+  .services-list li::before {
+    content: "•"; /* Default bullet point */
+    color: #3498db; /* Blue color for bullets */
+    position: absolute;
+    left: -20px; /* Position the bullet to the left of the text */
+    top: 0;
+    font-size: 24px; /* Increase bullet size */
+  }
+  
+  /* Testimonials Styling */
+  .testimonial {
+    font-size: 18px;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  
+  .testimonial span {
+    font-size: 16px;
+    color: #34495e;
+    font-style: italic;
+  }
+  
+  /* Footer Button Styling */
+  .card-footer {
+    margin-top: 40px;
+  }
+  
+  .cta-button {
+    background-color: #3498db;  /* Talentouch-themed blue */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 18px 30px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .cta-button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+    transform: scale(1.05); /* Slight zoom effect */
+  }
+  
+  .cta-button:focus {
+    outline: none; /* Remove focus outline for a cleaner look */
+  }
+  

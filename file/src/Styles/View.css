@@ -1,0 +1,87 @@
+
+.admin-home-container {
+  padding: 20px;
+ background-color: rgb(247, 255, 255);
+ height: 100vh;
+ box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+  /* Title for the details page */
+  .details-title {
+    text-align: center;
+    font-size: 1.4rem;  /* Increased size for emphasis */
+    margin-bottom: 20px;
+    color: #ffffff;  /* White text color for contrast */
+    background-color: #00796b; 
+    padding: 10px;
+    border-radius: 4px;  /* Rounded corners for a smoother look */
+    font-family: 'Poppins', sans-serif;  /* Modern sans-serif font */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Subtle shadow for depth */
+    letter-spacing: 2px;  /* Space between letters for a clean, modern look */
+  }
+  
+  /* Details section layout */
+  .details-section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  
+  /* Style for each individual data item */
+  .details-section p {
+    font-size: 1.1rem;
+    margin: 10px 0;
+  }
+  
+  .details-section strong {
+    color: #333;
+  }
+  
+  /* Additional details map section */
+  .details-map {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .details-map h3 {
+    font-size: 1.5rem;
+    color: #4CAF50;
+    margin-bottom: 10px;
+  }
+  
+  /* Loading state */
+  .loading-message {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #888;
+    padding: 50px;
+  }
+  
+  /* Responsive styling for smaller screens */
+  @media (max-width: 768px) {
+    .act-detail-page {
+      padding: 15px;
+    }
+  
+    .details-title {
+      font-size: 1.8rem;
+    }
+  
+    .details-section {
+      padding: 15px;
+    }
+  
+    .details-section p {
+      font-size: 1rem;
+    }
+  
+    .details-map h3 {
+      font-size: 1.3rem;
+    }
+  }
+  

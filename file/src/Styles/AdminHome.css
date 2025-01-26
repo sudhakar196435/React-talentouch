@@ -1,0 +1,87 @@
+.admin-home-container {
+    padding: 20px;
+   background-color: rgb(247, 255, 255);
+   height: 100vh;
+   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-home-title {
+    text-align: center;
+    font-size: 1.4rem;  /* Increased size for emphasis */
+    margin-bottom: 20px;
+    color: #ffffff;  /* White text color for contrast */
+    background-color: #00796b; 
+    padding: 10px;
+    border-radius: 4px;  /* Rounded corners for a smoother look */
+    font-family: 'Poppins', sans-serif;  /* Modern sans-serif font */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Subtle shadow for depth */
+    letter-spacing: 2px;  /* Space between letters for a clean, modern look */
+  }
+  
+  
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    justify-items: center;
+  }
+  
+  .stat-card {
+    background: #ffffff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .stat-card h2 {
+    font-size: 1rem;
+    color: #333333;
+    font-family: 'Lato', sans-serif;
+    font-weight: 600;
+    padding-top: 4px;
+  }
+  
+  .stat-card p {
+    font-size: 1.6rem;
+    color: #2f2f2f;
+    font-family: 'Lato', sans-serif;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+  .stat-card.active {
+ 
+  border-left: 5px solid #28a745;  /* Green border */
+}
+.stat-card.active p{
+ color: #28a745;
+  }
+  
+
+.stat-card.inactive {
+ 
+  border-left: 5px solid #ffc107;  /* Yellow border */
+}
+.stat-card.inactive p{
+ 
+    color:  #ffc107;  /* Yellow border */
+  }
+
+.stat-card.blocked {
+ 
+  border-left: 5px solid #dc3545;  /* Red border */
+}
+.stat-card.blocked p{
+ 
+    color:  #dc3545;  /* Red border */
+  }
+.stat-card.total {
+   
+    border-left: 5px solid #007bff;  /* Blue border */
+  }
+  .stat-card.total p {
+   
+    color:  #007bff;  /* Blue border */
+  }

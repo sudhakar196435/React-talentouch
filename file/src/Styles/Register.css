@@ -1,0 +1,121 @@
+/* Register Page Styling */
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #002161; /* Same background color as Login */
+}
+
+.register-form {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 15px;
+}
+
+/* Styling for the Register heading (h2) */
+.register-heading {
+  font-size: 28px;
+  font-weight: bold;
+  color: #002161;
+  text-align: center;
+  margin-bottom: 20px;
+  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif
+}
+
+/* Optional: Responsive styling for smaller screens */
+@media (max-width: 768px) {
+  .register-heading {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  height: 40px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.organization-select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+.register-form {
+.register-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #0c48c0;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.register-button:hover {
+  background-color: #002161;
+}}
+
+/* Optional: Add an error message */
+.error-message {
+  color: red;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* Optional: Styling for register message */
+.register-message {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.register-message a {
+  color: #002161;
+  text-decoration: none;
+}
+
+.register-message a:hover {
+  text-decoration: underline;
+}
+
+/* Container for the logo */
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
+}
+
+/* Logo image styling */
+.register-logo {
+  max-width: 80%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* Optional: Media query for mobile responsiveness */
+@media (max-width: 768px) {
+  .register-logo {
+    max-width: 60%;
+  }
+}

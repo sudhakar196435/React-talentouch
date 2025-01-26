@@ -1,0 +1,112 @@
+/* Login Page Styling */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 88.2vh;
+    background-color: #002161;
+  }
+  
+  .login-form {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 15px;
+  }
+  
+ /* Styling for the Login heading (h2) */
+.login-heading {
+  font-size: 28px; /* Set the font size */
+  font-weight: bold; /* Make the text bold */
+  color: #002161; /* Set a dark text color */
+  text-align: center; /* Center-align the heading */
+  margin-bottom: 20px; /* Add space below the heading */
+  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif /* Use a clean, modern font */
+  
+}
+
+/* Optional: Responsive styling for smaller screens */
+@media (max-width: 768px) {
+  .login-heading {
+    font-size: 24px; /* Reduce the font size on smaller screens */
+    margin-bottom: 15px; /* Adjust bottom margin on smaller screens */
+  }
+}
+
+  
+  .input-field {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .input-field:focus {
+    outline: none;
+    border-color: #002161;
+  }
+  .login-form{
+  .login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #0c48c0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .login-button:hover {
+    background-color: #002161;
+  }}
+  
+  .error-message {
+    color: red;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .register-message {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1rem;
+  }
+  
+  .register-message a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .register-message a:hover {
+    text-decoration: underline;
+  }
+  /* Container for the logo */
+.logo-container {
+  display: flex;
+  justify-content: center; /* Center the logo horizontally */
+  align-items: center; /* Center the logo vertically */
+ 
+  height: 150px; /* Set a specific height for the logo container */
+}
+
+/* Logo image styling */
+.login-logo {
+  max-width: 80%; /* Allow the logo to take up 80% of the container width */
+  max-height: 100%; /* Ensure the logo doesn't exceed the container's height */
+  object-fit: contain; /* Maintain aspect ratio and avoid stretching */
+  border-radius: 8px; /* Optional: Add rounded corners to the logo */
+}
+
+/* Optional: Media query for mobile responsiveness */
+@media (max-width: 768px) {
+  .login-logo {
+    max-width: 60%; /* Adjust the logo size for smaller screens */
+  }
+ 
+}

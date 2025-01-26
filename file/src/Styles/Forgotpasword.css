@@ -1,0 +1,260 @@
+/* Container for Forgot Password */
+.forgot-password-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 88.2vh;
+    background-color: #002161;
+    padding: 10px;
+}
+
+/* Forgot Password Form */
+.forgot-password-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    margin: 0 15px;
+}
+
+/* Logo Styling */
+.forgot-password-logo {
+    max-width: 80%; /* Allow the logo to take up 80% of the container width */
+    max-height: 100%; /* Ensure the logo doesn't exceed the container's height */
+    object-fit: contain; /* Maintain aspect ratio and avoid stretching */
+    border-radius: 8px; /* Optional: Add rounded corners to the logo */
+}
+
+/* Forgot Password Heading */
+.forgot-password-heading {
+    font-size: 24px;
+    color: #002161;
+    margin-bottom: 1rem;
+}
+
+/* Forgot Password Instructions */
+.forgot-password-instructions {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+/* Input Fields */
+.input-field {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Forgot Password Button */
+.forgot-password-form{
+.forgot-password-button {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #0c48c0;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.forgot-password-button:hover {
+    background-color: #002161;
+}}
+
+/* Success/Error Messages */
+.success-message {
+    color: #28a745;
+    margin-top: 1rem;
+    font-size: 14px;
+}
+
+.error-message {
+    color: #dc3545;
+    margin-top: 1rem;
+    font-size: 14px;
+}
+
+/* Back to Login Link */
+.back-to-login {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1rem;
+}
+
+.back-to-login a {
+    color: #002161;
+    text-decoration: none;
+}
+
+.back-to-login a:hover {
+    text-decoration: underline;
+}
+
+/* Full-Screen Popup */
+.full-screen-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+/* Popup Content */
+.popup-content {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 650px;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-left: 10px solid #28a745;  /* Green border */
+}
+
+/* Circle for Tick */
+.circle-tick {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #4CAF50; /* Green background for success */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.tick-icon {
+    font-size: 25px;
+    color: white;
+}
+
+/* Popup Text */
+.popup-content h3 {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 500;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* OK Button */
+.ok-button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+   
+}
+
+.ok-button:hover {
+    background-color: #0056b3;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .forgot-password-form {
+        padding: 1.5rem;
+    }
+
+    /* Adjusting popup content padding */
+    .popup-content {
+        padding: 30px;
+    }
+
+    /* Adjust circle tick size for smaller screens */
+    .circle-tick {
+        width: 70px;
+        height: 70px;
+    }
+
+    .tick-icon {
+        font-size: 40px;
+    }
+
+    /* Adjust heading font size */
+    .popup-content h3 {
+        font-size: 16px;
+    }
+
+    /* Button adjustments */
+    .ok-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+    
+.back-to-login {
+    text-align: center;
+    margin-top: 0.9rem;
+    font-size: 0.9rem;
+}
+}
+
+
+@media (max-width: 480px) {
+    /* Even smaller adjustments for mobile screens */
+    .forgot-password-form {
+        padding: 1.2rem;
+    }
+
+    .popup-content {
+        padding: 20px;
+    }
+
+    .circle-tick {
+        width: 60px;
+        height: 60px;
+    }
+
+    .tick-icon {
+        font-size: 35px;
+    }
+
+    .popup-content h3 {
+        font-size: 14px;
+    }
+
+    .ok-button {
+        padding: 8px 16px;
+        font-size: 12px;
+        min-width: 100px;
+    }
+    
+.back-to-login {
+    text-align: center;
+    margin-top: 0.9rem;
+    font-size: 0.9rem;
+}
+}
+
+
+/* FadeIn Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
