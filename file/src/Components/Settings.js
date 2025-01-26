@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom"; 
 import { getAuth, onAuthStateChanged } from "firebase/auth"; 
 import { doc, getDoc, updateDoc } from "firebase/firestore"; 
 import { db } from "../firebase"; 
@@ -13,6 +13,7 @@ const Settings = () => {
   const [editMode, setEditMode] = useState(false); // To toggle between view and edit mode
   const [formData, setFormData] = useState({});
   const auth = getAuth();
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -60,6 +61,10 @@ const Settings = () => {
   const handleCancel = () => {
     setFormData(userData); // Reset form data to the original user data
     setEditMode(false); // Exit edit mode without saving
+  };
+
+  const handleGoToAdminHome = () => {
+    navigate("/adminhome"); // Navigate to AdminHome page
   };
 
   return (
@@ -125,12 +130,19 @@ const Settings = () => {
                         </tr>
                       </tbody>
                     </table>
-                    <button onClick={handleSave} className="save-button">Save Changes</button>
-                    <button onClick={handleCancel} className="cancel-button">Cancel</button>
+                    <button onClick={handleSave} className="save-but">Save Changes</button>
+                    <button onClick={handleCancel} className="cancel-but">Cancel</button>
                   </div>
                 ) : (
                   <div>
+                        {/* Conditionally render the admin button */}
+                {userData.role === "admin" && (
+                  <button onClick={handleGoToAdminHome} className="admin-button">
+                    Admin Mode
+                  </button>
+                )}
                     <table className="profile-table">
+                      
                       <tbody>
                         <tr>
                           <td>Name</td>
@@ -150,9 +162,11 @@ const Settings = () => {
                         </tr>
                       </tbody>
                     </table>
-                    <button onClick={() => setEditMode(true)} className="edit-button">Edit</button>
+                    <button onClick={() => setEditMode(true)} className="edit-but">Edit</button>
                   </div>
                 )}
+                
+            
               </div>
             ) : (
               <p className="loading-message">Loading profile...</p>
