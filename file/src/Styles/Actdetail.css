@@ -1,23 +1,29 @@
 /* Overall page layout */
 .admin-home-container {
-    padding: 20px;
-   background-color: rgb(247, 255, 255);
-   height: 100vh;
-   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
+  padding: 20px;
+  background-color: rgb(247, 255, 255);
+  height: 100vh;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
 
 
 .page-title {
   text-align: center;
-  font-size: 1.4rem;  /* Increased size for emphasis */
+  font-size: 1.4rem;
+  /* Increased size for emphasis */
   margin-bottom: 20px;
-  color: #ffffff;  /* White text color for contrast */
-  background-color: #00796b; 
+  color: #ffffff;
+  /* White text color for contrast */
+  background-color: #00796b;
   padding: 10px;
-  border-radius: 4px;  /* Rounded corners for a smoother look */
-  font-family: 'Poppins', sans-serif;  /* Modern sans-serif font */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Subtle shadow for depth */
-  letter-spacing: 2px;  /* Space between letters for a clean, modern look */
+  border-radius: 4px;
+  /* Rounded corners for a smoother look */
+  font-family: 'Poppins', sans-serif;
+  /* Modern sans-serif font */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for depth */
+  letter-spacing: 2px;
+  /* Space between letters for a clean, modern look */
 }
 
 /* Table styling */
@@ -30,7 +36,8 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.acts-table th, .acts-table td {
+.acts-table th,
+.acts-table td {
   padding: 14px 20px;
   text-align: left;
   border-bottom: 1px solid #ddd;
@@ -58,13 +65,13 @@
   text-decoration: none;
   border-radius: 4px;
   font-size: 1rem;
-  
+
   display: inline-block;
 }
 
 .view-details-button:hover {
   background-color: #0056b3;
- 
+
 }
 
 /* Responsive table styling for mobile */
@@ -73,7 +80,8 @@
     padding: 20px;
   }
 
-  .acts-table th, .acts-table td {
+  .acts-table th,
+  .acts-table td {
     padding: 10px;
   }
 
@@ -85,4 +93,24 @@
     padding: 6px 14px;
     font-size: 0.9rem;
   }
+}
+
+.view-details-button,
+.view-questions-button {
+  margin-right: 10px;
+  /* Space between buttons */
+  padding: 8px 12px;
+  text-decoration: none;
+  color: white;
+  background-color: #007bff;
+  /* Blue color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.view-details-button:hover,
+.view-questions-button:hover {
+  background-color: #0056b3;
+  /* Darker blue on hover */
 }
