@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase"; // Ensure this is correctly initialized in firebase.js
-import { collection, getDocs, doc, setDoc, query, where } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom"; // To get the actId from the URL
 import UserNav from "./UserNav"; // Import the navigation bar component
 
@@ -45,18 +45,6 @@ const UserAudit = () => {
       const user = "2210030009cse@gmail.com"; // Replace with the actual user's email or UID
       const userRef = doc(db, "users", user); // Reference to user's document
 
-      // Check if audit for this act already exists
-      const answersRef = collection(userRef, "Answers");
-      const auditQuery = query(answersRef, where("actId", "==", id));
-      const querySnapshot = await getDocs(auditQuery);
-
-      if (!querySnapshot.empty) {
-        // If an audit already exists for this act, don't store duplicate answers
-        console.log("Audit already submitted for this act.");
-        return;
-      }
-
-      // If no existing audit, proceed to submit the answers
       const answersData = [];
       
       // Collect selected question IDs and their answers (boolean)
@@ -70,6 +58,7 @@ const UserAudit = () => {
       });
 
       // Store the answers in the "Answers" subcollection for the user
+      const answersRef = collection(userRef, "Answers");
       const answerDocRef = doc(answersRef); // Create a new document for the answers
       await setDoc(answerDocRef, {
         actId: id,
