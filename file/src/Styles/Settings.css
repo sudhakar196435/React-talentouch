@@ -143,8 +143,8 @@
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); /* Light blue glow effect */
   }
   
-  .save-button,
-  .edit-button {
+  .save-but,
+  .edit-but {
     background-color: #3498db; /* Vibrant blue color */
     color: white;
     border: none;
@@ -156,18 +156,18 @@
     transition: all 0.3s ease;
   }
   
-  .save-button:hover,
-  .edit-button:hover {
+  .save-but:hover,
+  .edit-but:hover {
     background-color: #2980b9; /* Slightly darker blue on hover */
    
   }
   
-  .save-button:active,
-  .edit-button:active {
+  .save-but:active,
+  .edit-but:active {
     transform: translateY(0); /* Restore position on click */
   }
   /* Basic styles for the cancel button */
-.cancel-button {
+.cancel-but {
     background-color: #f44336; /* Red background for the cancel button */
     color: white; /* White text */
     border: none; /* Remove border */
@@ -179,16 +179,12 @@
   }
   
   /* Hover effect */
-  .cancel-button:hover {
+  .cancel-but:hover {
     background-color: #e53935; /* Darker red on hover */
    
   }
   
-  /* Focus effect */
-  .cancel-button:focus {
-    outline: none; /* Remove the default outline */
-    box-shadow: 0 0 5px rgba(244, 67, 54, 0.8); /* Shadow effect when focused */
-  }
+ 
   
   
   
@@ -216,4 +212,22 @@
       padding: 10px 22px;
     }
   }
-  
+  /* Admin Button Styles */
+.admin-button {
+  background-color: #771fbb; /* Green color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  margin-top: 20px; /* Space above the button */
+  display: inline-block;
+}
+
+.admin-button:hover {
+  background-color: #7310a9; /* Slightly darker green when hovered */
+}
+
+
