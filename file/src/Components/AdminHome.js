@@ -109,7 +109,7 @@ function AdminHome() {
           className="home-button"
           onClick={() => navigate("/home")}
         >
-          Go to Home
+          User Mode
         </button>
       </div>
     </div>

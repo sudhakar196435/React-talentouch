@@ -16,6 +16,9 @@ import UserDetail from './Components/UserDetail';
 import Email from './Components/Email';
 import AdminQuestions from "./Components/AdminQuestions";
 import AddQuestions from "./Components/AdminQuestions";
+import UserActs from './Components/UserActs';
+import UserAudit from './Components/UserAudit';
+
 const App = () => {
   return (
     <Router>
@@ -34,7 +37,8 @@ const App = () => {
         <Route path="/home" element={<Home/>} />
         <Route path="/settings" element={<Settings/>} />
         <Route path="/changepassword" element={<ChangePassword/>} />
-
+        <Route path="/useracts" element={<UserActs/>} />
+        <Route path="/useraudit/:id" element={<UserAudit/>} />
      <Route path="/acts" element={<ActDetails/>} />
      <Route path="/act/:id" element={<ActDetailsView/>} />
      <Route path="/users/:userId" element={<UserDetail />} />

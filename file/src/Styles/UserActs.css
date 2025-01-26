@@ -1,0 +1,78 @@
+.acts-container {
+    padding: 20px;
+    background-color: #f1f8ff; /* Light blue background for the page */
+   
+   
+  }
+  
+  .acts-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table-header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+  
+  .act-name {
+    padding: 12px;
+    border-bottom: 1px solid #e4e4e4;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  /* Styling for the icons inside the buttons */
+.view-details-button, .audit-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* Spacing between icon and text */
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  /* Icon size and color adjustments */
+  .view-details-button svg, .audit-button svg {
+    font-size: 18px; /* Adjust the size of the icon */
+    color: inherit; /* Inherit the color from the button */
+  }
+  
+  
+  
+  /* View Details button specific styles */
+  .view-details-button {
+    background-color: #28a745;
+    color: #fff;
+  }
+  
+  .view-details-button:hover {
+    background-color: #218838;
+  }
+  
+  .view-details-button:hover svg {
+    color: #fff; /* Ensure icon color stays white on hover */
+  }
+  
+  /* Audit button specific styles */
+  .audit-button {
+    background-color: #ffc107;
+    color: #343a40;
+  }
+  
+  .audit-button:hover {
+    background-color: #e0a800;
+  }
+  
+  .audit-button:hover svg {
+    color: #343a40; /* Ensure icon color stays dark on hover */
+  }
+  
