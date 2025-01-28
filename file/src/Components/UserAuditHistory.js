@@ -1,29 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { db, auth } from "../firebase"; // Ensure firebase is properly initialized
-import { collection, getDocs } from "firebase/firestore"; // Remove unused imports
-import { onAuthStateChanged } from "firebase/auth"; // For monitoring auth state
-import { useNavigate } from "react-router-dom"; // For navigation
-import UserNav from "./UserNav"; // Import the navigation bar component
-import { ToastContainer, toast } from "react-toastify"; // Correct import for ToastContainer and toast
-import "react-toastify/dist/ReactToastify.css"; // Import the CSS for toastify
-
-
+import { db, auth } from "../firebase";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import UserNav from "./UserNav";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "../Styles/UserAuditHistory.css"
 const UserAuditHistory = () => {
-  const [user, setUser] = useState(null); // To store the logged-in user
-  const [audits, setAudits] = useState([]); // To store the submitted audits
-  const navigate = useNavigate(); // For navigation to login if not logged in
+  const [user, setUser] = useState(null);
+  const [audits, setAudits] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if the user is logged in
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        setUser(currentUser); // Set user if logged in
+        setUser(currentUser);
       } else {
-        navigate("/login"); // Redirect to login page if no user
+        navigate("/login");
       }
     });
 
-    return () => unsubscribe(); // Clean up the listener on component unmount
+    return () => unsubscribe();
   }, [navigate]);
 
   useEffect(() => {
@@ -32,14 +30,67 @@ const UserAuditHistory = () => {
         try {
           const auditsRef = collection(db, "users", user.uid, "Answers");
           const querySnapshot = await getDocs(auditsRef);
-          const auditsData = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setAudits(auditsData); // Set audits data in state
+          const auditsData = await Promise.all(
+            querySnapshot.docs.map(async (docSnapshot) => {
+              const audit = {
+                id: docSnapshot.id,
+                ...docSnapshot.data(),
+              };
+
+              console.log("Fetched audit:", audit);
+
+              // Fetch act details using actId
+              const actDocRef = doc(db, "acts", audit.actId);
+              console.log("Fetching act:", actDocRef);
+              const actDocSnap = await getDoc(actDocRef);
+
+              if (!actDocSnap.exists()) {
+                throw new Error(`Act with ID ${audit.actId} not found`);
+              }
+
+              const actName = actDocSnap.data().actName;
+              console.log("Act Name:", actName);
+
+              // Prepare to fetch all questions in parallel
+              const questionsWithText = [];
+              for (const answer of audit.answers) {
+                const questionDocRef = doc(
+                  db,
+                  "acts",
+                  audit.actId,
+                  "questions",
+                  answer.questionId
+                );
+
+                try {
+                  const questionDocSnap = await getDoc(questionDocRef);
+                  if (!questionDocSnap.exists()) {
+                    throw new Error(`Question with ID ${answer.questionId} not found`);
+                  }
+
+                  questionsWithText.push({
+                    questionId: answer.questionId,
+                    text: questionDocSnap.data().text,
+                    answer: answer.answer,
+                  });
+                } catch (error) {
+                  console.error("Error fetching question:", error.message);
+                  toast.error(`Error fetching question: ${error.message}`);
+                }
+              }
+
+              return {
+                ...audit,
+                actName,
+                questions: questionsWithText,
+              };
+            })
+          );
+
+          setAudits(auditsData);
         } catch (error) {
-          console.error("Error fetching audits:", error);
-          toast.error("Error fetching audits: " + error.message);
+          console.error("Error fetching audits or questions:", error);
+          toast.error("Error fetching audits or questions: " + error.message);
         }
       };
 
@@ -58,24 +109,37 @@ const UserAuditHistory = () => {
           <div className="audit-history-container">
             {audits.map((audit) => (
               <div key={audit.id} className="audit-history-item">
-                <h3>Audit ID: {audit.id}</h3>
-                <p><strong>Act ID:</strong> {audit.actId}</p>
-                <p><strong>Submission Date:</strong> {audit.timestamp.toDate().toLocaleString()}</p>
-                <h4>Audit Questions and Answers:</h4>
-                <ul className="audit-questions-list">
-                  {audit.answers.map((answer, index) => (
-                    <li key={index}>
-                      <p><strong>Question {index + 1}:</strong> {answer.questionText}</p>
-                      <p><strong>Your Answer:</strong> {answer.answer ? "Yes" : "No"}</p>
-                    </li>
-                  ))}
-                </ul>
+                <div className="audit-header">
+                  <h3 className="audit-id">Audit ID: {audit.id}</h3>
+                  <p className="act-name">
+                    <strong>Act Name:</strong> {audit.actName}
+                  </p>
+                </div>
+                <p className="submission-date">
+                  <strong>Submission Date:</strong>{" "}
+                  {audit.timestamp.toDate().toLocaleString()}
+                </p>
+                <div className="questions-container">
+                  <h4>Audit Questions and Answers</h4>
+                  <div className="questions">
+                    {audit.questions.map((question, index) => (
+                      <div key={question.questionId} className="question-item">
+                        <p className="question-text">
+                          <strong>Question {index + 1}:</strong> {question.text}
+                        </p>
+                        <p className="answer-text">
+                          <strong>Your Answer:</strong>{" "}
+                          {question.answer ? "Yes" : "No"}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
-      {/* Toast container for showing the toast notifications */}
       <ToastContainer />
     </div>
   );

@@ -1,0 +1,112 @@
+/* UserAuditHistory.css */
+.user-audit-history-wrapper {
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+.admin-home-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.no-audits-message {
+    font-size: 18px;
+    color: #6c757d;
+}
+
+.audit-history-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.audit-history-item {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border: 1px solid #e1e1e1;
+    transition: transform 0.2s ease-in-out;
+    max-width: 600px;
+    /* Keeps the audit card width smaller */
+    margin: 0 auto;
+}
+
+.audit-history-item:hover {
+    transform: translateY(-5px);
+}
+
+.audit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.audit-id {
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 600;
+    margin: 0;
+}
+
+.act-name {
+    font-size: 16px;
+    color: #495057;
+}
+
+.submission-date {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+.questions-container {
+    margin-top: 20px;
+}
+
+.questions h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.questions {
+    padding-left: 20px;
+}
+
+.question-item {
+    background-color: #f1f1f1;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.question-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.answer-text {
+    font-size: 14px;
+    color: #495057;
+    margin-top: 5px;
+}
+
+.answer-text strong {
+    font-weight: 600;
+}
+
+.question-item p {
+    margin: 0;
+    padding: 5px 0;
+}
+
+.question-item:last-child {
+    margin-bottom: 0;
+}
