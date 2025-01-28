@@ -4,14 +4,16 @@ import { collection, getDocs, doc, setDoc } from "firebase/firestore";
 import { useParams, useNavigate } from "react-router-dom"; // For navigation
 import UserNav from "./UserNav"; // Import the navigation bar component
 import { onAuthStateChanged } from "firebase/auth"; // For monitoring auth state
-
-
+import { ToastContainer, toast } from "react-toastify"; // Correct import for ToastContainer and toast
+import "react-toastify/dist/ReactToastify.css"; // Import the CSS for toastify
+import '../Styles/UserAudit.css';
 
 const UserAudit = () => {
   const { id } = useParams(); // Get actId from URL
   const [questions, setQuestions] = useState([]);
   const [selectedQuestions, setSelectedQuestions] = useState(new Set()); // To track selected checkboxes
   const [user, setUser] = useState(null); // To store the logged-in user
+  const [searchQuery, setSearchQuery] = useState(""); // State for the search query
   const navigate = useNavigate(); // For navigation to login if not logged in
 
   useEffect(() => {
@@ -83,44 +85,73 @@ const UserAudit = () => {
         timestamp: new Date(),
       });
 
-      console.log("Audit submitted successfully!");
+      // Show success toast
+      toast.success("Audit submitted successfully!");
 
     } catch (error) {
-      console.error("Error submitting audit:", error);
+      // Show error toast
+      toast.error("Error submitting audit: " + error.message);
     }
   };
+
+  // Filter questions based on the search query
+  const filteredQuestions = questions.filter((question) =>
+    question.text.includes(searchQuery) // Case-sensitive search
+  );
 
   return (
     <div>
       <UserNav />
-      <div className="audit-container">
-        <h2>Audit Questions for Act</h2>
-
-        <table className="audit-table">
-          <thead>
-            <tr>
-              <th>Question</th>
-              <th>Select</th>
-            </tr>
-          </thead>
-          <tbody>
-            {questions.map((question) => (
-              <tr key={question.id}>
-                <td>{question.text}</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    onChange={() => handleCheckboxChange(question.id)}
-                    checked={selectedQuestions.has(question.id)}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <button onClick={handleSubmitAudit} className="submit-button">Submit Audit</button>
+      <div className="user-audit-wrapper">
+        <h1 className="admin-home-title">Audit Questions for Act</h1>
+        
+        <div className="audit-content-container">
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search questions..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} // Handle search input change
+            className="search-input"
+          />
+        </div>
+          {filteredQuestions.length === 0 ? (
+            <p className="no-questions-message">No questions available</p>
+          ) : (
+            <>
+              <table className="audit-questions-table">
+                <thead>
+                  <tr>
+                    <th className="sno-column-header">S.No</th> {/* Serial Number Header */}
+                    <th className="question-column-header">Question</th>
+                    <th className="checkbox-column-header">Select</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredQuestions.map((question, index) => (
+                    <tr key={question.id}>
+                      <td className="sno-cell">{index + 1}</td> {/* Display serial number */}
+                      <td className="question-text">{question.text}</td>
+                      <td className="checkbox-cell">
+                        <input
+                          type="checkbox"
+                          onChange={() => handleCheckboxChange(question.id)}
+                          checked={selectedQuestions.has(question.id)}
+                          className="question-checkbox"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <button onClick={handleSubmitAudit} className="submit-audit-button">Submit Audit</button>
+            </>
+          )}
+        </div>
       </div>
+
+      {/* Toast container for showing the toast notifications */}
+      <ToastContainer />
     </div>
   );
 };

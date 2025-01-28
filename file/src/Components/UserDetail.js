@@ -3,14 +3,16 @@ import { useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
 import AdminNav from "./AdminNav";
-import "../Styles/UserDetail.css"; 
+import { FaSearch } from "react-icons/fa"; // Import search icon
+import "../Styles/UserDetail.css";
 
 const UserDetail = () => {
-  const { userId } = useParams(); // Get userId from route
+  const { userId } = useParams();
   const [user, setUser] = useState(null);
-  const [acts, setActs] = useState([]); // Acts from Firestore
-  const [selectedActs, setSelectedActs] = useState([]); // Acts selected for the user
-  const [role, setRole] = useState(""); // User role
+  const [acts, setActs] = useState([]);
+  const [selectedActs, setSelectedActs] = useState([]);
+  const [role, setRole] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // Search query state
 
   // Fetch user details
   useEffect(() => {
@@ -18,13 +20,12 @@ const UserDetail = () => {
       const userDoc = await getDoc(doc(db, "users", userId));
       if (userDoc.exists()) {
         setUser(userDoc.data());
-        setSelectedActs(userDoc.data().acts || []); // Prepopulate selected acts
-        setRole(userDoc.data().role || "user"); // Prepopulate role (default to 'user')
+        setSelectedActs(userDoc.data().acts || []);
+        setRole(userDoc.data().role || "user");
       } else {
         console.error("User not found");
       }
     };
-
     fetchUser();
   }, [userId]);
 
@@ -38,7 +39,6 @@ const UserDetail = () => {
       }));
       setActs(actData);
     };
-
     fetchActs();
   }, []);
 
@@ -46,8 +46,8 @@ const UserDetail = () => {
   const handleCheckboxChange = (actId) => {
     setSelectedActs((prevSelected) =>
       prevSelected.includes(actId)
-        ? prevSelected.filter((id) => id !== actId) // Remove if already selected
-        : [...prevSelected, actId] // Add if not selected
+        ? prevSelected.filter((id) => id !== actId)
+        : [...prevSelected, actId]
     );
   };
 
@@ -80,6 +80,12 @@ const UserDetail = () => {
     }
   };
 
+  // Filter acts based on search query
+  const filteredActs = acts.filter(
+    (act) =>
+      act.actName.includes(searchQuery) || act.actCode.includes(searchQuery)
+  );
+
   if (!user) {
     return (
       <div className="loading-container">
@@ -97,6 +103,7 @@ const UserDetail = () => {
           <p><strong>Full Name:</strong> {user.fullName}</p>
           <p><strong>Email:</strong> {user.email}</p>
           <p><strong>Mobile Number:</strong> {user.mobileNumber}</p>
+          <p><strong>Organization Type:</strong> {user.organizationType}</p>
         </div>
 
         <div className="role-section">
@@ -105,11 +112,23 @@ const UserDetail = () => {
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </select>
-          <button className="save-b" onClick={handleSaveRole}>Save Role</button>
+          <button className="save-btn" onClick={handleSaveRole}>Save Role</button>
         </div>
 
         <div className="acts-section">
-          <h3>Assign Acts</h3>
+        <h1 className="admin-home-title">Assign Acts</h1>
+          
+          <div className="search-bar">
+            <FaSearch className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search by Act Code or Name"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
+          </div>
+
           <table className="acts-table">
             <thead>
               <tr>
@@ -119,7 +138,7 @@ const UserDetail = () => {
               </tr>
             </thead>
             <tbody>
-              {acts.map((act) => (
+              {filteredActs.map((act) => (
                 <tr key={act.id}>
                   <td>{act.actCode}</td>
                   <td>{act.actName}</td>
@@ -134,7 +153,9 @@ const UserDetail = () => {
               ))}
             </tbody>
           </table>
-          <button className="save-btn" onClick={handleSaveActs}>Save Selected Acts</button>
+          <button className="save-btn" onClick={handleSaveActs}>
+            Save Selected Acts
+          </button>
         </div>
       </div>
     </div>

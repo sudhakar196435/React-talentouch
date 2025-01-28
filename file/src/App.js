@@ -18,6 +18,8 @@ import AdminQuestions from "./Components/AdminQuestions";
 import AddQuestions from "./Components/AdminQuestions";
 import UserActs from './Components/UserActs';
 import UserAudit from './Components/UserAudit';
+import AdminSettings from './Components/AdminSettings';
+import UserAuditHistory from './Components/UserAuditHistory';
 
 const App = () => {
   return (
@@ -36,6 +38,7 @@ const App = () => {
 
         <Route path="/home" element={<Home/>} />
         <Route path="/settings" element={<Settings/>} />
+        <Route path="/adminsettings" element={<AdminSettings/>} />
         <Route path="/changepassword" element={<ChangePassword/>} />
         <Route path="/useracts" element={<UserActs/>} />
         <Route path="/useraudit/:id" element={<UserAudit/>} />
@@ -44,6 +47,8 @@ const App = () => {
      <Route path="/users/:userId" element={<UserDetail />} />
      <Route path="/act/:id/questions" element={<AdminQuestions />} />
      <Route path="/act/:id/add-question" element={<AddQuestions />} />
+
+     <Route path="/myaudit" element={<UserAuditHistory/>} />
 
         </Routes>
       </div>

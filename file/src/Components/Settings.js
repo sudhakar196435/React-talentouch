@@ -28,6 +28,9 @@ const Settings = () => {
         } else {
           console.log("No such document!");
         }
+      } else {
+        // Redirect to login page if no user is logged in
+        navigate("/login");
       }
     };
 
@@ -36,11 +39,12 @@ const Settings = () => {
         fetchUserData();
       } else {
         setUserData(null);
+        navigate("/login"); // Redirect to login if user is not authenticated
       }
     });
 
     return () => unsubscribe(); 
-  }, [auth]);
+  }, [auth, navigate]); // Ensure navigate is included as a dependency
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -94,7 +98,7 @@ const Settings = () => {
 
         <div className="settings-content">
           <div className="profile-con">
-            <h2>Profile</h2>
+          <h2 className="admin-home-title">My Profile</h2>
             {userData ? (
               <div className="profile-info">
                 {editMode ? (

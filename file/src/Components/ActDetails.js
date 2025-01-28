@@ -47,7 +47,7 @@ const ActDetailPage = () => {
                     </Link>
                     {/* New View Questions button */}
                     <Link to={`/act/${act.id}/questions`} className="view-questions-button">
-                      View Questions
+                      Manage Questions
                     </Link>
                   </td>
                 </tr>

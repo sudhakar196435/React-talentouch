@@ -1,6 +1,6 @@
 .acts-container {
     padding: 20px;
-    background-color: #f1f8ff; /* Light blue background for the page */
+    background-color: rgb(247, 255, 255); /* Light blue background for the page */
    
    
   }
@@ -74,5 +74,19 @@
   
   .audit-button:hover svg {
     color: #343a40; /* Ensure icon color stays dark on hover */
+  }
+  
+  .no-acts-message {
+    color: #ff4d4d; /* A soft red color for warnings or important messages */
+    background-color: #fff5f5; /* A light red background for better visibility */
+    border: 1px solid #ffcccc; /* Subtle border matching the red theme */
+    border-radius: 8px; /* Rounded corners for a modern look */
+    padding: 16px; /* Adequate padding for spacing */
+    text-align: center; /* Center-align the message text */
+    font-size: 16px; /* Readable font size */
+    font-weight: 500; /* Slightly bold for emphasis */
+    margin: 20px auto; /* Space above and below, centering in the container */
+    max-width: 600px; /* Constrain the message width */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
   }
   

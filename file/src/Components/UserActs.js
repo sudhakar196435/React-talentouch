@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db, auth } from "../firebase"; // Ensure this is correctly initialized in firebase.js
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import UserNav from "./UserNav"; // Import the navigation bar component
 import { onAuthStateChanged } from "firebase/auth"; // For monitoring auth state
@@ -11,11 +11,13 @@ const UserActs = () => {
   const [acts, setActs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null); // To store the logged-in user
+  const [isActive, setIsActive] = useState(false); // For active status
+  const [isBlocked, setIsBlocked] = useState(false); // For blocked status
   const navigate = useNavigate(); // For navigation to login if not logged in
 
   useEffect(() => {
     // Check if the user is logged in
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser); // Set user if logged in
       } else {
@@ -23,84 +25,104 @@ const UserActs = () => {
       }
     });
 
-    return () => unsubscribe(); // Clean up the listener on component unmount
+    return () => unsubscribeAuth(); // Clean up the auth listener on component unmount
   }, [navigate]);
 
   useEffect(() => {
     if (!user) return; // If no user is logged in, don't fetch acts
 
-    const fetchActs = async () => {
-      try {
-        // Query to find the user with the specific email (using user's email)
-        const userRef = collection(db, "users");
-        const userQuery = query(userRef, where("email", "==", user.email));
-        const querySnapshot = await getDocs(userQuery);
-
+    // Fetch real-time data for user and their acts
+    const unsubscribeFirestore = onSnapshot(
+      query(collection(db, "users"), where("email", "==", user.email)),
+      async (querySnapshot) => {
         if (!querySnapshot.empty) {
           const userData = querySnapshot.docs[0].data();
-          const actIds = userData.acts || []; // Get acts IDs
+          setIsActive(userData.active || false); // Set active status
+          setIsBlocked(userData.blocked || false); // Set blocked status
 
-          // Now get the details of each act from the acts collection
-          const actsRef = collection(db, "acts");
-          const actDocs = await getDocs(actsRef);
-          const userActs = actDocs.docs.filter(doc => actIds.includes(doc.id))
-                                       .map(doc => ({ id: doc.id, actName: doc.data().actName })); // Use 'actName'
-          setActs(userActs); // Set acts data in state
+          if (userData.active && !userData.blocked) {
+            const actIds = userData.acts || []; // Get acts IDs
+
+            // Set up a listener for the acts collection
+            onSnapshot(collection(db, "acts"), (actSnapshot) => {
+              const userActs = actSnapshot.docs
+                .filter((doc) => actIds.includes(doc.id))
+                .map((doc) => ({
+                  id: doc.id,
+                  actName: doc.data().actName,
+                  actCode: doc.data().actCode,
+                }));
+              setActs(userActs); // Update acts state in real-time
+            });
+          } else {
+            setActs([]); // Reset acts if user is inactive or blocked
+          }
         }
-
-      } catch (error) {
-        console.error("Error fetching acts:", error);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching user data:", error);
+        setLoading(false);
       }
-      setLoading(false);
-    };
+    );
 
-    fetchActs();
-  }, [user]); // Re-fetch acts when user changes
+    return () => unsubscribeFirestore(); // Clean up the Firestore listener on component unmount
+  }, [user]); // Re-run when user changes
 
   if (loading) {
-    return  <div className="loading-container">
-    <div className="spinner"></div>
-  </div>; // Simple loading message
+    return (
+      <div className="loading-container">
+        <div className="spinner"></div>
+      </div>
+    ); // Simple loading message
   }
 
   return (
     <div>
       <UserNav />
-      
+      <div className="acts-container">
+        <h1 className="admin-home-title">My Acts</h1>
 
-<div className="acts-container">
-  
-  <h1 className="admin-home-title">My Acts</h1>
+        {isBlocked && (
+          <p className="no-acts-message">Your account is blocked. Contact support for assistance.</p>
+        )}
 
-  {acts.length > 0 ? (
-    <table className="acts-table">
-      <thead>
-        <tr>
-          <th className="table-header">Act Name</th>
-          <th className="table-header">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {acts.map((act) => (
-          <tr key={act.id}>
-            <td className="act-name">{act.actName}</td> {/* Display actName */}
-            <td className="action-buttons">
-              <Link to={`/act/${act.id}`} className="view-details-button">
-                <FaEye /> View Details
-              </Link>
-              <Link to={`/useraudit/${act.id}`} className="audit-button">
-                <FaClipboardList /> Audit
-              </Link>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  ) : (
-    <p className="no-acts-message">No acts assigned yet.</p>
-  )}
-</div>
+        {!isBlocked && !isActive && (
+          <p className="no-acts-message">Your account is under verification. Please wait for approval.</p>
+        )}
 
+        {isActive && !isBlocked && acts.length > 0 ? (
+          <table className="acts-table">
+            <thead>
+              <tr>
+              <th className="table-header">Act Code</th>
+                <th className="table-header">Act Name</th>
+                <th className="table-header">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {acts.map((act) => (
+                <tr key={act.id}>
+                   <td className="act-name">{act.actCode}</td>
+                  <td className="act-name">{act.actName}</td>
+                  <td className="action-buttons">
+                    <Link to={`/act/${act.id}`} className="view-details-button">
+                      <FaEye /> View Details
+                    </Link>
+                    <Link to={`/useraudit/${act.id}`} className="audit-button">
+                      <FaClipboardList /> Audit
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          isActive && !isBlocked && (
+            <p className="no-acts-message">No acts assigned yet.</p>
+          )
+        )}
+      </div>
     </div>
   );
 };

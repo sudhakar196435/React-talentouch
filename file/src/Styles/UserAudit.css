@@ -1,0 +1,142 @@
+/* General Styling for the UserAudit page */
+.user-audit-wrapper {
+    font-family: 'Arial', sans-serif;
+    padding: 20px;
+    background-color: #f4f7fb;
+    min-height: 100vh;
+  }
+  
+  .audit-content-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+ 
+  
+  .audit-questions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .audit-questions-table th,
+  .audit-questions-table td {
+    padding: 12px;
+    text-align: left;
+    font-size: 16px;
+  }
+  
+  .question-column-header {
+    color: #ffffff;
+    font-weight: 600;
+  }
+  
+  .checkbox-column-header {
+    width: 120px;
+    text-align: center;
+  }
+  
+  .question-text {
+    color: #34495e;
+  }
+  
+  .checkbox-cell {
+    text-align: center;
+  }
+  
+  .question-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+  
+  .submit-audit-button {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    margin: 0 auto;
+    display: block;
+    width: 200px;
+  }
+  
+  .submit-audit-button:hover {
+    background-color: #2980b9;
+  }
+  
+  .submit-audit-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.6);
+  }
+  
+  @media (max-width: 768px) {
+    .audit-content-container {
+      padding: 15px;
+    }
+  
+    .audit-title {
+      font-size: 20px;
+    }
+  
+    .audit-questions-table th,
+    .audit-questions-table td {
+      font-size: 14px;
+      padding: 10px;
+    }
+  
+    .submit-audit-button {
+      width: 100%;
+      padding: 10px 20px;
+    }
+  }
+  .no-questions-message {
+    font-size: 16px; /* Slightly larger font for visibility */
+    color: #ff4d4d; /* Light red color for the message */
+    text-align: center; /* Center-align the text */
+    font-weight: 600; /* Make it a bit bolder */
+    padding: 20px; /* Add some padding for spacing */
+    background-color: #f9f9f9; /* Light background color */
+    border-radius: 8px; /* Rounded corners */
+    border: 1px solid #ff4d4d; /* Border matching the text color */
+    width: 50%; /* Give it a fixed width */
+    margin: 20px auto; /* Center it horizontally with some margin */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+  }
+  
+  .no-questions-message:hover {
+    background-color: #ffe6e682; /* Slightly darker red on hover */
+    border-color: #ff1a1a; /* Darker border color on hover */
+    cursor: pointer; /* Change cursor to pointer for interactivity */
+  }
+  .search-container {
+    margin-bottom: 20px;
+  }
+  
+  .search-input {
+    padding: 8px;
+    width: 300px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  .sno-column-header, .sno-cell {
+    width: 60px;
+  }
+  
+  .audit-questions-table th, .audit-questions-table td {
+    padding: 8px;
+    text-align: left;
+  }
+  

@@ -36,6 +36,7 @@ const UserNav = () => {
           <li><Link to="/home" className="nav-link">Home</Link></li>
           <li><Link to="/email" className="nav-link">Email</Link></li>
           <li><Link to="/useracts" className="nav-link">My acts</Link></li>
+          <li><Link to="/myaudit" className="nav-link">My Audits</Link></li>
           <li><Link to="/settings" className="nav-link">Settings</Link></li>
           
             {/* Logout Button */}

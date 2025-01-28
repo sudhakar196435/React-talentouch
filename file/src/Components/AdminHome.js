@@ -105,12 +105,7 @@ function AdminHome() {
             <h2>Blocked Users</h2>
             <p>{blockedUsers}</p>
           </div>
-        </div> <button
-          className="home-button"
-          onClick={() => navigate("/home")}
-        >
-          User Mode
-        </button>
+        </div> 
       </div>
     </div>
   );

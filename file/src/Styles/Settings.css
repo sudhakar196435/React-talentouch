@@ -72,27 +72,16 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for the content area */
 }
 
-.settings-content h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: #333; /* Darker color for headings */
-}
+
 .profile-con {
     padding: 30px;
-    max-width: 800px;
+    
     margin: auto;
-    background-color: #ffffff;
+   
     border-radius: 4px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   
   }
   
-  .profile-con h2 {
-    text-align: center;
-    color: #002161; /* Darker shade for a stronger professional presence */
-    font-family: 'Arial', sans-serif;
-    font-weight: 600;
-    margin-bottom: 25px;
-  }
   
   .profile-info {
     margin-top: 20px;
