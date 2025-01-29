@@ -6,10 +6,12 @@ import { useNavigate } from "react-router-dom";
 import UserNav from "./UserNav";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../Styles/UserAuditHistory.css"
+import "../Styles/UserAuditHistory.css";
+
 const UserAuditHistory = () => {
   const [user, setUser] = useState(null);
   const [audits, setAudits] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Initially true
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -88,15 +90,25 @@ const UserAuditHistory = () => {
           );
 
           setAudits(auditsData);
+          setIsLoading(false); // Set loading to false once data is fetched
         } catch (error) {
           console.error("Error fetching audits or questions:", error);
           toast.error("Error fetching audits or questions: " + error.message);
+          setIsLoading(false); // Stop loading in case of error
         }
       };
 
       fetchAudits();
     }
   }, [user]);
+
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -110,7 +122,7 @@ const UserAuditHistory = () => {
             {audits.map((audit) => (
               <div key={audit.id} className="audit-history-item">
                 <div className="audit-header">
-                  <h3 className="audit-id">Audit ID: {audit.id}</h3>
+
                   <p className="act-name">
                     <strong>Act Name:</strong> {audit.actName}
                   </p>
@@ -128,8 +140,7 @@ const UserAuditHistory = () => {
                           <strong>Question {index + 1}:</strong> {question.text}
                         </p>
                         <p className="answer-text">
-                          <strong>Your Answer:</strong>{" "}
-                          {question.answer ? "Yes" : "No"}
+                          <strong>Your Answer:</strong> {question.answer ? "Yes" : "No"}
                         </p>
                       </div>
                     ))}

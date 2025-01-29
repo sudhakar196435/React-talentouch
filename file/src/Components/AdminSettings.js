@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../Styles/Adminsettings.css'; // Import your CSS for styling
 
 import AdminNav from './AdminNav';
+import Adminsidebar from './Adminsidebar';
+
 import { auth, db } from '../firebase'; // Assuming auth and db are properly initialized
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -57,19 +59,7 @@ const AdminSettings = () => {
     <div>
       <AdminNav />
       <div className="setting-container">
-        {/* Sidebar with links */}
-        <div className="setting-sidebar">
-          <ul>
-            <li><Link to="/adminsettings">My Account</Link></li>
-            <li><Link to="/acts">All Acts</Link></li>
-            <li><Link to="/act">Add Act</Link></li>
-            <li><Link to="/settings/security">Hiring Process Workflow</Link></li>
-            <li><Link to="/settings/payments">Role Assignments</Link></li>
-            <li><Link to="/settings/orders">Order History</Link></li>
-            <li><Link to="/settings/subscriptions">Subscription Settings</Link></li>
-            <li><Link to="/settings/address">Address Book</Link></li>
-          </ul>
-        </div>
+      <Adminsidebar/>
 
         {/* Main content */}
         <div className="setting-content">

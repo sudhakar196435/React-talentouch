@@ -5,7 +5,8 @@ import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore"
 import AdminNav from "./AdminNav";
 import { FaSearch } from "react-icons/fa"; // Import search icon
 import "../Styles/UserDetail.css";
-
+import { Button, message, Popconfirm } from "antd";
+import { ToastContainer, toast } from "react-toastify";
 const UserDetail = () => {
   const { userId } = useParams();
   const [user, setUser] = useState(null);
@@ -61,10 +62,10 @@ const UserDetail = () => {
     try {
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, { acts: selectedActs });
-      alert("Selected acts saved successfully!");
+      toast.success("Acts assigned successfully!");
     } catch (error) {
       console.error("Error saving acts:", error);
-      alert("Failed to save selected acts. Please try again.");
+      message.error("Failed to save selected acts. Please try again.");
     }
   };
 
@@ -73,7 +74,7 @@ const UserDetail = () => {
     try {
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, { role: role });
-      alert("User role saved successfully!");
+      toast.success("User role saved successfully!");
     } catch (error) {
       console.error("Error saving role:", error);
       alert("Failed to save user role. Please try again.");
@@ -112,7 +113,16 @@ const UserDetail = () => {
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </select>
-          <button className="save-btn" onClick={handleSaveRole}>Save Role</button>
+          <Popconfirm
+            title="Confirm Role Change"
+            description="Are you sure you want to save this user role?"
+            onConfirm={handleSaveRole}
+            onCancel={() => message.error("Role change canceled")}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="primary">Save Role</Button>
+          </Popconfirm>
         </div>
 
         <div className="acts-section">
@@ -158,6 +168,7 @@ const UserDetail = () => {
           </button>
         </div>
       </div>
+        <ToastContainer />
     </div>
   );
 };

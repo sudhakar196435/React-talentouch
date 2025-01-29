@@ -7,6 +7,8 @@ import { onAuthStateChanged } from "firebase/auth"; // For monitoring auth state
 import { ToastContainer, toast } from "react-toastify"; // Correct import for ToastContainer and toast
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for toastify
 import '../Styles/UserAudit.css';
+import { Empty } from "antd"; // Import Ant Design's Empty component
+
 
 const UserAudit = () => {
   const { id } = useParams(); // Get actId from URL
@@ -115,8 +117,8 @@ const UserAudit = () => {
             className="search-input"
           />
         </div>
-          {filteredQuestions.length === 0 ? (
-            <p className="no-questions-message">No questions available</p>
+        {filteredQuestions.length === 0 ? (
+            <Empty description="No questions available" className="empty-state" />
           ) : (
             <>
               <table className="audit-questions-table">

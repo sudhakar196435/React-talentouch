@@ -100,26 +100,7 @@
       padding: 10px 20px;
     }
   }
-  .no-questions-message {
-    font-size: 16px; /* Slightly larger font for visibility */
-    color: #ff4d4d; /* Light red color for the message */
-    text-align: center; /* Center-align the text */
-    font-weight: 600; /* Make it a bit bolder */
-    padding: 20px; /* Add some padding for spacing */
-    background-color: #f9f9f9; /* Light background color */
-    border-radius: 8px; /* Rounded corners */
-    border: 1px solid #ff4d4d; /* Border matching the text color */
-    width: 50%; /* Give it a fixed width */
-    margin: 20px auto; /* Center it horizontally with some margin */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-    transition: all 0.3s ease; /* Smooth transition for hover effects */
-  }
   
-  .no-questions-message:hover {
-    background-color: #ffe6e682; /* Slightly darker red on hover */
-    border-color: #ff1a1a; /* Darker border color on hover */
-    cursor: pointer; /* Change cursor to pointer for interactivity */
-  }
   .search-container {
     margin-bottom: 20px;
   }

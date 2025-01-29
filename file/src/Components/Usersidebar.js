@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, Button } from 'antd';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { UserOutlined, UnorderedListOutlined, PlusOutlined, UserSwitchOutlined,LogoutOutlined } from '@ant-design/icons';
+import { UserOutlined, UnorderedListOutlined, FileTextOutlined,LogoutOutlined ,BarChartOutlined,MailOutlined} from '@ant-design/icons';
 import { getAuth, signOut } from 'firebase/auth'; // Import Firebase authentication
 
 const items = [
@@ -17,34 +17,33 @@ const items = [
   {
     key: 'myAccount',
     icon: <UserOutlined />,
-    label: <Link to="/adminsettings">My Account</Link>,
+    label: <Link to="/settings">Profile</Link>,
   },
   {
-    key: 'viewAllActs',
+    key: 'Myacts',
     icon: <UnorderedListOutlined />,
-    label: <Link to="/acts">View All Acts</Link>,
+    label: <Link to="/useracts">My Acts</Link>,
   },
   {
-    key: 'addNewAct',
-    icon: <PlusOutlined />,
-    label: <Link to="/act">Add New Act</Link>,
+    key: 'AuditSubmissions',
+    icon: <FileTextOutlined />,
+    label: <Link to="/myaudit">Audit Submissions</Link>,
   },
   {
-    key: 'hiringProcess',
-    label: (
-      <Link to="/users">
-        <UserSwitchOutlined style={{ marginRight: 8 }} /> {/* Icon with margin */}
-        User Control Panel
-      </Link>
-    ),
+    key: 'report',
+    icon: <BarChartOutlined />,
+    label: <Link to="/myaudit">Report</Link>,
   },
   {
-    key: 'hiringProcessWorkflow',
-    label: <Link to="/settings/security">Hiring Process Workflow</Link>,
+    key: 'email',
+    icon: <MailOutlined />,
+    label: <Link to="/email">Email</Link>,
   },
+  
+
 ];
 
-const Adminsidebar = () => {
+const Usersidebar = () => {
   const navigate = useNavigate(); // Use navigate hook for redirection
   
   const onClick = (e) => {
@@ -87,4 +86,4 @@ const Adminsidebar = () => {
   );
 };
 
-export default Adminsidebar;
+export default Usersidebar;

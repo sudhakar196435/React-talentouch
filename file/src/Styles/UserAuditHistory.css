@@ -1,71 +1,69 @@
 /* UserAuditHistory.css */
 .user-audit-history-wrapper {
-    padding: 20px;
-    background-color: #f8f9fa;
+    padding: 25px;
+    
 }
-
 
 .no-audits-message {
     font-size: 18px;
-    color: #6c757d;
+    color: #232124;
 }
 
 .audit-history-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px;
+    width: 80%; /* Adjust width for the entire container */
+    margin: 0 auto;
 }
 
 .audit-history-item {
     background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    border: 1px solid #e1e1e1;
-    transition: transform 0.2s ease-in-out;
-    max-width: 600px;
-    /* Keeps the audit card width smaller */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 25px;
+    border: 1px solid #d1d1d1;
+    transition: transform 0.3s ease-in-out;
+    max-width: 700px;
     margin: 0 auto;
 }
 
-.audit-history-item:hover {
-    transform: translateY(-5px);
-}
+
 
 .audit-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .audit-id {
     font-size: 14px;
-    color: #6c757d;
-    font-weight: 600;
+    color: #9b59b6;
+    font-weight: 700;
     margin: 0;
 }
 
 .act-name {
-    font-size: 16px;
-    color: #495057;
+    font-size: 17px;
+    color: #2c3e50;
 }
 
 .submission-date {
     font-size: 14px;
-    color: #6c757d;
-    margin-bottom: 20px;
+    color: #3c4f32;
+    margin-bottom: 18px;
 }
 
 .questions-container {
-    margin-top: 20px;
+    margin-top: 22px;
 }
 
 .questions h4 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
+    font-size: 19px;
+    font-weight: 700;
+    color: #34495e;
+    margin-bottom: 12px;
 }
 
 .questions {
@@ -73,32 +71,32 @@
 }
 
 .question-item {
-    background-color: #f1f1f1;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 6px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f4f4f9;
+    padding: 18px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .question-text {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
+    font-size: 17px;
+    font-weight: 700;
+    color: #34495e;
 }
 
 .answer-text {
-    font-size: 14px;
-    color: #495057;
-    margin-top: 5px;
+    font-size: 15px;
+    color: #7f8c8d;
+    margin-top: 6px;
 }
 
 .answer-text strong {
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .question-item p {
     margin: 0;
-    padding: 5px 0;
+    padding: 6px 0;
 }
 
 .question-item:last-child {

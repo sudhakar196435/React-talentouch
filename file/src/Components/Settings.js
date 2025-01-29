@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; 
+import {  useNavigate } from "react-router-dom"; 
 import { getAuth, onAuthStateChanged } from "firebase/auth"; 
 import { doc, getDoc, updateDoc } from "firebase/firestore"; 
 import { db } from "../firebase"; 
@@ -7,6 +7,8 @@ import "../Styles/Settings.css";
 import UserNav from "./UserNav";
 import { ToastContainer, toast } from "react-toastify"; // Corrected import
 import 'react-toastify/dist/ReactToastify.css'; // Import the necessary CSS for toast
+import Usersidebar from "./Usersidebar";
+
 
 const Settings = () => {
   const [userData, setUserData] = useState(null);
@@ -76,29 +78,11 @@ const Settings = () => {
       <UserNav />
       
       <div className="settings-container">
-        <div className="settings-sidebar">
-          <ul className="settings-menu">
-            <li className="settings-menu-item active">
-              <Link to="/settings">Profile</Link>
-            </li>
-            <li className="settings-menu-item">
-              <Link to="/changepassword">Change Password</Link>
-            </li>
-            <li className="settings-menu-item">
-              <Link to="/two-step-verification">Two-Step Verification</Link>
-            </li>
-            <li className="settings-menu-item">
-              <Link to="/privacy-settings">Privacy Settings</Link>
-            </li>
-            <li className="settings-menu-item">
-              <Link to="/login">Logout</Link>
-            </li>
-          </ul>
-        </div>
+        <Usersidebar/>
 
         <div className="settings-content">
           <div className="profile-con">
-          <h2 className="admin-home-title">My Profile</h2>
+          <h2 className="admin-home-title">Profile</h2>
             {userData ? (
               <div className="profile-info">
                 {editMode ? (

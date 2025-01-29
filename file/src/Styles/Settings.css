@@ -1,72 +1,20 @@
 /* settings-container: Container for the entire settings page */
 .settings-container {
-    display: flex;
-    height: 100vh; /* Full viewport height */
-    padding: 20px;
-    background-color: #f1f8ff; /* Light blue background for the page */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: 100vh;
+  background-color: #f7f7f7; /* Light gray background */
+  padding: 20px;
 }
 
-/* settings-sidebar: Sidebar for navigation */
-.settings-sidebar {
-    width: 250px;
-    background-color: #1e3d58; /* Darker blue for a more professional look */
-    color: #fff; /* White text for better contrast */
-    border-radius: 10px;
-    padding: 20px;
-    height: 100%; /* Full height of the container */
-    display: flex;
-    flex-direction: column; /* Stack menu items vertically */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Softer shadow for a more subtle effect */
-}
-
-/* settings-menu: List container for sidebar menu items */
-.settings-menu {
-    list-style: none;
-    padding: 0;
-    margin-top: 20px; /* Added space from the top */
-}
-
-/* settings-menu-item: Individual menu item style */
-.settings-menu-item {
-    padding: 12px;
-    margin: 10px 0;
-    font-size: 16px;
-    font-family: 'Roboto', sans-serif; /* Consistent font */
-    font-weight: 0; /* Slightly lighter weight for better readability */
-    cursor: pointer;
-    border-radius: 6px;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-/* Hover effect for menu items */
-.settings-menu-item:hover {
-    background-color: #334e6f; /* Slight darkening effect on hover */
-}
-
-/* settings-menu-item link styles */
-.settings-menu-item a {
-    color: inherit; /* Inherit color from the parent item */
- 
-    text-decoration: none; /* Remove underlines from links */
-    display: block; /* Ensure the whole item is clickable */
-    padding: 5px 10px;
-}
-
-/* Active menu item styling */
-.settings-menu-item.active {
-    background-color: #c2e7fa; /* Soft red highlight for active item */
-}
-
-.settings-menu-item.active a {
-    color: #000000; /* Dark red for active item text */
-}
 
 /* settings-content: Main content area */
 .settings-content {
     flex-grow: 1;
     padding: 20px;
     background-color: #ffffff; /* White background for content */
-    border-radius: 10px;
+    
     margin-left: 20px;
     overflow-y: auto; /* Allows scrolling if content is too long */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for the content area */

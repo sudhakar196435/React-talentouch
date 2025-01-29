@@ -98,7 +98,7 @@ const ActDetailsView = () => {
     <div>
       {userRole === "admin" ? <AdminNav /> : <UserNav />} {/* Conditional navigation bar */}
       
-      <div className="admin-home-container">
+      <div className="admin-home-containe">
         <div className="act-detail-page">
           {act ? (
             <div className="act-details">

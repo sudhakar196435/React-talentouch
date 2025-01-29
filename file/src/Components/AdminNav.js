@@ -39,7 +39,7 @@ const AdminNav = () => {
         <ul className={`nav-links ${isMobile ? 'active' : ''}`}>
           <li><Link to="/adminhome" className="nav-link">Home</Link></li>
           <li><Link to="/users" className="nav-link">Manage Users</Link></li>
-          <li><Link to="/adminsettings" className="nav-link">More</Link></li>
+          <li><Link to="/adminsettings" className="nav-link">Menu</Link></li>
           <li>
             {/* Logout Button */}
             <button className="log-out" onClick={handleLogout}>

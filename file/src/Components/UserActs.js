@@ -6,6 +6,7 @@ import UserNav from "./UserNav"; // Import the navigation bar component
 import { onAuthStateChanged } from "firebase/auth"; // For monitoring auth state
 import { FaEye, FaClipboardList } from 'react-icons/fa';
 import "../Styles/UserActs.css"; // Import CSS for styling
+import { Empty } from "antd"; // Import Ant Design's Empty component
 
 const UserActs = () => {
   const [acts, setActs] = useState([]);
@@ -119,7 +120,7 @@ const UserActs = () => {
           </table>
         ) : (
           isActive && !isBlocked && (
-            <p className="no-acts-message">No acts assigned yet.</p>
+            <Empty description="No Acts available" className="empty-state" />
           )
         )}
       </div>
