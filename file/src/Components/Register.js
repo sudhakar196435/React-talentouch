@@ -87,14 +87,20 @@ const Register = () => {
             required
             className="input-field"
           />
-          <input
-            type="text"
-            placeholder="Mobile Number"
-            value={mobileNumber}
-            onChange={(e) => setMobileNumber(e.target.value)}
-            required
-            className="input-field"
-          />
+        <input
+  type="text"
+  placeholder="Mobile Number"
+  value={mobileNumber}
+  onChange={(e) => {
+    const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+    if (value.length <= 10) {
+      setMobileNumber(value);
+    }
+  }}
+  required
+  className="input-field"
+/>
+
           <input
             type="email"
             placeholder="Email"

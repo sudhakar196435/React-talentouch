@@ -20,6 +20,7 @@ import UserActs from './Components/UserActs';
 import UserAudit from './Components/UserAudit';
 import AdminSettings from './Components/AdminSettings';
 import UserAuditHistory from './Components/UserAuditHistory';
+import Adminsidebar from './Components/Adminsidebar';
 
 const App = () => {
   return (
@@ -49,6 +50,7 @@ const App = () => {
      <Route path="/act/:id/add-question" element={<AddQuestions />} />
 
      <Route path="/myaudit" element={<UserAuditHistory/>} />
+     <Route path="/sidebar" element={<Adminsidebar/>} />
 
         </Routes>
       </div>
