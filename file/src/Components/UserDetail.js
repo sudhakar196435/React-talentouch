@@ -5,7 +5,8 @@ import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore"
 import AdminNav from "./AdminNav";
 import { FaSearch } from "react-icons/fa"; // Import search icon
 import "../Styles/UserDetail.css";
-import { Button, message, Popconfirm } from "antd";
+import { Button, message, Popconfirm,Spin } from "antd";
+
 import { ToastContainer, toast } from "react-toastify";
 const UserDetail = () => {
   const { userId } = useParams();
@@ -89,9 +90,9 @@ const UserDetail = () => {
 
   if (!user) {
     return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-      </div>
+       <div className="loading-container">
+                   <Spin size="large" />
+                 </div>
     );
   }
 

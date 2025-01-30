@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase"; // Ensure Firebase is correctly initialized
+import { Spin } from 'antd';
 import {
   collection,
   doc,
@@ -107,7 +108,9 @@ const AdminQuestions = () => {
     setFilteredQuestions(filteredQuestions.filter((q) => q.id !== questionId));
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <div className="loading-container">
+  <Spin size="large" />
+</div>;
 
   return (
     <div>

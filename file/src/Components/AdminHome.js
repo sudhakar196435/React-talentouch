@@ -4,6 +4,7 @@ import { auth } from "../firebase";
 import { doc, getDoc, collection, getDocs } from "firebase/firestore"; // Add missing imports
 import { db } from "../firebase"; // Firestore instance
 import AdminNav from "./AdminNav";
+import { Spin } from 'antd';
 import { FaUsers, FaCheckCircle, FaTimesCircle, FaBan } from 'react-icons/fa'; // Importing React Icons
 import '../Styles/AdminHome.css';
 
@@ -74,7 +75,7 @@ function AdminHome() {
   if (isLoading) {
     return (
       <div className="loading-container">
-        <div className="spinner"></div>
+        <Spin size="large" />
       </div>
     );
   }
