@@ -25,14 +25,26 @@ const Login = () => {
       const user = userCredential.user;
 
       if (user.emailVerified) {
-        // Fetch user role from Firestore
+        // Fetch user data from Firestore
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists() && userDoc.data().role === "admin") {
-          navigate("/adminhome"); // Redirect to admin home
-          toast.success("Welcome, Admin!");
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          
+          // Check if the user has completed their profile
+          if (!userData.profileCompleted) {
+            // Redirect to profile completion page if profile is not completed
+            navigate("/complete-profile");
+            toast.info("Please complete your profile.");
+          } else if (userData.role === "admin") {
+            navigate("/adminhome"); // Redirect to admin home
+            toast.success("Welcome, Admin!");
+          } else {
+            navigate("/home"); // Redirect to user home
+            toast.success("Login successful!");
+          }
         } else {
-          navigate("/home"); // Redirect to user home
-          toast.success("Login successful!");
+          setError("User data not found.");
+          toast.error("User data not found.");
         }
       } else {
         setError("Please verify your email before logging in.");

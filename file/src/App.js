@@ -21,6 +21,7 @@ import UserAudit from './Components/UserAudit';
 import AdminSettings from './Components/AdminSettings';
 import UserAuditHistory from './Components/UserAuditHistory';
 import Upload from './Components/UploadActs';
+import CompleteProfile from './Components/CompleteProfile';
 
 
 const App = () => {
@@ -52,7 +53,8 @@ const App = () => {
 
      <Route path="/myaudit" element={<UserAuditHistory/>} />
      <Route path="/UploadActs" element={<Upload />}/>
-
+     <Route path="/complete-profile" element={<CompleteProfile />}/>
+     complete-profile
         </Routes>
       </div>
     </Router>

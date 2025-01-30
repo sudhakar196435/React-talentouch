@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {  useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom"; 
 import { getAuth, onAuthStateChanged } from "firebase/auth"; 
 import { doc, getDoc, updateDoc } from "firebase/firestore"; 
 import { db } from "../firebase"; 
@@ -82,7 +82,7 @@ const Settings = () => {
 
         <div className="settings-content">
           <div className="profile-con">
-          <h2 className="admin-home-title">Profile</h2>
+            <h2 className="admin-home-title">Profile</h2>
             {userData ? (
               <div className="profile-info">
                 {editMode ? (
@@ -116,6 +116,133 @@ const Settings = () => {
                             onChange={handleInputChange} 
                           /></td>
                         </tr>
+                        {/* Add new fields */}
+                        <tr>
+                          <td><label>Company Name</label></td>
+                          <td><input 
+                            type="text" 
+                            name="companyName" 
+                            value={formData.companyName} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>Company Address</label></td>
+                          <td><input 
+                            type="text" 
+                            name="companyAddress" 
+                            value={formData.companyAddress} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>Hazardous</label></td>
+                          <td><input 
+                            type="text" 
+                            name="hazardous" 
+                            value={formData.hazardous} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>Industry Type</label></td>
+                          <td><input 
+                            type="text" 
+                            name="industryType" 
+                            value={formData.industryType} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>Contract Employees</label></td>
+                          <td><input 
+                            type="text" 
+                            name="contractEmployees" 
+                            value={formData.contractEmployees} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>Occupier Name</label></td>
+                          <td><input 
+                            type="text" 
+                            name="occupierName" 
+                            value={formData.occupierName} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>Director Name</label></td>
+                          <td><input 
+                            type="text" 
+                            name="directorName" 
+                            value={formData.directorName} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>License No</label></td>
+                          <td><input 
+                            type="text" 
+                            name="licenseNo" 
+                            value={formData.licenseNo} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>License Validity</label></td>
+                          <td><input 
+                            type="text" 
+                            name="licenseValidity" 
+                            value={formData.licenseValidity} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>HP and Man Power</label></td>
+                          <td><input 
+                            type="text" 
+                            name="hpAndManPower" 
+                            value={formData.hpAndManPower} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>Coordinator Name</label></td>
+                          <td><input 
+                            type="text" 
+                            name="coordinatorName" 
+                            value={formData.coordinatorName} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>Safety Officer Name</label></td>
+                          <td><input 
+                            type="text" 
+                            name="safetyOfficerName" 
+                            value={formData.safetyOfficerName} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>Welfare Officer Name</label></td>
+                          <td><input 
+                            type="text" 
+                            name="welfareOfficerName" 
+                            value={formData.welfareOfficerName} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
+                        <tr>
+                          <td><label>Medical Advisor Name</label></td>
+                          <td><input 
+                            type="text" 
+                            name="medicalAdvisorName" 
+                            value={formData.medicalAdvisorName} 
+                            onChange={handleInputChange} 
+                          /></td>
+                        </tr>
                       </tbody>
                     </table>
                     <button onClick={handleSave} className="save-but">Save Changes</button>
@@ -123,14 +250,13 @@ const Settings = () => {
                   </div>
                 ) : (
                   <div>
-                        {/* Conditionally render the admin button */}
-                {userData.role === "admin" && (
-                  <button onClick={handleGoToAdminHome} className="admin-button">
-                    Admin Mode
-                  </button>
-                )}
+                    {/* Conditionally render the admin button */}
+                    {userData.role === "admin" && (
+                      <button onClick={handleGoToAdminHome} className="admin-button">
+                        Admin Mode
+                      </button>
+                    )}
                     <table className="profile-table">
-                      
                       <tbody>
                         <tr>
                           <td>Name</td>
@@ -148,13 +274,68 @@ const Settings = () => {
                           <td>Organization Type</td>
                           <td>{userData.organizationType}</td>
                         </tr>
+                        {/* Display newly added fields */}
+                        <tr>
+                          <td>Company Name</td>
+                          <td>{userData.companyName}</td>
+                        </tr>
+                        <tr>
+                          <td>Company Address</td>
+                          <td>{userData.companyAddress}</td>
+                        </tr>
+                        <tr>
+                          <td>Hazardous</td>
+                          <td>{userData.hazardous}</td>
+                        </tr>
+                        <tr>
+                          <td>Industry Type</td>
+                          <td>{userData.industryType}</td>
+                        </tr>
+                        <tr>
+                          <td>Contract Employees</td>
+                          <td>{userData.contractEmployees}</td>
+                        </tr>
+                        <tr>
+                          <td>Occupier Name</td>
+                          <td>{userData.occupierName}</td>
+                        </tr>
+                        <tr>
+                          <td>Director Name</td>
+                          <td>{userData.directorName}</td>
+                        </tr>
+                        <tr>
+                          <td>License No</td>
+                          <td>{userData.licenseNo}</td>
+                        </tr>
+                        <tr>
+                          <td>License Validity</td>
+                          <td>{userData.licenseValidity}</td>
+                        </tr>
+                        <tr>
+                          <td>HP and Man Power</td>
+                          <td>{userData.hpAndManPower}</td>
+                        </tr>
+                        <tr>
+                          <td>Coordinator Name</td>
+                          <td>{userData.coordinatorName}</td>
+                        </tr>
+                        <tr>
+                          <td>Safety Officer Name</td>
+                          <td>{userData.safetyOfficerName}</td>
+                        </tr>
+                        <tr>
+                          <td>Welfare Officer Name</td>
+                          <td>{userData.welfareOfficerName}</td>
+                        </tr>
+                        <tr>
+                          <td>Medical Advisor Name</td>
+                          <td>{userData.medicalAdvisorName}</td>
+                        </tr>
                       </tbody>
                     </table>
                     <button onClick={() => setEditMode(true)} className="edit-but">Edit</button>
                   </div>
                 )}
-                
-            
               </div>
             ) : (
               <p className="loading-message">Loading profile...</p>
