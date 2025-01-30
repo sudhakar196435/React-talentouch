@@ -20,6 +20,7 @@ import UserActs from './Components/UserActs';
 import UserAudit from './Components/UserAudit';
 import AdminSettings from './Components/AdminSettings';
 import UserAuditHistory from './Components/UserAuditHistory';
+import Upload from './Components/UploadActs';
 
 
 const App = () => {
@@ -50,7 +51,7 @@ const App = () => {
      <Route path="/act/:id/add-question" element={<AddQuestions />} />
 
      <Route path="/myaudit" element={<UserAuditHistory/>} />
-    
+     <Route path="/UploadActs" element={<Upload />}/>
 
         </Routes>
       </div>

@@ -3,47 +3,44 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase"; // Adjust the path as necessary
 import '../Styles/Actpage.css';
 import AdminNav from "./AdminNav";
+
+const statesOfIndia = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+];
+
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
+
 const Addact = () => {
   const [actCode, setActCode] = useState("");
   const [actName, setActName] = useState("");
-  const [details, setDetails] = useState({
- 
-    status: "",
-    section: "",
-    compliance: "",
-    description: "",
-    registerForm: "",
-    timeLimit: "",
-    remarks: "",
-  });
-
-  const handleDetailChange = (e) => {
-    const { name, value } = e.target;
-    setDetails((prev) => ({ ...prev, [name]: value }));
-  };
-
+  const [govType, setGovType] = useState("Central Government");
+  const [state, setState] = useState("");
+  const [status, setStatus] = useState("Active");
+  const [actNature, setActNature] = useState("Act");
+  const [enactYear, setEnactYear] = useState(currentYear);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await addDoc(collection(db, "acts"), {
         actCode,
         actName,
-        details,
+        govType,
+        state: govType === "State Government" ? state : "", 
+        status,
+        actNature,
+        enactYear,
         createdAt: new Date(),
       });
       alert("Act added successfully!");
       setActCode("");
       setActName("");
-      setDetails({
-        
-        status: "",
-        section: "",
-        compliance: "",
-        description: "",
-        registerForm: "",
-        timeLimit: "",
-        remarks: "",
-      });
+      setGovType("Central Government");
+      setState("");
+      setStatus("Active");
+      setActNature("Act");
+      setEnactYear(currentYear);
     } catch (error) {
       console.error("Error adding document: ", error);
       alert("Failed to add act!");
@@ -51,122 +48,82 @@ const Addact = () => {
   };
 
   return (
-    <div><AdminNav/>
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
-      <h1>Add Act</h1>
-      <form onSubmit={handleSubmit}>
-        <table className="act-form-table" style={{ width: "100%", borderCollapse: "collapse" }}>
-          <tbody>
-            <tr>
-              <td><label>Act Code:</label></td>
-              <td>
-                <input
-                  type="text"
-                  value={actCode}
-                  onChange={(e) => setActCode(e.target.value)}
-                  required
-                />
-              </td>
-            </tr>
-            <tr>
-              <td><label>Act Name:</label></td>
-              <td>
-                <input
-                  type="text"
-                  value={actName}
-                  onChange={(e) => setActName(e.target.value)}
-                  required
-                />
-              </td>
-            </tr>
-            <tr>
-            </tr>
-            <tr>
-              <td><label>Status:</label></td>
-              <td>
-                <input
-                  type="text"
-                  name="status"
-                  value={details.status}
-                  onChange={handleDetailChange}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td><label>Section:</label></td>
-              <td>
-                <input
-                  type="text"
-                  name="section"
-                  value={details.section}
-                  onChange={handleDetailChange}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td><label>Compliance:</label></td>
-              <td>
-                <input
-                  type="text"
-                  name="compliance"
-                  value={details.compliance}
-                  onChange={handleDetailChange}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td><label>Description:</label></td>
-              <td>
-                <textarea
-                  name="description"
-                  value={details.description}
-                  onChange={handleDetailChange}
-                  rows="3"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td><label>Register/Form:</label></td>
-              <td>
-                <input
-                  type="text"
-                  name="registerForm"
-                  value={details.registerForm}
-                  onChange={handleDetailChange}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td><label>Time Limit:</label></td>
-              <td>
-                <input
-                  type="text"
-                  name="timeLimit"
-                  value={details.timeLimit}
-                  onChange={handleDetailChange}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td><label>Remarks:</label></td>
-              <td>
-                <textarea
-                  name="remarks"
-                  value={details.remarks}
-                  onChange={handleDetailChange}
-                  rows="3"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div style={{ marginTop: "20px", textAlign: "center" }}>
-          <button type="submit" style={{ padding: "10px 20px", fontSize: "16px" }}>
-            Add Act
-          </button>
-        </div>
-      </form>
-    </div>
+    <div>
+      <AdminNav />
+      <div className="Add">
+        <h1>Add Act</h1>
+        <form onSubmit={handleSubmit}>
+          <table>
+            <tbody>
+              <tr>
+                <td><label>Act Code:</label></td>
+                <td>
+                  <input type="text" value={actCode} onChange={(e) => setActCode(e.target.value)} required />
+                </td>
+              </tr>
+              <tr>
+                <td><label>Act Name:</label></td>
+                <td>
+                  <input type="text" value={actName} onChange={(e) => setActName(e.target.value)} required />
+                </td>
+              </tr>
+              <tr>
+                <td><label>Government Type:</label></td>
+                <td>
+                  <select value={govType} onChange={(e) => setGovType(e.target.value)}>
+                    <option value="Central Government">Central Government</option>
+                    <option value="State Government">State Government</option>
+                  </select>
+                </td>
+              </tr>
+              {govType === "State Government" && (
+                <tr>
+                  <td><label>Select State:</label></td>
+                  <td>
+                    <select value={state} onChange={(e) => setState(e.target.value)}>
+                      <option value="">Select State</option>
+                      {statesOfIndia.map((state, index) => (
+                        <option key={index} value={state}>{state}</option>
+                      ))}
+                    </select>
+                  </td>
+                </tr>
+              )}
+              <tr>
+                <td><label>Status:</label></td>
+                <td>
+                  <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td><label>Act Nature:</label></td>
+                <td>
+                  <select value={actNature} onChange={(e) => setActNature(e.target.value)}>
+                    <option value="Act">Act</option>
+                    <option value="Rule">Rule</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td><label>Enact Year:</label></td>
+                <td>
+                  <select value={enactYear} onChange={(e) => setEnactYear(e.target.value)}>
+                    {years.map((year) => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div>
+            <button type="submit">Add Act</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
