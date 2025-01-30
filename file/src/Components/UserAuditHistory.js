@@ -7,6 +7,7 @@ import UserNav from "./UserNav";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../Styles/UserAuditHistory.css";
+import { Spin } from 'antd';
 
 const UserAuditHistory = () => {
   const [user, setUser] = useState(null);
@@ -104,9 +105,9 @@ const UserAuditHistory = () => {
 
   if (isLoading) {
     return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-      </div>
+       <div className="loading-container">
+                   <Spin size="large" />
+                 </div>
     );
   }
 

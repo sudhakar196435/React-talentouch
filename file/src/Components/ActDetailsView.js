@@ -6,7 +6,7 @@ import "../Styles/View.css";
 import AdminNav from "./AdminNav";
 import UserNav from "./UserNav";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-
+import { Spin } from 'antd';
 const ActDetailsView = () => {
   const { id } = useParams(); // Retrieve the act ID from the URL
   const [act, setAct] = useState(null);
@@ -89,8 +89,8 @@ const ActDetailsView = () => {
   if (loading) {
     return (
       <div className="loading-container">
-        <div className="spinner"></div>
-      </div>
+      <Spin size="large" />
+    </div>
     );
   }
 

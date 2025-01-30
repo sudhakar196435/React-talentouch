@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase"; // Ensure Firebase is set up correctly
 import { doc, onSnapshot } from "firebase/firestore"; // For fetching and listening to user status
-
+import { Spin } from 'antd';
 import '../Styles/Home.css';
 import UserNav from "./UserNav";
 
@@ -72,9 +72,9 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-      </div>
+       <div className="loading-container">
+              <Spin size="large" />
+            </div>
     );
   }
 

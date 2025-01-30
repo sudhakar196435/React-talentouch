@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../Styles/Adminsettings.css'; // Import your CSS for styling
-
+import { Spin } from 'antd';
 import AdminNav from './AdminNav';
 import Adminsidebar from './Adminsidebar';
 
@@ -50,8 +50,8 @@ const AdminSettings = () => {
   }, [navigate]); // Dependency on navigate to update when navigation changes
 
   if (loading) {
-    return  <div className="loading-container">
-    <div className="spinner"></div>
+    return    <div className="loading-container">
+    <Spin size="large" />
   </div>;
   }
 

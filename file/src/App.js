@@ -15,7 +15,7 @@ import ChangePassword from './Components/Changepassword';
 import UserDetail from './Components/UserDetail';
 import Email from './Components/Email';
 import AdminQuestions from "./Components/AdminQuestions";
-import AddQuestions from "./Components/AdminQuestions";
+
 import UserActs from './Components/UserActs';
 import UserAudit from './Components/UserAudit';
 import AdminSettings from './Components/AdminSettings';
@@ -48,7 +48,7 @@ const App = () => {
      <Route path="/act/:id" element={<ActDetailsView/>} />
      <Route path="/users/:userId" element={<UserDetail />} />
      <Route path="/act/:id/questions" element={<AdminQuestions />} />
-     <Route path="/act/:id/add-question" element={<AddQuestions />} />
+    
 
      <Route path="/myaudit" element={<UserAuditHistory/>} />
      <Route path="/UploadActs" element={<Upload />}/>

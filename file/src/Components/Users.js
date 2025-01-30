@@ -6,8 +6,9 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import '../Styles/Users.css';
 import AdminNav from "./AdminNav";
 import { ToastContainer, toast } from 'react-toastify';
-import { Button, Modal } from 'antd';
+import { Button, Modal,Spin } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
+
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -82,7 +83,7 @@ const Users = () => {
   if (isLoading) {
     return (
       <div className="loading-container">
-        <div className="spinner"></div>
+        <Spin size="large" />
       </div>
     );
   }
