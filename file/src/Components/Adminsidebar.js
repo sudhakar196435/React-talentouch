@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, Button } from 'antd';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { UserOutlined, UnorderedListOutlined, PlusOutlined, UserSwitchOutlined,LogoutOutlined } from '@ant-design/icons';
+import { UserOutlined, UnorderedListOutlined, PlusOutlined,UploadOutlined, UserSwitchOutlined,LogoutOutlined } from '@ant-design/icons';
 import { getAuth, signOut } from 'firebase/auth'; // Import Firebase authentication
 
 const items = [
@@ -27,7 +27,12 @@ const items = [
   {
     key: 'addNewAct',
     icon: <PlusOutlined />,
-    label: <Link to="/act">Add New Act</Link>,
+    label: <Link to="/act">Add Act Manually</Link>,
+  },
+  {
+    key: 'uploadacts',
+    icon: <UploadOutlined />,
+    label: <Link to="/uploadacts">Upload Acts</Link>,
   },
   {
     key: 'hiringProcess',

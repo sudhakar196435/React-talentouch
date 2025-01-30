@@ -120,7 +120,7 @@ const Addact = () => {
             </tbody>
           </table>
           <div>
-            <button type="submit">Add Act</button>
+            <button className="bn"type="submit">Add Act</button>
           </div>
         </form>
       </div>

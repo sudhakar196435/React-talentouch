@@ -13,7 +13,7 @@ const UserActs = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null); // To store the logged-in user
   const [isActive, setIsActive] = useState(false); // For active status
-  const [isBlocked, setIsBlocked] = useState(false); // For blocked status
+  
   const navigate = useNavigate(); // For navigation to login if not logged in
 
   useEffect(() => {
@@ -39,9 +39,9 @@ const UserActs = () => {
         if (!querySnapshot.empty) {
           const userData = querySnapshot.docs[0].data();
           setIsActive(userData.active || false); // Set active status
-          setIsBlocked(userData.blocked || false); // Set blocked status
+         
 
-          if (userData.active && !userData.blocked) {
+          if (userData.active) {
             const actIds = userData.acts || []; // Get acts IDs
 
             // Set up a listener for the acts collection
@@ -84,15 +84,13 @@ const UserActs = () => {
       <div className="acts-container">
         <h1 className="admin-home-title">My Acts</h1>
 
-        {isBlocked && (
-          <p className="no-acts-message">Your account is blocked. Contact support for assistance.</p>
+       
+
+        {!isActive && (
+          <p className="verification-message">Your account is under verification. Please wait for approval.</p>
         )}
 
-        {!isBlocked && !isActive && (
-          <p className="no-acts-message">Your account is under verification. Please wait for approval.</p>
-        )}
-
-        {isActive && !isBlocked && acts.length > 0 ? (
+        {isActive && acts.length > 0 ? (
           <table className="acts-table">
             <thead>
               <tr>
@@ -119,7 +117,7 @@ const UserActs = () => {
             </tbody>
           </table>
         ) : (
-          isActive && !isBlocked && (
+          isActive && (
             <Empty description="No Acts available" className="empty-state" />
           )
         )}

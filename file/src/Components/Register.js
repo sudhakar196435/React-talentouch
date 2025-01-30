@@ -12,19 +12,16 @@ import { serverTimestamp } from "firebase/firestore";
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState(""); // State for full name
+ 
   const [mobileNumber, setMobileNumber] = useState(""); // State for mobile number
-  const [organizationType, setOrganizationType] = useState("");
+  
   const navigate = useNavigate(); // Initialize useNavigate
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
     // Validate inputs
-    if (!fullName) {
-      alert("Please enter your full name.");
-      return;
-    }
+    
 
     if (!/^\d{10}$/.test(mobileNumber)) {
       alert("Please enter a valid 10-digit mobile number.");
@@ -36,10 +33,6 @@ const Register = () => {
       return;
     }
 
-    if (!organizationType) {
-      alert("Please select an organization.");
-      return;
-    }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -47,10 +40,10 @@ const Register = () => {
 
       // Save user details in Firestore
       await setDoc(doc(db, "users", user.uid), {
-        fullName, // Save full name
+       
         email,
         mobileNumber, // Save mobile number
-        organizationType,
+       
         createdAt: serverTimestamp(), // Add registration timestamp
       });
 
@@ -79,14 +72,7 @@ const Register = () => {
             <img src={logo} alt="Logo" className="login-logo" />
           </div>
           <h2 className="register-heading">Register</h2>
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            required
-            className="input-field"
-          />
+         
         <input
   type="text"
   placeholder="Mobile Number"
@@ -117,17 +103,7 @@ const Register = () => {
             required
             className="input-field"
           />
-          <select
-            className="organization-select"
-            value={organizationType}
-            onChange={(e) => setOrganizationType(e.target.value)}
-            required
-          >
-            <option value="" disabled>Select an organization</option>
-            <option value="Student">Student</option>
-            <option value="Company">Company</option>
-            <option value="Consultant">Consultant</option>
-          </select>
+         
           <button type="submit" className="register-button">Register</button>
           <p className="register-message">
             Already have an account? <a href="/login">Login </a>

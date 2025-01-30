@@ -124,16 +124,18 @@
     }
   }
   /* Role Dropdown */
-.role-dropdown {
-  padding: 8px 12px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #f9f9f9;
-  margin-right: 10px;
-  cursor: pointer;
-  transition: border-color 0.3s ease;
-}
+  .role-dropdown {
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    width: 120px; /* Adjust the width to a smaller size */
+  }
+  
 
 .role-dropdown:hover {
   border-color: #007bff;

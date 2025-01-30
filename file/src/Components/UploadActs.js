@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import '../Styles/Actpage.css';
+import '../Styles/Uploadacts.css';
+import AdminNav from "./AdminNav";
 
 const Upload = () => {
   const [file, setFile] = useState(null);
@@ -47,10 +48,13 @@ const Upload = () => {
   };
 
   return (
+    <div>
+      <AdminNav/>
     <div className="Upload">
       <h1>Upload Excel File</h1>
       <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
       <button onClick={handleUpload}>Upload</button>
+    </div>
     </div>
   );
 };

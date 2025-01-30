@@ -28,7 +28,7 @@ const Home = () => {
             if (docSnap.exists()) {
               const userData = docSnap.data();
               setFullName(userData.fullName || "User"); // Update full name
-              setUser({ active: userData.active, blocked: userData.blocked });
+              setUser({ active: userData.active });
             } else {
               console.log("No user data found!");
             }
@@ -59,14 +59,7 @@ const Home = () => {
   const renderStatusMessage = () => {
     if (!messageVisible) return null;
 
-    if (user.blocked) {
-      return (
-        <div className="status-message blocked">
-          <p>Your account has been blocked. Please contact support.</p>
-          <button className="close-btn" onClick={handleCloseMessage}>OK</button>
-        </div>
-      );
-    } else if (!user.active) {
+    if (!user.active) {
       return (
         <div className="status-message inactive">
           <p>Your account is under verification.</p>
@@ -74,7 +67,8 @@ const Home = () => {
         </div>
       );
     }
-  };
+};
+
 
   if (loading) {
     return (
