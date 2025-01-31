@@ -138,3 +138,18 @@
     align-items: center;
     min-height: 60vh;
 }
+
+.generate-pdf-button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .generate-pdf-button:hover {
+    background-color: #45a049;
+  }
