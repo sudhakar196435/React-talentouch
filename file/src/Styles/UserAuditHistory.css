@@ -1,7 +1,6 @@
 /* UserAuditHistory.css */
 .user-audit-history-wrapper {
     padding: 25px;
-    
 }
 
 .no-audits-message {
@@ -9,11 +8,12 @@
     color: #232124;
 }
 
+/* Audit History Container */
 .audit-history-container {
     display: flex;
     flex-direction: column;
     gap: 25px;
-    width: 80%; /* Adjust width for the entire container */
+    width: 80%;
     margin: 0 auto;
 }
 
@@ -28,8 +28,11 @@
     margin: 0 auto;
 }
 
+.audit-history-item:hover {
+    transform: scale(1.02);
+}
 
-
+/* Audit Header */
 .audit-header {
     display: flex;
     justify-content: space-between;
@@ -55,6 +58,7 @@
     margin-bottom: 18px;
 }
 
+/* Questions Container */
 .questions-container {
     margin-top: 22px;
 }
@@ -101,4 +105,36 @@
 
 .question-item:last-child {
     margin-bottom: 0;
+}
+
+/* Yes/No Count Section */
+.count-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.count-section span {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.count-section .yes-count {
+    color: green;
+}
+
+.count-section .no-count {
+    color: red;
+}
+
+/* Loader */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
 }
