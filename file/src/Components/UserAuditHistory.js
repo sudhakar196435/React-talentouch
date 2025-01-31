@@ -8,6 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../Styles/UserAuditHistory.css";
 import { Spin, Empty } from "antd";
+import { jsPDF } from "jspdf"; // Import jsPDF
 
 const UserAuditHistory = () => {
   const [user, setUser] = useState(null);
@@ -113,6 +114,32 @@ const UserAuditHistory = () => {
     }
   };
 
+  const generatePDF = () => {
+    const doc = new jsPDF();
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+
+    // Act Name and Submission Date
+    doc.text(`Act Name: ${selectedAudit.actName}`, 20, 20);
+    doc.text(`Submission Date: ${selectedAudit.timestamp.toDate().toLocaleString()}`, 20, 30);
+    
+    // Question and Answer Section
+    selectedAudit.questions.forEach((question, index) => {
+      const yPosition = 40 + index * 20; // Dynamically position the content
+      doc.text(`Question ${index + 1}: ${question.text}`, 20, yPosition);
+      doc.text(`Answer: ${question.answer ? "Yes" : "No"}`, 20, yPosition + 10);
+    });
+
+    // Yes/No Count
+    const yPositionForCounts = 40 + selectedAudit.questions.length * 20;
+    doc.text(`Yes Count: ${selectedAudit.yesCount}`, 20, yPositionForCounts + 10);
+    doc.text(`No Count: ${selectedAudit.noCount}`, 20, yPositionForCounts + 20);
+
+    // Save the PDF
+    doc.save(`${selectedAudit.actName}_Audit_${selectedAudit.timestamp.toDate().toLocaleString()}.pdf`);
+  };
+
   if (isLoading) {
     return (
       <div className="loading-container">
@@ -149,6 +176,9 @@ const UserAuditHistory = () => {
                   <span className="yes-count">Yes: {selectedAudit.yesCount}</span>
                   <span className="no-count">No: {selectedAudit.noCount}</span>
                 </div>
+
+                {/* Generate PDF Button */}
+                <button onClick={generatePDF} className="generate-pdf-button">Generate PDF</button>
               </div>
             ) : (
               audits.map((audit) => (
