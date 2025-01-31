@@ -69,6 +69,9 @@ const UserAuditHistory = () => {
 
   const fetchAuditDetails = async (audit) => {
     try {
+      let yesCount = 0;
+      let noCount = 0;
+
       const questionsWithText = await Promise.all(
         audit.answers.map(async (answer) => {
           const questionDocRef = doc(
@@ -82,6 +85,14 @@ const UserAuditHistory = () => {
           if (!questionDocSnap.exists()) {
             throw new Error(`Question with ID ${answer.questionId} not found`);
           }
+
+          // Count "Yes" and "No" answers
+          if (answer.answer === true) {
+            yesCount++;
+          } else if (answer.answer === false) {
+            noCount++;
+          }
+
           return {
             questionId: answer.questionId,
             text: questionDocSnap.data().text,
@@ -90,7 +101,12 @@ const UserAuditHistory = () => {
         })
       );
 
-      setSelectedAudit({ ...audit, questions: questionsWithText });
+      setSelectedAudit({
+        ...audit,
+        questions: questionsWithText,
+        yesCount,
+        noCount,
+      });
     } catch (error) {
       console.error("Error fetching audit details:", error);
       toast.error("Error fetching audit details: " + error.message);
@@ -126,6 +142,12 @@ const UserAuditHistory = () => {
                       <p><strong>Your Answer:</strong> {question.answer ? "Yes" : "No"}</p>
                     </div>
                   ))}
+                </div>
+
+                {/* Yes/No Count Section */}
+                <div className="count-section">
+                  <span className="yes-count">Yes: {selectedAudit.yesCount}</span>
+                  <span className="no-count">No: {selectedAudit.noCount}</span>
                 </div>
               </div>
             ) : (
