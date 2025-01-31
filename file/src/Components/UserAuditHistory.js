@@ -7,7 +7,7 @@ import UserNav from "./UserNav";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../Styles/UserAuditHistory.css";
-import { Spin } from 'antd';
+import { Spin ,Empty} from 'antd';
 
 const UserAuditHistory = () => {
   const [user, setUser] = useState(null);
@@ -117,7 +117,8 @@ const UserAuditHistory = () => {
       <div className="user-audit-history-wrapper">
         <h1 className="admin-home-title">Submitted Audits</h1>
         {audits.length === 0 ? (
-          <p className="no-audits-message">You have not submitted any audits yet.</p>
+         
+           <Empty description="You have not submitted any audits yet." className="empty-state" />
         ) : (
           <div className="audit-history-container">
             {audits.map((audit) => (

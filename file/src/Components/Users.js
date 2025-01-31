@@ -104,7 +104,7 @@ const Users = () => {
           <thead>
             <tr>
               <th>S.No</th>
-              <th>Full Name</th>
+              <th>Company Name</th>
               <th>Email</th>
               <th>Mobile Number</th>
               <th>Active Status</th>
@@ -115,7 +115,7 @@ const Users = () => {
             {filteredUsers.map((user, index) => (
               <tr key={user.id}>
                 <td>{index + 1}</td>
-                <td>{user.fullName}</td>
+                <td>{user.companyName}</td>
                 <td>{user.email}</td>
                 <td>{user.mobileNumber}</td>
                 <td>{user.active ? "Active" : "Inactive"}</td>

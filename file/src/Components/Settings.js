@@ -8,7 +8,7 @@ import UserNav from "./UserNav";
 import { ToastContainer, toast } from "react-toastify"; // Corrected import
 import 'react-toastify/dist/ReactToastify.css'; // Import the necessary CSS for toast
 import Usersidebar from "./Usersidebar";
-
+import { Descriptions ,Skeleton} from 'antd'; // Import Ant Design components
 
 const Settings = () => {
   const [userData, setUserData] = useState(null);
@@ -89,15 +89,7 @@ const Settings = () => {
                   <div>
                     <table className="profile-table">
                       <tbody>
-                        <tr>
-                          <td><label>Name</label></td>
-                          <td><input 
-                            type="text" 
-                            name="fullName" 
-                            value={formData.fullName} 
-                            onChange={handleInputChange} 
-                          /></td>
-                        </tr>
+                       
                         <tr>
                           <td><label>Mobile Number</label></td>
                           <td><input 
@@ -107,15 +99,7 @@ const Settings = () => {
                             onChange={handleInputChange} 
                           /></td>
                         </tr>
-                        <tr>
-                          <td><label>Organization Type</label></td>
-                          <td><input 
-                            type="text" 
-                            name="organizationType" 
-                            value={formData.organizationType} 
-                            onChange={handleInputChange} 
-                          /></td>
-                        </tr>
+                        
                         {/* Add new fields */}
                         <tr>
                           <td><label>Company Name</label></td>
@@ -256,89 +240,31 @@ const Settings = () => {
                         Admin Mode
                       </button>
                     )}
-                    <table className="profile-table">
-                      <tbody>
-                        <tr>
-                          <td>Name</td>
-                          <td>{userData.fullName}</td>
-                        </tr>
-                        <tr>
-                          <td>Email</td>
-                          <td>{userData.email}</td>
-                        </tr>
-                        <tr>
-                          <td>Mobile Number</td>
-                          <td>{userData.mobileNumber}</td>
-                        </tr>
-                        <tr>
-                          <td>Organization Type</td>
-                          <td>{userData.organizationType}</td>
-                        </tr>
-                        {/* Display newly added fields */}
-                        <tr>
-                          <td>Company Name</td>
-                          <td>{userData.companyName}</td>
-                        </tr>
-                        <tr>
-                          <td>Company Address</td>
-                          <td>{userData.companyAddress}</td>
-                        </tr>
-                        <tr>
-                          <td>Hazardous</td>
-                          <td>{userData.hazardous}</td>
-                        </tr>
-                        <tr>
-                          <td>Industry Type</td>
-                          <td>{userData.industryType}</td>
-                        </tr>
-                        <tr>
-                          <td>Contract Employees</td>
-                          <td>{userData.contractEmployees}</td>
-                        </tr>
-                        <tr>
-                          <td>Occupier Name</td>
-                          <td>{userData.occupierName}</td>
-                        </tr>
-                        <tr>
-                          <td>Director Name</td>
-                          <td>{userData.directorName}</td>
-                        </tr>
-                        <tr>
-                          <td>License No</td>
-                          <td>{userData.licenseNo}</td>
-                        </tr>
-                        <tr>
-                          <td>License Validity</td>
-                          <td>{userData.licenseValidity}</td>
-                        </tr>
-                        <tr>
-                          <td>HP and Man Power</td>
-                          <td>{userData.hpAndManPower}</td>
-                        </tr>
-                        <tr>
-                          <td>Coordinator Name</td>
-                          <td>{userData.coordinatorName}</td>
-                        </tr>
-                        <tr>
-                          <td>Safety Officer Name</td>
-                          <td>{userData.safetyOfficerName}</td>
-                        </tr>
-                        <tr>
-                          <td>Welfare Officer Name</td>
-                          <td>{userData.welfareOfficerName}</td>
-                        </tr>
-                        <tr>
-                          <td>Medical Advisor Name</td>
-                          <td>{userData.medicalAdvisorName}</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <Descriptions bordered column={2} size="small">
+          <Descriptions.Item label="Email">{userData.email}</Descriptions.Item>
+          <Descriptions.Item label="Mobile Number">{userData.mobileNumber}</Descriptions.Item>
+          <Descriptions.Item label="Company Name">{userData.companyName}</Descriptions.Item>
+          <Descriptions.Item label="Company Address">{userData.companyAddress}</Descriptions.Item>
+          <Descriptions.Item label="Hazardous">{userData.hazardous}</Descriptions.Item>
+          <Descriptions.Item label="Industry Type">{userData.industryType}</Descriptions.Item>
+          <Descriptions.Item label="Contract Employees">{userData.contractEmployees}</Descriptions.Item>
+          <Descriptions.Item label="Occupier Name">{userData.occupierName}</Descriptions.Item>
+          <Descriptions.Item label="Director Name">{userData.directorName}</Descriptions.Item>
+          <Descriptions.Item label="License No">{userData.licenseNo}</Descriptions.Item>
+          <Descriptions.Item label="License Validity">{userData.licenseValidity}</Descriptions.Item>
+          <Descriptions.Item label="HP and Man Power">{userData.hpAndManPower}</Descriptions.Item>
+          <Descriptions.Item label="Coordinator Name">{userData.coordinatorName}</Descriptions.Item>
+          <Descriptions.Item label="Safety Officer Name">{userData.safetyOfficerName}</Descriptions.Item>
+          <Descriptions.Item label="Welfare Officer Name">{userData.welfareOfficerName}</Descriptions.Item>
+          <Descriptions.Item label="Medical Advisor Name">{userData.medicalAdvisorName}</Descriptions.Item>
+          
+        </Descriptions>
                     <button onClick={() => setEditMode(true)} className="edit-but">Edit</button>
                   </div>
                 )}
               </div>
             ) : (
-              <p className="loading-message">Loading profile...</p>
+              <Skeleton active />
             )}
           </div>
         </div>

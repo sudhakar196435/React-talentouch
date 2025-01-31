@@ -5,7 +5,8 @@ import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore"
 import AdminNav from "./AdminNav";
 import { FaSearch } from "react-icons/fa"; // Import search icon
 import "../Styles/UserDetail.css";
-import { Button, message, Popconfirm,Spin } from "antd";
+import { Button, message, Popconfirm,Spin, Descriptions  } from "antd";
+
 
 import { ToastContainer, toast } from "react-toastify";
 const UserDetail = () => {
@@ -15,6 +16,7 @@ const UserDetail = () => {
   const [selectedActs, setSelectedActs] = useState([]);
   const [role, setRole] = useState("");
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
+
 
   // Fetch user details
   useEffect(() => {
@@ -82,6 +84,7 @@ const UserDetail = () => {
     }
   };
 
+  
   // Filter acts based on search query
   const filteredActs = acts.filter(
     (act) =>
@@ -101,12 +104,25 @@ const UserDetail = () => {
       <AdminNav />
       <div className="user-detail-container">
         <h1 className="admin-home-title">User Details</h1>
-        <div className="user-info">
-          <p><strong>Full Name:</strong> {user.fullName}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Mobile Number:</strong> {user.mobileNumber}</p>
-          <p><strong>Organization Type:</strong> {user.organizationType}</p>
-        </div>
+        <Descriptions bordered column={2} size="small">
+          <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
+          <Descriptions.Item label="Mobile Number">{user.mobileNumber}</Descriptions.Item>
+          <Descriptions.Item label="Company Name">{user.companyName}</Descriptions.Item>
+          <Descriptions.Item label="Company Address">{user.companyAddress}</Descriptions.Item>
+          <Descriptions.Item label="Hazardous">{user.hazardous}</Descriptions.Item>
+          <Descriptions.Item label="Industry Type">{user.industryType}</Descriptions.Item>
+          <Descriptions.Item label="Contract Employees">{user.contractEmployees}</Descriptions.Item>
+          <Descriptions.Item label="Occupier Name">{user.occupierName}</Descriptions.Item>
+          <Descriptions.Item label="Director Name">{user.directorName}</Descriptions.Item>
+          <Descriptions.Item label="License No">{user.licenseNo}</Descriptions.Item>
+          <Descriptions.Item label="License Validity">{user.licenseValidity}</Descriptions.Item>
+          <Descriptions.Item label="HP and Man Power">{user.hpAndManPower}</Descriptions.Item>
+          <Descriptions.Item label="Coordinator Name">{user.coordinatorName}</Descriptions.Item>
+          <Descriptions.Item label="Safety Officer Name">{user.safetyOfficerName}</Descriptions.Item>
+          <Descriptions.Item label="Welfare Officer Name">{user.welfareOfficerName}</Descriptions.Item>
+          <Descriptions.Item label="Medical Advisor Name">{user.medicalAdvisorName}</Descriptions.Item>
+          
+        </Descriptions>
 
         <div className="role-section">
           <h3>Assign User Role</h3>

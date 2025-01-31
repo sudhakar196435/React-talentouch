@@ -54,7 +54,7 @@ const App = () => {
      <Route path="/myaudit" element={<UserAuditHistory/>} />
      <Route path="/UploadActs" element={<Upload />}/>
      <Route path="/complete-profile" element={<CompleteProfile />}/>
-     complete-profile
+     
         </Routes>
       </div>
     </Router>

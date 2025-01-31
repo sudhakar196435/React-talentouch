@@ -5,7 +5,7 @@ import { doc, getDoc, collection, getDocs } from "firebase/firestore"; // Add mi
 import { db } from "../firebase"; // Firestore instance
 import AdminNav from "./AdminNav";
 import { Spin } from 'antd';
-import { FaUsers, FaCheckCircle, FaTimesCircle, FaBan } from 'react-icons/fa'; // Importing React Icons
+import { FaUsers, FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // Importing React Icons
 import '../Styles/AdminHome.css';
 
 function AdminHome() {
@@ -14,7 +14,7 @@ function AdminHome() {
   const [totalUsers, setTotalUsers] = useState(0);
   const [activeUsers, setActiveUsers] = useState(0);
   const [inactiveUsers, setInactiveUsers] = useState(0);
-  const [blockedUsers, setBlockedUsers] = useState(0);
+  
 
   useEffect(() => {
     const checkAdminAuth = async () => {
@@ -50,20 +50,20 @@ function AdminHome() {
 
         let activeCount = 0;
         let inactiveCount = 0;
-        let blockedCount = 0;
+        
 
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           if (data.active) activeCount++;
           else inactiveCount++;
 
-          if (data.blocked) blockedCount++;
+          
         });
 
         setTotalUsers(querySnapshot.size); // Using querySnapshot.size for total user count
         setActiveUsers(activeCount);
         setInactiveUsers(inactiveCount);
-        setBlockedUsers(blockedCount);
+        
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -101,11 +101,7 @@ function AdminHome() {
             <h2>Inactive Users</h2>
             <p>{inactiveUsers}</p>
           </div>
-          <div className={`stat-card ${blockedUsers > 0 ? 'blocked' : ''}`}>
-            <FaBan size={40} color="#dc3545" />
-            <h2>Blocked Users</h2>
-            <p>{blockedUsers}</p>
-          </div>
+         
         </div> 
       </div>
     </div>

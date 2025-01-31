@@ -4,10 +4,10 @@ import { collection, getDocs, doc, setDoc } from "firebase/firestore";
 import { useParams, useNavigate } from "react-router-dom"; // For navigation
 import UserNav from "./UserNav"; // Import the navigation bar component
 import { onAuthStateChanged } from "firebase/auth"; // For monitoring auth state
-import { ToastContainer, toast } from "react-toastify"; // Correct import for ToastContainer and toast
-import "react-toastify/dist/ReactToastify.css"; // Import the CSS for toastify
+
 import '../Styles/UserAudit.css';
 import { Empty } from "antd"; // Import Ant Design's Empty component
+import { Result, Button } from 'antd'; // Import Result and Button for success message
 
 
 const UserAudit = () => {
@@ -16,6 +16,7 @@ const UserAudit = () => {
   const [selectedQuestions, setSelectedQuestions] = useState(new Set()); // To track selected checkboxes
   const [user, setUser] = useState(null); // To store the logged-in user
   const [searchQuery, setSearchQuery] = useState(""); // State for the search query
+  const [submitSuccess, setSubmitSuccess] = useState(false); // State to track submission status
   const navigate = useNavigate(); // For navigation to login if not logged in
 
   useEffect(() => {
@@ -87,12 +88,12 @@ const UserAudit = () => {
         timestamp: new Date(),
       });
 
-      // Show success toast
-      toast.success("Audit submitted successfully!");
+       // Set success state
+       setSubmitSuccess(true);
 
     } catch (error) {
       // Show error toast
-      toast.error("Error submitting audit: " + error.message);
+      console.error("Error submitting audit: " + error.message);
     }
   };
 
@@ -100,6 +101,24 @@ const UserAudit = () => {
   const filteredQuestions = questions.filter((question) =>
     question.text.includes(searchQuery) // Case-sensitive search
   );
+  if (submitSuccess) {
+    return (
+      <div>
+        <UserNav />
+        <Result
+          status="success"
+          title="Audit Submitted Successfully!"
+          subTitle="Your answers have been submitted successfully. Thank you for completing the audit."
+          extra={[
+            <Button type="primary" key="view" onClick={() => navigate("/myaudit")}>
+              View Details
+            </Button>,
+            <Button key="back" onClick={() => navigate("/home")}>Back to Home</Button>,
+          ]}
+        />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -152,8 +171,6 @@ const UserAudit = () => {
         </div>
       </div>
 
-      {/* Toast container for showing the toast notifications */}
-      <ToastContainer />
     </div>
   );
 };

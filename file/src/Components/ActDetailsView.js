@@ -99,7 +99,7 @@ const ActDetailsView = () => {
     <div>
       {userRole === "admin" ? <AdminNav /> : <UserNav />}
 
-      <div className="act-detail-page">
+      <div className="admin-home-container">
         {act ? (
           <div className="act-details">
             <h2 className="details-title">Details for {act.actName}</h2>
