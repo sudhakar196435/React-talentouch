@@ -10,26 +10,11 @@
 
 /* Audit History Container */
 .audit-history-container {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    width: 80%;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
-}
-
-.audit-history-item {
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 25px;
-    border: 1px solid #d1d1d1;
-    transition: transform 0.3s ease-in-out;
-    max-width: 700px;
-    margin: 0 auto;
-}
-
-.audit-history-item:hover {
-    transform: scale(1.02);
 }
 
 /* Audit Header */
@@ -107,29 +92,7 @@
     margin-bottom: 0;
 }
 
-/* Yes/No Count Section */
-.count-section {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    padding: 12px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
 
-.count-section span {
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.count-section .yes-count {
-    color: green;
-}
-
-.count-section .no-count {
-    color: red;
-}
 
 /* Loader */
 .loading-container {
@@ -148,8 +111,150 @@
     cursor: pointer;
     border-radius: 5px;
     font-size: 16px;
-  }
-  
-  .generate-pdf-button:hover {
+}
+
+.generate-pdf-button:hover {
     background-color: #45a049;
-  }
+}
+
+.submission-date {
+    font-size: 14px; /* Adjust font size */
+    color: #555; /* Dark gray color */
+    font-style: italic; /* Make the text italic */
+    margin: 10px 0; /* Add margin to separate it from other elements */
+    padding: 5px; /* Add some padding for better spacing */
+    background-color: #f9f9f9; /* Light background color */
+    border-radius: 4px; /* Rounded corners */
+}
+
+.total-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    background-color: #fff3d3;
+    border-radius: 8px;
+}
+
+.total-item {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 20%;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.total-icon {
+    font-size: 24px;
+    color: #4caf50;
+    margin-right: 10px;
+}
+
+.total-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.total-item:nth-child(2) .total-icon {
+    color: #4caf50; /* Orange for complied */
+}
+
+.total-item:nth-child(3) .total-icon {
+    color: #d4af09; /* Red for partial complied */
+}
+
+.total-item:nth-child(4) .total-icon {
+    color: #f44336; /* Deep Red for not complied */
+}
+
+.total-item:nth-child(5) .total-icon {
+    color: #1643a3; /* Grey for not applicable */
+}
+
+.audit-details h2 {
+    font-size: 24px; /* Adjust size as needed */
+    font-weight: bold; /* Make the text bold */
+    color: #333; /* Dark gray color */
+    margin: 20px 0; /* Add margin for spacing */
+    text-align: center; /* Center the text */
+    text-transform: uppercase; /* Make the text uppercase */
+    letter-spacing: 1px; /* Add some space between letters */
+    text-decoration: underline;
+}
+
+.aud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Adds spacing between cards */
+    justify-content: center; /* Centers the cards horizontally */
+}
+
+.audit-history-item {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: calc(33% - 20px); /* 3 cards per row, minus gap */
+    padding: 20px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.audit-history-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.audit-content {
+    margin-bottom: 15px;
+}
+
+.audit-content p {
+    font-size: 14px;
+    color: #333;
+    margin: 5px 0;
+}
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .audit-history-item {
+        width: calc(50% - 20px); /* 2 cards per row */
+    }
+    
+    .total-item {
+        width: 48%; /* 2 items per row */
+    }
+}
+
+@media (max-width: 480px) {
+    .audit-history-item {
+        width: 100%; /* 1 card per row */
+    }
+    
+    .total-item {
+        width: 100%; /* 1 item per row */
+    }
+
+    .audit-header {
+        flex-direction: column; /* Stack header items */
+        align-items: flex-start;
+    }
+
+    .generate-pdf-button {
+        width: 100%; /* Full width button on small screens */
+    }
+
+    .audit-id,
+    .act-name,
+    .submission-date {
+        font-size: 12px; /* Adjust text size for mobile */
+    }
+}
