@@ -293,20 +293,20 @@ const UserAuditHistory = () => {
                   <thead>
                     <tr>
                       <th>Question</th>
-                      <th>Status</th>
-                      <th>Remark</th>
                       <th>Register Form</th>
                       <th>Time Limit</th>
+                      <th>Status</th>
+                      <th>Remarks</th>
                     </tr>
                   </thead>
                   <tbody>
                     {selectedAudit.answers.map((answer, index) => (
                       <tr key={answer.questionId}>
                         <td>{answer.text}</td>
-                        <td>{answer.status}</td>
-                        <td>{answer.remark}</td>
                         <td>{answer.registerForm}</td>
                         <td>{answer.timeLimit}</td>
+                        <td>{answer.status}</td>
+                        <td>{answer.remark}</td>
                       </tr>
                     ))}
                   </tbody>
