@@ -6,9 +6,8 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import '../Styles/Users.css';
 import AdminNav from "./AdminNav";
 import { ToastContainer, toast } from 'react-toastify';
-import { Button, Modal,Spin } from 'antd';
+import { Button, Modal, Spin } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
-
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -125,7 +124,14 @@ const Users = () => {
                   ) : (
                     <button className="activate" onClick={() => showConfirmationModal(user, "activate")}>Activate</button>
                   )}
-                  <Button className="view-btn" onClick={() => navigate(`/users/${user.id}`)}  icon={<EyeOutlined />}> View</Button>
+                  <Button className="view-btn" onClick={() => navigate(`/users/${user.id}`)} icon={<EyeOutlined />}> View</Button>
+                  {/* New Button: View Audit History */}
+                  <Button
+                    className="view-audit-history-btn"
+                    onClick={() => navigate(`/user-audit-history/${user.id}`)} // Redirect to the user's audit history
+                  >
+                    View Audit History
+                  </Button>
                 </td>
               </tr>
             ))}
