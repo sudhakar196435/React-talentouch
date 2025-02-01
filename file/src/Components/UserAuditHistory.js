@@ -7,11 +7,12 @@ import UserNav from "./UserNav";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../Styles/UserAuditHistory.css";
-import { Spin, Empty,Button } from "antd";
+import { Spin, Empty, Button } from "antd";
 import { jsPDF } from "jspdf"; // Import jsPDF
 import "jspdf-autotable"; // Import autoTable
-import { CheckCircleOutlined, ExclamationCircleOutlined, QuestionCircleOutlined,ArrowLeftOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, ExclamationCircleOutlined, QuestionCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
+
 const UserAuditHistory = () => {
   const [user, setUser] = useState(null);
   const [audits, setAudits] = useState([]);
@@ -80,14 +81,16 @@ const UserAuditHistory = () => {
     try {
       const answersWithDetails = await Promise.all(
         audit.answers.map(async (answer) => {
+          // Fetch question details from the acts collection
           const questionDocRef = doc(
             db,
             "acts",
-            audit.actId,
+            audit.actId, // Act ID
             "questions",
-            answer.questionId
+            answer.questionId // Question ID
           );
           const questionDocSnap = await getDoc(questionDocRef);
+
           if (!questionDocSnap.exists()) {
             throw new Error(`Question with ID ${answer.questionId} not found`);
           }
@@ -96,9 +99,11 @@ const UserAuditHistory = () => {
 
           return {
             questionId: answer.questionId,
-            remark: answer.remark || "N/A", // Use the remark if available, else default to "N/A"
-            status: answer.status || "Not Applicable", // Use the status if available, else default to "Not Applicable"
-            text: questionData.text,
+            remark: answer.remark || "N/A",
+            status: answer.status || "Not Applicable",
+            text: questionData.text || "N/A",
+            registerForm: questionData.registerForm || "N/A", // Fetch registerForm
+            timeLimit: questionData.timeLimit || "N/A", // Fetch timeLimit
           };
         })
       );
@@ -153,34 +158,36 @@ const UserAuditHistory = () => {
     doc.text(`Submission Date: ${selectedAudit.timestamp.toDate().toLocaleString()}`, 20, 30);
 
     // Define table headers and data
-    const tableHeaders = ['Question', 'Remark', 'Status'];
+    const tableHeaders = ['Question', 'Remark', 'Status', 'Register Form', 'Time Limit'];
     const tableData = selectedAudit.answers.map(answer => [
       answer.text,
-      answer.remark || 'N/A', // Default to 'N/A' if no remark
-      answer.status || 'Not Applicable' // Default to 'Not Applicable' if no status
+      answer.remark || 'N/A',
+      answer.status || 'Not Applicable',
+      answer.registerForm || 'N/A',
+      answer.timeLimit || 'N/A',
     ]);
 
     // Use autoTable to generate a styled table
     doc.autoTable({
       head: [tableHeaders],
       body: tableData,
-      startY: 40,  // Start the table after the title section
-      theme: 'striped',  // Striped rows for better readability
+      startY: 40,
+      theme: 'striped',
       headStyles: {
-        fillColor: [63, 81, 181],  // Blue header background
-        textColor: 255,  // White text in the header
-        fontStyle: 'bold',  // Bold header text
+        fillColor: [63, 81, 181],
+        textColor: 255,
+        fontStyle: 'bold',
       },
       bodyStyles: {
-        textColor: 50,  // Dark text for body
+        textColor: 50,
       },
       alternateRowStyles: {
-        fillColor: [242, 242, 242],  // Light grey for alternate rows
+        fillColor: [242, 242, 242],
       },
-      margin: { top: 40, left: 20, right: 20 },  // Add margins for better layout
+      margin: { top: 40, left: 20, right: 20 },
     });
 
-    // Save the PDF with a dynamic filename based on the act name and submission date
+    // Save the PDF
     doc.save(`${selectedAudit.actName}_Audit_${selectedAudit.timestamp.toDate().toLocaleString()}.pdf`);
   };
 
@@ -203,86 +210,78 @@ const UserAuditHistory = () => {
           <div className="audit-history-container">
             {selectedAudit ? (
               <div className="audit-details">
-              
-  <Button onClick={() => setSelectedAudit(null)} icon={<ArrowLeftOutlined />} size="large">
-    Back
-  </Button>
+                <Button onClick={() => setSelectedAudit(null)} icon={<ArrowLeftOutlined />} size="large">
+                  Back
+                </Button>
                 <h2>{selectedAudit.actName}</h2>
-               
-
 
                 {/* Display Total Counts for Each Status in a Graph */}
                 <div className="status-totals">
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-  <ResponsiveContainer width="50%" height={200}>  {/* Adjusted width and height */}
-    <BarChart data={[
-      { name: "Complied", value: statusTotals.complied },
-      { name: "Not Complied", value: statusTotals.notComplied },
-      { name: "Partial Complied", value: statusTotals.partialComplied },
-      { name: "Not Applicable", value: statusTotals.notApplicable },
-    ]}>
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <CartesianGrid strokeDasharray="3 3" />
-      <Bar dataKey="value">
-        {/* Apply colors based on status */}
-        {[
-          { name: 'Complied', color: '#28a745' }, // Green
-          { name: 'Not Complied', color: '#dc3545' }, // Red
-          { name: 'Partial Complied', color: '#ffc107' }, // Yellow
-          { name: 'Not Applicable', color: '#007bff' }, // Blue
-        ].map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={entry.color} />
-        ))}
-      </Bar>
-    </BarChart>
-  </ResponsiveContainer>
-</div>
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    <ResponsiveContainer width="50%" height={200}>
+                      <BarChart data={[
+                        { name: "Complied", value: statusTotals.complied },
+                        { name: "Not Complied", value: statusTotals.notComplied },
+                        { name: "Partial Complied", value: statusTotals.partialComplied },
+                        { name: "Not Applicable", value: statusTotals.notApplicable },
+                      ]}>
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <Bar dataKey="value">
+                          {[
+                            { name: 'Complied', color: '#28a745' },
+                            { name: 'Not Complied', color: '#dc3545' },
+                            { name: 'Partial Complied', color: '#ffc107' },
+                            { name: 'Not Applicable', color: '#007bff' },
+                          ].map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
 
-<div className="total-container">
-  <div className="total-item">
-    <CheckCircleOutlined className="total-icon" />
-    <p className="total-text">
-      <strong>Total Questions:</strong> {selectedAudit.answers.length}
-    </p>
-  </div>
-  <div className="total-item">
-    <CheckCircleOutlined className="total-icon" />
-    <p className="total-text">
-      <strong>Complied:</strong> {statusTotals.complied}
-    </p>
-  </div>
-  <div className="total-item">
-    <ExclamationCircleOutlined className="total-icon" />
-    <p className="total-text">
-      <strong>Not Complied:</strong> {statusTotals.notComplied}
-    </p>
-  </div>
-  <div className="total-item">
-    <ExclamationCircleOutlined className="total-icon" />
-    <p className="total-text">
-      <strong>Partial Complied:</strong> {statusTotals.partialComplied}
-    </p>
-  </div>
- 
-  <div className="total-item">
-    <QuestionCircleOutlined className="total-icon" />
-    <p className="total-text">
-      <strong>Not Applicable:</strong> {statusTotals.notApplicable}
-    </p>
-  </div>
-</div>
+                  <div className="total-container">
+                    <div className="total-item">
+                      <CheckCircleOutlined className="total-icon" />
+                      <p className="total-text">
+                        <strong>Total Questions:</strong> {selectedAudit.answers.length}
+                      </p>
+                    </div>
+                    <div className="total-item">
+                      <CheckCircleOutlined className="total-icon" />
+                      <p className="total-text">
+                        <strong>Complied:</strong> {statusTotals.complied}
+                      </p>
+                    </div>
+                    <div className="total-item">
+                      <ExclamationCircleOutlined className="total-icon" />
+                      <p className="total-text">
+                        <strong>Not Complied:</strong> {statusTotals.notComplied}
+                      </p>
+                    </div>
+                    <div className="total-item">
+                      <ExclamationCircleOutlined className="total-icon" />
+                      <p className="total-text">
+                        <strong>Partial Complied:</strong> {statusTotals.partialComplied}
+                      </p>
+                    </div>
+                    <div className="total-item">
+                      <QuestionCircleOutlined className="total-icon" />
+                      <p className="total-text">
+                        <strong>Not Applicable:</strong> {statusTotals.notApplicable}
+                      </p>
+                    </div>
+                  </div>
 
-
-<p className="submission-date">
-  
-  <strong>Submission Date:</strong> {selectedAudit.timestamp.toDate().toLocaleString()}
-  <p><strong>Email:</strong> {user.email}</p>
-</p>
+                  <p className="submission-date">
+                    <strong>Submission Date:</strong> {selectedAudit.timestamp.toDate().toLocaleString()}
+                    <p><strong>Email:</strong> {user.email}</p>
+                  </p>
                 </div>
-
 
                 {/* Table for displaying answers */}
                 <table className="answers-table">
@@ -291,6 +290,8 @@ const UserAuditHistory = () => {
                       <th>Question</th>
                       <th>Status</th>
                       <th>Remark</th>
+                      <th>Register Form</th>
+                      <th>Time Limit</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -299,6 +300,8 @@ const UserAuditHistory = () => {
                         <td>{answer.text}</td>
                         <td>{answer.status}</td>
                         <td>{answer.remark}</td>
+                        <td>{answer.registerForm}</td>
+                        <td>{answer.timeLimit}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -308,23 +311,19 @@ const UserAuditHistory = () => {
                 <button onClick={generatePDF} className="generate-pdf-button">Generate PDF</button>
               </div>
             ) : (
-             
-                <div className="aud">
-  {audits.map(audit => (
-    <div key={audit.id} className="audit-history-item">
-      <div className="audit-content">
-        <p><strong>Act Name:</strong> {audit.actName}</p>
-        <p><strong>Submission Date:</strong> {audit.timestamp.toDate().toLocaleString()}</p>
-      </div>
-      <button className="view-btn" onClick={() => fetchAuditDetails(audit)}>
-        View
-      </button>
-    </div>
-  ))}
-</div>
-
-
-              
+              <div className="aud">
+                {audits.map(audit => (
+                  <div key={audit.id} className="audit-history-item">
+                    <div className="audit-content">
+                      <p><strong>Act Name:</strong> {audit.actName}</p>
+                      <p><strong>Submission Date:</strong> {audit.timestamp.toDate().toLocaleString()}</p>
+                    </div>
+                    <button className="view-btn" onClick={() => fetchAuditDetails(audit)}>
+                      View
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         )}
