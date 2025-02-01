@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { db, auth } from "../firebase";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"; // Add useParams
 import UserNav from "./UserNav";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,6 +25,7 @@ const UserAuditHistory = () => {
     notApplicable: 0,
   });
   const navigate = useNavigate();
+  const { userId } = useParams(); // Get userId from URL params
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -38,44 +39,48 @@ const UserAuditHistory = () => {
   }, [navigate]);
 
   useEffect(() => {
-    if (user) {
-      const fetchAudits = async () => {
-        try {
-          const auditsRef = collection(db, "users", user.uid, "Answers");
-          const querySnapshot = await getDocs(auditsRef);
-          const auditsData = await Promise.all(
-            querySnapshot.docs.map(async (docSnapshot) => {
-              const audit = {
-                id: docSnapshot.id,
-                ...docSnapshot.data(),
-              };
+    const fetchAudits = async () => {
+      try {
+        // Use userId from params if available, otherwise use the current user's ID
+        const targetUserId = userId || user?.uid;
+        if (!targetUserId) return; // Exit if no user ID is available
 
-              try {
-                const actDocRef = doc(db, "acts", audit.actId);
-                const actDocSnap = await getDoc(actDocRef);
-                audit.actName = actDocSnap.exists() ? actDocSnap.data().actName : "Unknown Act";
-              } catch (error) {
-                console.error("Error fetching act name:", error);
-                audit.actName = "Unknown Act";
-              }
+        const auditsRef = collection(db, "users", targetUserId, "Answers");
+        const querySnapshot = await getDocs(auditsRef);
+        const auditsData = await Promise.all(
+          querySnapshot.docs.map(async (docSnapshot) => {
+            const audit = {
+              id: docSnapshot.id,
+              ...docSnapshot.data(),
+            };
 
-              return audit;
-            })
-          );
+            try {
+              const actDocRef = doc(db, "acts", audit.actId);
+              const actDocSnap = await getDoc(actDocRef);
+              audit.actName = actDocSnap.exists() ? actDocSnap.data().actName : "Unknown Act";
+            } catch (error) {
+              console.error("Error fetching act name:", error);
+              audit.actName = "Unknown Act";
+            }
 
-          auditsData.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
-          setAudits(auditsData);
-          setIsLoading(false);
-        } catch (error) {
-          console.error("Error fetching audits:", error);
-          toast.error("Error fetching audits: " + error.message);
-          setIsLoading(false);
-        }
-      };
+            return audit;
+          })
+        );
 
+        auditsData.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
+        setAudits(auditsData);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching audits:", error);
+        toast.error("Error fetching audits: " + error.message);
+        setIsLoading(false);
+      }
+    };
+
+    if (user || userId) {
       fetchAudits();
     }
-  }, [user]);
+  }, [user, userId]); // Add userId to dependency array
 
   const fetchAuditDetails = async (audit) => {
     try {
@@ -279,7 +284,7 @@ const UserAuditHistory = () => {
 
                   <p className="submission-date">
                     <strong>Submission Date:</strong> {selectedAudit.timestamp.toDate().toLocaleString()}
-                    <p><strong>Email:</strong> {user.email}</p>
+                    <p><strong>Email:</strong> {user?.email}</p>
                   </p>
                 </div>
 
