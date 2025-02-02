@@ -39,7 +39,7 @@ const items = [
     label: (
       <Link to="/users">
         <UserSwitchOutlined style={{ marginRight: 8 }} /> {/* Icon with margin */}
-        User Control Panel
+        Manage Users
       </Link>
     ),
   },

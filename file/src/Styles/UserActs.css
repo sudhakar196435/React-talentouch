@@ -74,14 +74,4 @@
   .audit-button:hover svg {
     color: #343a40; /* Ensure icon color stays dark on hover */
   }
-  .verification-message {
-    background-color: #fff3cd; /* Light yellow background */
-    color: #856404; /* Dark gold text for visibility */
-    padding: 10px 15px;
-    border: 1px solid #ffeeba; /* Soft border */
-    border-radius: 5px;
-    font-size: 14px;
-    text-align: center;
-    margin-top: 10px;
-  }
-  
+ 

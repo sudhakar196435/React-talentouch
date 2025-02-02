@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase"; // Ensure Firebase is set up correctly
 import { doc, onSnapshot } from "firebase/firestore"; // For fetching and listening to user status
-import { Spin } from 'antd';
+import { Spin,Alert } from 'antd';
 import '../Styles/Home.css';
 import UserNav from "./UserNav";
 
@@ -11,7 +11,6 @@ const Home = () => {
   const [fullName, setFullName] = useState(""); // Full name state
   const [user, setUser] = useState({ active: false, blocked: false });
   const [loading, setLoading] = useState(true);
-  const [messageVisible, setMessageVisible] = useState(true); // To manage message visibility
 
   useEffect(() => {
     let unsubscribeAuth;
@@ -52,22 +51,7 @@ const Home = () => {
     };
   }, [navigate]);
 
-  const handleCloseMessage = () => {
-    setMessageVisible(false); // Hide the message box when OK is clicked
-  };
-
-  const renderStatusMessage = () => {
-    if (!messageVisible) return null;
-
-    if (!user.active) {
-      return (
-        <div className="status-message inactive">
-          <p>Your account is under verification.</p>
-          <button className="close-btn" onClick={handleCloseMessage}>OK</button>
-        </div>
-      );
-    }
-};
+  
 
 
   if (loading) {
@@ -81,8 +65,17 @@ const Home = () => {
   return (
     <div>
       <UserNav />
-      {renderStatusMessage()}
+     
       <div className="home-container">
+      {!user.active && (
+        <Alert
+          message="Your account is under verification"
+            description="Thank you for registering! Your account is currently being reviewed by our team. The verification process may take up to 24-48 hours."
+          type="warning"
+          showIcon
+          className="already-submitted-alert"
+        />
+      )}
         <div className="status-message-container">
           {fullName && <p><strong>Hello</strong>, {fullName}!</p>}
         </div>

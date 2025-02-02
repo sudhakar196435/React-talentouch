@@ -6,7 +6,7 @@ import UserNav from "./UserNav"; // Import the navigation bar component
 import { onAuthStateChanged } from "firebase/auth"; // For monitoring auth state
 import '../Styles/UserAudit.css';
 import { Empty } from "antd"; // Import Ant Design's Empty component
-import { Result, Button } from 'antd'; // Import Result and Button for success message
+import { Result, Button,Alert,Spin } from 'antd'; // Import Result and Button for success message
 
 const UserAudit = () => {
   const { id } = useParams(); // Get actId from URL
@@ -17,6 +17,8 @@ const UserAudit = () => {
   const [searchQuery, setSearchQuery] = useState(""); // State for the search query
   const [submitSuccess, setSubmitSuccess] = useState(false); // State to track submission status
   const [actDetails, setActDetails] = useState({ actCode: "", actName: "" }); // To store act details (code and name)
+  const [alreadySubmitted, setAlreadySubmitted] = useState(false);
+ const [loading, setLoading] = useState(true);
   const navigate = useNavigate(); // For navigation to login if not logged in
 
   useEffect(() => {
@@ -48,6 +50,7 @@ const UserAudit = () => {
         } else {
           console.log("Act not found");
         }
+        setLoading(false); // Stop loading once data is fetched
       } catch (error) {
         console.error("Error fetching act details:", error);
       }
@@ -56,6 +59,38 @@ const UserAudit = () => {
     fetchActDetails();
   }, [id]);
 
+  useEffect(() => {
+    if (user) {
+      const checkIfAlreadySubmitted = async () => {
+        try {
+          const userRef = doc(db, "users", user.uid);
+          const answersRef = collection(userRef, "Answers");
+          const querySnapshot = await getDocs(answersRef);
+          
+          const submittedAudit = querySnapshot.docs.find(doc => doc.data().actId === id);
+          
+          if (submittedAudit) {
+            setAlreadySubmitted(true);
+            const submittedData = submittedAudit.data().answers;
+            const statusMap = new Map();
+            const remarksMap = new Map();
+
+            submittedData.forEach(({ questionId, status, remark }) => {
+              statusMap.set(questionId, status);
+              remarksMap.set(questionId, remark);
+            });
+
+            setSelectedStatus(statusMap);
+            setRemarks(remarksMap);
+          }
+        } catch (error) {
+          console.error("Error checking submitted audit:", error);
+        }
+      };
+
+      checkIfAlreadySubmitted();
+    }
+  }, [user, id]);
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -87,43 +122,25 @@ const UserAudit = () => {
   };
 
   const handleSubmitAudit = async () => {
-    if (!user) return; // Ensure there's a user logged in
-
+    if (!user) return;
     try {
-      const userRef = doc(db, "users", user.uid); // Reference to user's document
-
-      const answersData = [];
-      
-      // Collect selected status and remarks for each question
-      questions.forEach((question) => {
-        const status = selectedStatus.get(question.id) || ''; // Get selected status
-        const remark = remarks.get(question.id) || ''; // Get remarks
-        const questionAnswer = {
-          questionId: question.id,
-          status: status, // Status selected from dropdown
-          remark: remark, // Remark text
-        };
-        answersData.push(questionAnswer);
-      });
-
-      // Store the answers in the "Answers" subcollection for the user
+      const userRef = doc(db, "users", user.uid);
       const answersRef = collection(userRef, "Answers");
-      const answerDocRef = doc(answersRef); // Create a new document for the answers
+      const answerDocRef = doc(answersRef);
       await setDoc(answerDocRef, {
         actId: id,
-        answers: answersData,
+        answers: questions.map((q) => ({
+          questionId: q.id,
+          status: selectedStatus.get(q.id) || '',
+          remark: remarks.get(q.id) || '',
+        })),
         timestamp: new Date(),
       });
-
-      // Set success state
       setSubmitSuccess(true);
-
     } catch (error) {
-      // Show error toast
-      console.error("Error submitting audit: " + error.message);
+      console.error("Error submitting audit:", error);
     }
   };
-
   // Filter questions based on the search query
   const filteredQuestions = questions.filter((question) =>
     question.text.includes(searchQuery) // Case-sensitive search
@@ -148,6 +165,13 @@ const UserAudit = () => {
     );
   }
 
+  if (loading) {
+      return (
+         <div className="loading-container">
+                <Spin size="large" />
+              </div>
+      );
+    }
   return (
     <div>
       <UserNav />
@@ -170,6 +194,18 @@ const UserAudit = () => {
               className="search-input"
             />
           </div>
+          
+          {/* Show already submitted message */}
+        {alreadySubmitted && (
+          <Alert
+            message="Audit Already Submitted"
+            description="You have already submitted the audit for this Act. Changes are not allowed."
+            type="warning"
+            showIcon
+           
+          />
+          
+        )}
           {filteredQuestions.length === 0 ? (
             <Empty description="No questions available" className="empty-state" />
           ) : (
@@ -197,6 +233,7 @@ const UserAudit = () => {
                           value={selectedStatus.get(question.id) || ''}
                           onChange={(e) => handleStatusChange(question.id, e.target.value)}
                           className="status-dropdown"
+                          disabled={alreadySubmitted}
                         >
                           <option value="">Select Status</option>
                           <option value="Complied">Complied</option>
@@ -212,13 +249,18 @@ const UserAudit = () => {
                           placeholder="Add remarks"
                           className="remarks-textarea"
                           rows={2}
+                          disabled={alreadySubmitted}
                         />
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <button onClick={handleSubmitAudit} className="submit-audit-button">Submit Audit</button>
+              {!alreadySubmitted && (
+                <button onClick={handleSubmitAudit} className="submit-audit-button">
+                  Submit Audit
+                </button>
+              )}
             </>
           )}
         </div>

@@ -3,7 +3,7 @@
 /* Home Container */
 .home-container {
   margin: 20px auto;
-
+  padding: 20px;
 }
 
 .status-message-container {

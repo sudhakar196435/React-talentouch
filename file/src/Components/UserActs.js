@@ -6,7 +6,7 @@ import UserNav from "./UserNav"; // Import the navigation bar component
 import { onAuthStateChanged } from "firebase/auth"; // For monitoring auth state
 import { FaEye, FaClipboardList } from 'react-icons/fa';
 import "../Styles/UserActs.css"; // Import CSS for styling
-import { Empty ,Spin} from "antd"; // Import Ant Design's Empty component
+import { Empty ,Spin,Alert} from "antd"; // Import Ant Design's Empty component
 
 const UserActs = () => {
   const [acts, setActs] = useState([]);
@@ -87,9 +87,14 @@ const UserActs = () => {
        
 
         {!isActive && (
-          <p className="verification-message">Your account is under verification. Please wait for approval.</p>
-        )}
-
+        <Alert
+        message="Your account is under verification"
+        description="Thank you for registering! Your account is currently being reviewed by our team. The verification process may take up to 24-48 hours."
+        type="warning"
+        showIcon
+      />
+      
+      )}
         {isActive && acts.length > 0 ? (
           <table className="acts-table">
             <thead>

@@ -10,14 +10,15 @@ import "../Styles/UserAuditHistory.css";
 import { Spin, Empty, Button } from "antd";
 import { jsPDF } from "jspdf"; // Import jsPDF
 import "jspdf-autotable"; // Import autoTable
-import { CheckCircleOutlined, ExclamationCircleOutlined, QuestionCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, ExclamationCircleOutlined, QuestionCircleOutlined, ArrowLeftOutlined ,DownloadOutlined} from '@ant-design/icons';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
-
+import logo from "../Assets/logo.png"; // Import your logo
 const UserAuditHistory = () => {
   const [user, setUser] = useState(null);
   const [audits, setAudits] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAudit, setSelectedAudit] = useState(null);
+  
   const [statusTotals, setStatusTotals] = useState({
     complied: 0,
     notComplied: 0,
@@ -26,7 +27,7 @@ const UserAuditHistory = () => {
   });
   const navigate = useNavigate();
   const { userId } = useParams(); // Get userId from URL params
-
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
@@ -151,35 +152,86 @@ const UserAuditHistory = () => {
       toast.error("Error fetching audit details: " + error.message);
     }
   };
-
   const generatePDF = () => {
     const doc = new jsPDF();
-
+  
+    // Add Company Logo
+    const imgWidth = 50;
+    const imgHeight = 15;
+    doc.addImage(logo, "PNG", 150, 10, imgWidth, imgHeight);
+  
+    // Set company name
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.setTextColor(0, 51, 102); // Dark Blue
+    doc.text("Talentouch", 20, 20);
+  
+    // Add email below company name
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(12);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Email: info@talentouch.com", 20, 28);
+  
+     // Act Name - Centered with Underline
+     doc.setFont("helvetica", "bold");
+     doc.setFontSize(18);
+     doc.setTextColor(0, 0, 0);
+     doc.text(`${selectedAudit.actName}`, 105, 45, { align: "center" });
+     doc.setDrawColor(0, 0, 0);
+     doc.line(50, 48, 160, 48); // Underline
+  
+    // Submission Date
     doc.setFont("helvetica", "normal");
     doc.setFontSize(12);
+    doc.setTextColor(50, 50, 50);
+    doc.text(`Submission Date: ${selectedAudit.timestamp.toDate().toLocaleString()}`,  105, 55, { align: "center" });
+  
+    // Compliance Summary Data
+    const complianceCounts = {
+      complied: selectedAudit.answers.filter(a => a.status === "Complied").length,
+      notComplied: selectedAudit.answers.filter(a => a.status === "Not Complied").length,
+      partialComplied: selectedAudit.answers.filter(a => a.status === "Partial Complied").length,
+      notApplicable: selectedAudit.answers.filter(a => a.status === "Not Applicable").length
+    };
+  
+    // Draw a compliance summary box
+    doc.setFillColor(255, 248, 245); 
+    doc.rect(20, 60, 170, 30, "F"); // This creates a rectangle with no border radius
 
-    // Act Name and Submission Date
-    doc.text(`Act Name: ${selectedAudit.actName}`, 20, 20);
-    doc.text(`Submission Date: ${selectedAudit.timestamp.toDate().toLocaleString()}`, 20, 30);
-
-    // Define table headers and data
-    const tableHeaders = ['Question', 'Remark', 'Status', 'Register Form', 'Time Limit'];
+  
+    // Compliance Summary Title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(0, 102, 102);
+    doc.text("Compliance Summary", 105, 68, { align: "center" });
+  
+    // Display Compliance Counts
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Complied: ${complianceCounts.complied}`, 30, 78);
+    doc.text(`Not Complied: ${complianceCounts.notComplied}`, 80, 78);
+    doc.text(`Partial Complied: ${complianceCounts.partialComplied}`, 30, 86);
+    doc.text(`Not Applicable: ${complianceCounts.notApplicable}`, 80, 86);
+  
+    // Table Headers and Data
+    const tableHeaders = ['Question', 'Register Form', 'Time Limit', 'Status', 'Remark'];
     const tableData = selectedAudit.answers.map(answer => [
       answer.text,
-      answer.remark || 'N/A',
-      answer.status || 'Not Applicable',
       answer.registerForm || 'N/A',
       answer.timeLimit || 'N/A',
+      answer.status || 'Not Applicable',
+      answer.remark || 'N/A',
     ]);
-
-    // Use autoTable to generate a styled table
+  
+    // AutoTable with Styling
     doc.autoTable({
       head: [tableHeaders],
       body: tableData,
-      startY: 40,
-      theme: 'striped',
+      startY: 95,
+      theme: 'grid',
       headStyles: {
-        fillColor: [63, 81, 181],
+        fillColor: [0, 128, 128], // Teal
         textColor: 255,
         fontStyle: 'bold',
       },
@@ -187,14 +239,15 @@ const UserAuditHistory = () => {
         textColor: 50,
       },
       alternateRowStyles: {
-        fillColor: [242, 242, 242],
+        fillColor: [230, 230, 230], // Light Gray
       },
-      margin: { top: 40, left: 20, right: 20 },
+      margin: { top: 60, left: 20, right: 20 },
     });
-
-    // Save the PDF
+  
+    // Save the PDF with formatted name
     doc.save(`${selectedAudit.actName}_Audit_${selectedAudit.timestamp.toDate().toLocaleString()}.pdf`);
   };
+  const [size] = useState('large');
 
   if (isLoading) {
     return (
@@ -313,7 +366,16 @@ const UserAuditHistory = () => {
                 </table>
 
                 {/* Generate PDF Button */}
-                <button onClick={generatePDF} className="generate-pdf-button">Generate PDF</button>
+                <Button
+  type="primary"
+  
+  icon={<DownloadOutlined />}
+  size={size}
+  onClick={generatePDF}
+>
+  Generate PDF
+</Button>
+
               </div>
             ) : (
               <div className="aud">

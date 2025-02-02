@@ -166,11 +166,11 @@
 }
 
 .total-item:nth-child(3) .total-icon {
-    color: #d4af09; /* Red for partial complied */
+    color: #f44336; /* Red for partial complied */
 }
 
 .total-item:nth-child(4) .total-icon {
-    color: #f44336; /* Deep Red for not complied */
+    color: #d4af09; /* Deep Red for not complied */
 }
 
 .total-item:nth-child(5) .total-icon {
