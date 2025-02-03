@@ -271,6 +271,7 @@ const UserAuditHistory = () => {
                 <Button onClick={() => setSelectedAudit(null)} icon={<ArrowLeftOutlined />} size="large">
                   Back
                 </Button>
+                <Button type="primary"icon={<DownloadOutlined />}size={size}onClick={generatePDF}>Generate PDF</Button>
                 <h2>{selectedAudit.actName}</h2>
 
                 {/* Display Total Counts for Each Status in a Graph */}
@@ -366,15 +367,7 @@ const UserAuditHistory = () => {
                 </table>
 
                 {/* Generate PDF Button */}
-                <Button
-  type="primary"
-  
-  icon={<DownloadOutlined />}
-  size={size}
-  onClick={generatePDF}
->
-  Generate PDF
-</Button>
+               
 
               </div>
             ) : (

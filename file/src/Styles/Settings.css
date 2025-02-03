@@ -168,3 +168,35 @@
 }
 
 
+
+
+.custom-descriptions .ant-descriptions-view {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.custom-descriptions .ant-descriptions-item-label {
+  background: #0b3c73 !important; /* Blue background */
+  color: white !important;
+ 
+  text-align: left;
+  padding: 8px;
+  border-right: 2px solid #ffffff;
+}
+
+.custom-descriptions .ant-descriptions-item-content {
+  background: #ffffff !important; /* Light blue content background */
+  color: #333 !important;
+  
+  padding: 8px;
+}
+
+.custom-descriptions .ant-descriptions-item {
+  border-bottom: 1px solid #d1e3f3 !important;
+}
+
+/* Alternating row effect */
+.custom-descriptions .ant-descriptions-row:nth-child(even) .ant-descriptions-item-content {
+  background: #eeeeee !important;
+}

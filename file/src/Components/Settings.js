@@ -240,7 +240,7 @@ const Settings = () => {
                         Admin Mode
                       </button>
                     )}
-                    <Descriptions bordered column={2} size="small">
+                    <Descriptions bordered column={2} size="large"className="custom-descriptions" >
           <Descriptions.Item label="Email">{userData.email}</Descriptions.Item>
           <Descriptions.Item label="Mobile Number">{userData.mobileNumber}</Descriptions.Item>
           <Descriptions.Item label="Company Name">{userData.companyName}</Descriptions.Item>
