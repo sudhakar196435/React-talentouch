@@ -1,0 +1,146 @@
+/* Overall container for centering */
+.setting-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    min-height: 100vh;
+    background-color: #f7f7f7;
+    /* Light gray background */
+    padding: 20px;
+}
+
+/* Sidebar with links */
+.setting-sidebar {
+    width: 280px;
+    /* Sidebar width */
+    background-color: #1e3d58;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.setting-sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.setting-sidebar li {
+    margin-bottom: 20px;
+}
+
+.setting-sidebar a {
+    display: block;
+    text-decoration: none;
+    color: #ffffff;
+    /* Light text color */
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    /* Consistent font */
+    padding: 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.setting-sidebar a:hover {
+    background-color: #334e6f;
+    /* Slight darkening effect on hover */
+}
+
+/* Main settings content */
+.setting-content {
+    flex: 1;
+    margin-left: 30px;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* General link styling in content */
+.setting-content a {
+    display: inline-block;
+    text-decoration: none;
+    color: #e60800;
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.setting-content a:hover {
+    color: rgb(203, 12, 5);
+    text-decoration: underline;
+}
+
+/* Auditor-specific info container */
+.auditor-info {
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+.auditor-info p {
+    font-size: 16px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.auditor-info strong {
+    color: #333;
+    /* Darker text for labels */
+    font-weight: bold;
+}
+
+.auditor-info p:last-child {
+    margin-bottom: 0;
+    /* Remove bottom margin from last paragraph */
+}
+
+/* User mode link styling */
+.user-mode-message {
+    font-size: 16px;
+    /* Adjust font size */
+    color: #2c3e50;
+    /* Set text color */
+    line-height: 1.5;
+    /* Spacing between lines */
+}
+
+.user-mode-link {
+    color: #3498db;
+    /* Blue text color */
+    font-weight: bold;
+    /* Bold text */
+    text-decoration: none;
+    /* Remove default underline */
+    cursor: pointer;
+    /* Show pointer cursor on hover */
+    margin-left: 5px;
+    /* Add space between text and link */
+}
+
+.user-mode-link:hover {
+    text-decoration: underline;
+    /* Underline text on hover */
+    color: #2980b9;
+    /* Darker blue color on hover */
+}
+
+/* Media query for mobile responsiveness */
+@media (max-width: 768px) {
+    .setting-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .setting-sidebar {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .setting-content {
+        width: 100%;
+    }
+}

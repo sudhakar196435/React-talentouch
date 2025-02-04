@@ -1,0 +1,89 @@
+.auditor-home-container {
+    padding: 20px;
+    background-color: rgb(247, 255, 255);
+    height: 100vh;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.auditor-home-title {
+    text-align: center;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: #ffffff;
+    background-color: #6c5ce7;
+    /* Purple shade for differentiation */
+    padding: 10px;
+    border-radius: 4px;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    letter-spacing: 2px;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    justify-items: center;
+}
+
+.stat-card {
+    background: #ffffff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 300px;
+}
+
+.stat-card h2 {
+    font-size: 1rem;
+    color: #333333;
+    font-family: 'Lato', sans-serif;
+    font-weight: 600;
+    padding-top: 4px;
+}
+
+.stat-card p {
+    font-size: 1.6rem;
+    color: #2f2f2f;
+    font-family: 'Lato', sans-serif;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+.stat-card.verified {
+    border-left: 5px solid #28a745;
+    /* Green border for verified reports */
+}
+
+.stat-card.verified p {
+    color: #28a745;
+}
+
+.stat-card.pending {
+    border-left: 5px solid #ffc107;
+    /* Yellow border for pending reports */
+}
+
+.stat-card.pending p {
+    color: #ffc107;
+}
+
+.stat-card.rejected {
+    border-left: 5px solid #dc3545;
+    /* Red border for rejected reports */
+}
+
+.stat-card.rejected p {
+    color: #dc3545;
+}
+
+.stat-card.total {
+    border-left: 5px solid #6c5ce7;
+    /* Purple border for total reports */
+}
+
+.stat-card.total p {
+    color: #6c5ce7;
+}
