@@ -8,6 +8,7 @@ import AdminNav from "./AdminNav";
 import { ToastContainer, toast } from 'react-toastify';
 import { Button, Modal, Spin } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
+import emailjs from 'emailjs-com';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -47,6 +48,20 @@ const Users = () => {
     }
   }, [userAuthenticated]);
 
+  const sendActivationEmail = async (email) => {
+    try {
+      const templateParams = {
+        email: email,
+      };
+      await emailjs.send('service_c36fmij', 'template_r1ujk21', templateParams, 'VTtmali6bgh-tzEk6');
+     
+      toast.success(`Activation email sent to ${email}`);
+    } catch (error) {
+      console.error('Error sending email:', error);
+      toast.error('Failed to send activation email.');
+    }
+  };
+
   const updateUserStatus = async (userId, field, value) => {
     const userDoc = doc(db, "users", userId);
     await updateDoc(userDoc, { [field]: value });
@@ -54,6 +69,14 @@ const Users = () => {
       prevUsers.map((user) => (user.id === userId ? { ...user, [field]: value } : user))
     );
     toast.success(`User has been ${value ? "activated" : "deactivated"}!`);
+    
+    // If the user is activated, send the activation email
+    if (value) {
+      const activatedUser = users.find(user => user.id === userId);
+      if (activatedUser) {
+        sendActivationEmail(activatedUser.email, activatedUser.fullName);
+      }
+    }
   };
 
   const showConfirmationModal = (user, action) => {

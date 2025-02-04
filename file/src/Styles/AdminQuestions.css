@@ -13,101 +13,121 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
-  h1 {
-    text-align: center;
-    font-size: 28px;
-    margin-bottom: 20px;
-  }
-  
-  /* Search Section */
-  .search-section {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  .search-input {
-    padding: 8px;
-    font-size: 16px;
-    width: 300px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    outline: none;
-  }
-  
-  .search-input:focus {
-    border-color: #4caf50;
-  }
-  
-  /* Add Question Section */
   .add-question-section {
-    margin-bottom: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+   background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    
+    margin: 0 auto;
   }
   
   .input-label {
-    font-size: 16px;
-    font-weight: bold;
-    width: 50%;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    display: block;
   }
   
   .input-field {
-    padding: 12px;
-    font-size: 16px;
     width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    margin-bottom: 12px;
-    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 16px;
+    transition: border-color 0.3s ease;
   }
   
-  .add-button {
-    padding: 10px 20px;
-    background-color: #4caf50;
+  .input-field:focus {
+    outline: none;
+    border-color: #4e9fca;
+  }
+  
+  select.input-field {
+    background-color: #fff;
+    height: auto;
+  }
+  
+  button.add-button {
+    background-color: #4e9fca;
     color: white;
-    border: none;
-    border-radius: 6px;
     font-size: 16px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .add-button:hover {
-    background-color: #45a049;
-  }
-  
-  /* Table Styling */
-  .questions-table {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
   }
   
-  .questions-table th, .questions-table td {
-    padding: 12px;
-    text-align: center;
-    border: 1px solid #dddddd;
+  button.add-button:hover {
+    background-color: #357f9e;
   }
   
-  .questions-table th {
-    background-color: #53a8e0;
-    font-size: 18px;
+  button.add-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
   }
   
-  .questions-table td {
-    font-size: 16px;
-  }
   
-  .questions-table td input {
-    padding: 6px;
-    font-size: 14px;
-    width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-  }
+ /* Table Styling */
+.questions-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+}
+
+.questions-table th, .questions-table td {
+  padding: 12px 18px;        /* Added more space for better readability */
+  text-align: left;          /* Align text to the left for a cleaner look */
+  vertical-align: middle;    /* Vertically center-align content */
+  border: 1px solid #ddd;    /* Light border for a cleaner look */
+}
+
+.questions-table th {
+  background-color: #3498db; /* A professional blue color */
+  color: #fff;               /* White text for contrast */
+  font-size: 18px;
+  text-align: left;          /* Align headers to the left */
+         /* Bold headers for emphasis */
+}
+
+.questions-table td {
+  font-size: 16px;
+  color: #333;               /* Dark color for text */
+}
+
+.questions-table td input {
+  padding: 8px;              /* Padding to make the input fields more comfortable */
+  font-size: 14px;
+  width: 100%;
+  border: 1px solid #ccc;    /* Subtle border for input fields */
+  border-radius: 6px;        /* Rounded corners for input fields */
+  background-color: #f9f9f9; /* Light background for input fields */
+  box-sizing: border-box;    /* Ensure padding does not affect width */
+}
+
+.questions-table td input:focus {
+  outline: none;             /* Remove default focus outline */
+  border-color: #3498db;     /* Highlight input field with a blue border on focus */
+  background-color: #fff;    /* Change background to white when focused */
+}
+
+.questions-table tr:nth-child(even) {
+  background-color: #f2f2f2; /* Light grey for even rows */
+}
+
+.questions-table tr:hover {
+  background-color: #e0f7fa; /* Light blue on hover for rows */
+}
+
+
+
   
   /* Buttons for Edit, Save, Delete, Cancel */
   .edit-button, .delete-button, .save-button, .cancel-button {
@@ -203,3 +223,19 @@
     }
   }
   
+  .act-details h2 {
+    font-size: 18px;            /* Adjust font size */
+    color: #333;                /* Dark text color for readability */
+    margin: 10px 0;             /* Margin to separate the headings */
+    font-weight: 600;           /* Slightly bold for emphasis */
+  }
+  
+  .act-details h2:first-child {
+    color: #2c3e50;             /* A different color for the first heading */
+  }
+  
+  .act-details h2:last-child {
+    color: #16a085;             /* A different color for the second heading */
+  }
+  
+ 

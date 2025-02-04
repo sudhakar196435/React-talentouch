@@ -101,8 +101,8 @@ const ActDetailsView = () => {
 
       <div className="admin-home-container">
         {act ? (
-          <div className="act-details">
-            <h2 className="details-title">Details for {act.actName}</h2>
+          <div className="act-detail">
+            <h2 className="detail-title">Details for {act.actName}</h2>
 
             <div className="details-section">
               <table className="details-table">
