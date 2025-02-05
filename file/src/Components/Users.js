@@ -148,13 +148,6 @@ const Users = () => {
                     <button className="activate" onClick={() => showConfirmationModal(user, "activate")}>Activate</button>
                   )}
                   <Button className="view-btn" onClick={() => navigate(`/users/${user.id}`)} icon={<EyeOutlined />}> View</Button>
-                  {/* New Button: View Audit History */}
-                  <Button
-                    className="view-audit-history-btn"
-                    onClick={() => navigate(`/user-audit-history/${user.id}`)} // Redirect to the user's audit history
-                  >
-                    View Audit History
-                  </Button>
                 </td>
               </tr>
             ))}
