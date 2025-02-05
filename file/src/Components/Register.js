@@ -28,11 +28,6 @@ const Register = () => {
       return;
     }
 
-    if (!/^\d+$/.test(numOfBranches) || numOfBranches <= 0) {
-      alert("Please enter a valid number of branches.");
-      return;
-    }
-
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -41,7 +36,6 @@ const Register = () => {
       await setDoc(doc(db, "users", user.uid), {
         email,
         mobileNumber,
-        numOfBranches,  // Store Number of Branches
         createdAt: serverTimestamp(), 
       });
 
