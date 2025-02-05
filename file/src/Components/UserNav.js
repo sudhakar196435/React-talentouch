@@ -33,7 +33,7 @@ const UserNav = () => {
         <ul className={`nav-links ${isMobile ? 'active' : ''}`}>
           <li><Link to="/home" className="nav-link">Home</Link></li>
           <li><Link to="/settings" className="nav-link">Menu</Link></li>
-          <li><Link to="/subusers" className="nav-link">Sub Users</Link></li>  {/* New Link for Sub User Panel */}
+          <li><Link to="/branches" className="nav-link">Sub Users</Link></li>  {/* New Link for Sub User Panel */}
           
           <button className="log-out" onClick={handleLogout}>
             <span className="material-symbols-outlined" style={{ marginRight: '5px' }}>

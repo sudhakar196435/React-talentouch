@@ -62,11 +62,12 @@ const App = () => {
           <Route path="/auditorsettings" element={<AuditorSettings />} />
 
           {/* Ensure clicking "Sub Users" first leads to the Branches page */}
-          <Route path="/subusers" element={<Branches />} />
+         
 
           {/* Clicking a branch navigates to its sub-users */}
           <Route path="/branches" element={<Branches />} />
-          <Route path="/branches/:branchId/sub-users" element={<SubUsers />} />
+         <Route path="/sub-users/:branchId" element={<SubUsers />} />
+
         </Routes>
       </div>
     </Router>
