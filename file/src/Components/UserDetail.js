@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
 import AdminNav from "./AdminNav";
+import { FaSearch } from "react-icons/fa";
 import { Button, message, Popconfirm, Spin, Descriptions, Select } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -13,53 +14,57 @@ const UserDetail = () => {
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [acts, setActs] = useState([]);
   const [selectedActs, setSelectedActs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [auditPeriod, setAuditPeriod] = useState("");
 
   useEffect(() => {
     const fetchUser = async () => {
       const userDoc = await getDoc(doc(db, "users", userId));
       if (userDoc.exists()) {
         setUser(userDoc.data());
+        setRole(userDoc.data().role || "user");
+        setAuditPeriod(userDoc.data().auditPeriod || "");
       } else {
         console.error("User not found");
       }
     };
-
-    const fetchBranches = async () => {
-      const branchCollection = collection(db, "users", userId, "branches");
-      const branchSnapshot = await getDocs(branchCollection);
-      const branchList = branchSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setBranches(branchList);
-    };
-
-    const fetchActs = async () => {
-      const actCollection = collection(db, "acts");
-      const actSnapshot = await getDocs(actCollection);
-      const actList = actSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setActs(actList);
-    };
-
     fetchUser();
-    fetchBranches();
-    fetchActs();
-    setLoading(false);
   }, [userId]);
 
-  const handleBranchSelect = async (branchId) => {
+  useEffect(() => {
+    if (role !== "auditor" && role !== "admin") {
+      const fetchBranches = async () => {
+        const branchSnapshot = await getDocs(collection(db, "users", userId, "branches"));
+        const branchData = branchSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setBranches(branchData);
+      };
+      fetchBranches();
+    }
+  }, [userId, role]);
+
+  useEffect(() => {
+    if (role !== "auditor" && role !== "admin") {
+      const fetchActs = async () => {
+        const querySnapshot = await getDocs(collection(db, "acts"));
+        const actData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setActs(actData);
+      };
+      fetchActs();
+    }
+  }, [role]);
+
+  const handleBranchChange = async (branchId) => {
     setSelectedBranch(branchId);
     const branchDoc = await getDoc(doc(db, "users", userId, "branches", branchId));
     if (branchDoc.exists()) {
       setSelectedActs(branchDoc.data().acts || []);
-    } else {
-      setSelectedActs([]);
     }
   };
 
   const handleCheckboxChange = (actId) => {
     setSelectedActs((prevSelected) =>
-      prevSelected.includes(actId)
-        ? prevSelected.filter((id) => id !== actId)
-        : [...prevSelected, actId]
+      prevSelected.includes(actId) ? prevSelected.filter((id) => id !== actId) : [...prevSelected, actId]
     );
   };
 
@@ -71,51 +76,67 @@ const UserDetail = () => {
     try {
       const branchRef = doc(db, "users", userId, "branches", selectedBranch);
       await updateDoc(branchRef, { acts: selectedActs });
-      toast.success("Acts assigned successfully to the branch!");
+      toast.success("Acts assigned successfully!");
     } catch (error) {
-      console.error("Error saving acts:", error);
-      message.error("Failed to save selected acts. Please try again.");
+      message.error("Failed to save acts. Please try again.");
     }
   };
 
-  if (loading || !user) {
-    return (
-      <div className="loading-container">
-        <Spin size="large" />
-      </div>
-    );
+  const handleSaveRole = async () => {
+    try {
+      await updateDoc(doc(db, "users", userId), { role });
+      toast.success("User role saved successfully!");
+    } catch (error) {
+      message.error("Failed to save user role. Please try again.");
+    }
+  };
+
+  if (!user) {
+    return <Spin size="large" />;
   }
 
   return (
     <div>
       <AdminNav />
       <div className="user-detail-container">
-        <h1 className="admin-home-title">User Details</h1>
-        <Descriptions bordered column={2} size="small">
+        <h1>User Details</h1>
+        <Descriptions bordered column={2}>
           <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
-          <Descriptions.Item label="Mobile Number">{user.mobileNumber}</Descriptions.Item>
           <Descriptions.Item label="Company Name">{user.companyName}</Descriptions.Item>
           <Descriptions.Item label="Company Address">{user.companyAddress}</Descriptions.Item>
+          <Descriptions.Item label="Industry Type">{user.industryType}</Descriptions.Item>
         </Descriptions>
+        <h3>Assign User Role</h3>
+        <Select value={role} onChange={setRole} style={{ width: 200 }}>
+          <Select.Option value="user">User</Select.Option>
+          <Select.Option value="admin">Admin</Select.Option>
+          <Select.Option value="auditor">Auditor</Select.Option>
+        </Select>
+        <Popconfirm title="Confirm Role Change" onConfirm={handleSaveRole} okText="Yes" cancelText="No">
+          <Button type="primary">Save Role</Button>
+        </Popconfirm>
 
-        <div className="branch-selection">
-          <h3>Select Branch</h3>
-          <Select
-            style={{ width: "100%" }}
-            placeholder="Select a branch"
-            onChange={handleBranchSelect}
-          >
-            {branches.map((branch) => (
-              <Select.Option key={branch.id} value={branch.id}>
-                {branch.branchName}
-              </Select.Option>
-            ))}
-          </Select>
-        </div>
+        {role !== "auditor" && role !== "admin" && (
+          <>
+            <h3>Select Branch</h3>
+            <Select style={{ width: 200 }} onChange={handleBranchChange} placeholder="Select a Branch">
+              {branches.map((branch) => (
+                <Select.Option key={branch.id} value={branch.id}>{branch.branchName}</Select.Option>
+              ))}
+            </Select>
 
-        {selectedBranch && (
-          <div className="acts-section">
-            <h1 className="admin-home-title">Assign Acts to Branch</h1>
+            <h3>Assign Acts</h3>
+            <div className="search-bar">
+              <FaSearch className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search by Act Code or Name"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+            </div>
+
             <table className="acts-table">
               <thead>
                 <tr>
@@ -125,7 +146,7 @@ const UserDetail = () => {
                 </tr>
               </thead>
               <tbody>
-                {acts.map((act) => (
+                {acts.filter((act) => act.actName.includes(searchQuery)).map((act) => (
                   <tr key={act.id}>
                     <td>{act.actCode}</td>
                     <td>{act.actName}</td>
@@ -140,11 +161,13 @@ const UserDetail = () => {
                 ))}
               </tbody>
             </table>
-            <Button type="primary" onClick={handleSaveActs}>
+            <Button type="primary" onClick={handleSaveActs} disabled={!selectedBranch}>
               Save Selected Acts
             </Button>
-          </div>
+          </>
         )}
+
+       
       </div>
       <ToastContainer />
     </div>
