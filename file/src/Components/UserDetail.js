@@ -16,7 +16,7 @@ const UserDetail = () => {
   const [selectedActs, setSelectedActs] = useState([]);
   const [role, setRole] = useState("");
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
-
+  const [auditPeriod, setAuditPeriod] = useState("");
 
   // Fetch user details
   useEffect(() => {
@@ -26,6 +26,7 @@ const UserDetail = () => {
         setUser(userDoc.data());
         setSelectedActs(userDoc.data().acts || []);
         setRole(userDoc.data().role || "user");
+        setAuditPeriod(userDoc.data().auditPeriod || "");
       } else {
         console.error("User not found");
       }
@@ -59,6 +60,10 @@ const UserDetail = () => {
   const handleRoleChange = (e) => {
     setRole(e.target.value);
   };
+   // Handle audit frequency change
+   const handleAuditChange = (e) => {
+    setAuditPeriod(e.target.value);
+  };
 
   // Save selected acts to the user
   const handleSaveActs = async () => {
@@ -81,6 +86,17 @@ const UserDetail = () => {
     } catch (error) {
       console.error("Error saving role:", error);
       alert("Failed to save user role. Please try again.");
+    }
+  };
+   // Save audit Period to the user
+   const handleSaveAuditPeriod = async () => {
+    try {
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, { auditPeriod });
+      toast.success("Audit Period saved successfully!");
+    } catch (error) {
+      console.error("Error saving audit Period:", error);
+      message.error("Failed to save audit Period. Please try again.");
     }
   };
 
@@ -125,10 +141,31 @@ const UserDetail = () => {
         </Descriptions>
 
         <div className="role-section">
+        <h3>Audit Frequency</h3>
+          <select value={auditPeriod} onChange={handleAuditChange} className="role-dropdown">
+              <option value="">Select Audit Frequency</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Quarterly">Quarterly</option>
+              <option value="Half-Yearly">Half-Yearly</option>
+              <option value="Annually">Annually</option>
+
+              
+            </select>
+            <Popconfirm
+              title="Confirm Audit Frequency Change"
+              description="Are you sure you want to save this audit frequency?"
+              onConfirm={handleSaveAuditPeriod}
+              onCancel={() => message.error("Audit frequency change canceled")}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button type="primary">Save Audit Frequency</Button>
+            </Popconfirm>
           <h3>Assign User Role</h3>
           <select value={role} onChange={handleRoleChange} className="role-dropdown">
             <option value="user">User</option>
             <option value="admin">Admin</option>
+            <option value="auditor">Auditor</option>
           </select>
           <Popconfirm
             title="Confirm Role Change"
@@ -140,9 +177,12 @@ const UserDetail = () => {
           >
             <Button type="primary">Save Role</Button>
           </Popconfirm>
+
+         
         </div>
 
         <div className="acts-section">
+          
         <h1 className="admin-home-title">Assign Acts</h1>
           
           <div className="search-bar">
