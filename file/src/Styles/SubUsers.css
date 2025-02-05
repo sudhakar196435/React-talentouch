@@ -1,0 +1,84 @@
+.subusers-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    min-height: 100vh;
+    background-color: #f4f4f4;
+  }
+  
+  .subusers-content {
+    width: 90%;
+    max-width: 900px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .subusers-content h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .ant-btn-primary {
+    background-color: #1890ff;
+    border-color: #1890ff;
+  }
+  
+  .ant-btn-primary:hover {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+  }
+  
+  .ant-table {
+    margin-top: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .ant-modal-footer {
+    display: none; /* Hide default modal footer */
+  }
+  
+  /* Modal Styling */
+  .ant-modal .ant-modal-content {
+    border-radius: 10px;
+  }
+  
+  .ant-modal .ant-modal-header {
+    background-color: #1890ff;
+    color: white;
+    border-radius: 10px 10px 0 0;
+  }
+  
+  .ant-modal .ant-modal-title {
+    color: white;
+    font-size: 18px;
+    text-align: center;
+  }
+  
+  .ant-form-item-label label {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  /* Buttons */
+  .ant-btn {
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  .ant-btn-danger {
+    background-color: #ff4d4f;
+    border-color: #ff4d4f;
+    color: white;
+  }
+  
+  .ant-btn-danger:hover {
+    background-color: #ff7875;
+    border-color: #ff7875;
+  }
+  
