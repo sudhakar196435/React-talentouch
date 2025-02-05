@@ -8,21 +8,16 @@ import logo from '../Assets/logo.png';
 import Navbar from "./Navbar";
 import { serverTimestamp } from "firebase/firestore";
 
-
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
- 
-  const [mobileNumber, setMobileNumber] = useState(""); // State for mobile number
-  
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [mobileNumber, setMobileNumber] = useState(""); 
+  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
     // Validate inputs
-    
-
     if (!/^\d{10}$/.test(mobileNumber)) {
       alert("Please enter a valid 10-digit mobile number.");
       return;
@@ -33,6 +28,10 @@ const Register = () => {
       return;
     }
 
+    if (!/^\d+$/.test(numOfBranches) || numOfBranches <= 0) {
+      alert("Please enter a valid number of branches.");
+      return;
+    }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -40,11 +39,10 @@ const Register = () => {
 
       // Save user details in Firestore
       await setDoc(doc(db, "users", user.uid), {
-       
         email,
-        mobileNumber, // Save mobile number
-       
-        createdAt: serverTimestamp(), // Add registration timestamp
+        mobileNumber,
+        numOfBranches,  // Store Number of Branches
+        createdAt: serverTimestamp(), 
       });
 
       // Send verification email
@@ -73,20 +71,22 @@ const Register = () => {
           </div>
           <h2 className="register-heading">Register</h2>
          
-        <input
-  type="text"
-  placeholder="Mobile Number"
-  value={mobileNumber}
-  onChange={(e) => {
-    const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-    if (value.length <= 10) {
-      setMobileNumber(value);
-    }
-  }}
-  required
-  className="input-field"
-/>
+          {/* Mobile Number Input */}
+          <input
+            type="text"
+            placeholder="Mobile Number"
+            value={mobileNumber}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, ""); 
+              if (value.length <= 10) {
+                setMobileNumber(value);
+              }
+            }}
+            required
+            className="input-field"
+          />
 
+          {/* Email Input */}
           <input
             type="email"
             placeholder="Email"
@@ -95,6 +95,8 @@ const Register = () => {
             required
             className="input-field"
           />
+
+          {/* Password Input */}
           <input
             type="password"
             placeholder="Create a Password"
@@ -103,10 +105,14 @@ const Register = () => {
             required
             className="input-field"
           />
-         
+
+
+          {/* Register Button */}
           <button type="submit" className="register-button">Register</button>
+          
+          {/* Login Link */}
           <p className="register-message">
-            Already have an account? <a href="/login">Login </a>
+            Already have an account? <a href="/login">Login</a>
           </p>
         </form>
       </div>
