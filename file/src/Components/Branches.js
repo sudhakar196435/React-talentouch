@@ -1,35 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Table, Button, Modal, Input, Form, Skeleton } from "antd";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import UserNav from "./UserNav";
 
 const Branches = () => {
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const [form] = Form.useForm();
   const navigate = useNavigate();
-
   const auth = getAuth();
-  const currentUser = auth.currentUser;
 
   useEffect(() => {
-    if (currentUser) {
-      fetchBranches();
-    }
-  }, [currentUser]);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        navigate("/login");
+      } else {
+        setCurrentUser(user);
+        fetchBranches(user);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [auth, navigate]);
 
   // Fetch branches for the logged-in user
-  const fetchBranches = async () => {
-    if (!currentUser) return;
+  const fetchBranches = async (user) => {
+    if (!user) return;
     setLoading(true);
-    
+
     try {
-      const branchesRef = collection(db, `users/${currentUser.uid}/branches`);
+      const branchesRef = collection(db, `users/${user.uid}/branches`);
       const snapshot = await getDocs(branchesRef);
 
       if (!snapshot.empty) {
@@ -57,7 +64,7 @@ const Branches = () => {
       await addDoc(collection(db, `users/${currentUser.uid}/branches`), values);
       toast.success("Branch added successfully!");
       setIsModalOpen(false);
-      fetchBranches();
+      fetchBranches(currentUser);
     } catch (error) {
       console.error("Error adding branch:", error);
       toast.error("Error adding branch!");
@@ -109,6 +116,7 @@ const Branches = () => {
 
   return (
     <div>
+      <UserNav/>
       <h2>Branches</h2>
       <Button type="primary" onClick={openModal} style={{ marginBottom: 16 }}>
         Add Branch

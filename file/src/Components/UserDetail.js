@@ -16,7 +16,7 @@ const UserDetail = () => {
   const [selectedActs, setSelectedActs] = useState([]);
   const [role, setRole] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [auditPeriod, setAuditPeriod] = useState("");
+  
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -24,7 +24,7 @@ const UserDetail = () => {
       if (userDoc.exists()) {
         setUser(userDoc.data());
         setRole(userDoc.data().role || "user");
-        setAuditPeriod(userDoc.data().auditPeriod || "");
+        
       } else {
         console.error("User not found");
       }

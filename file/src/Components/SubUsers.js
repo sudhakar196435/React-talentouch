@@ -1,21 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { getAuth } from "firebase/auth";
+import { useNavigate, useParams } from "react-router-dom"; 
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Table, Button, Modal, Input, Form } from "antd";
-import { useParams } from "react-router-dom";  // <-- Import useParams
 import { toast } from "react-toastify";
 
 const SubUsers = () => {
   const [subUsers, setSubUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSubUserModalOpen, setIsSubUserModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const [form] = Form.useForm();
+  
+  const navigate = useNavigate();
   const auth = getAuth();
-  const currentUser = auth.currentUser;
-
-  // Get branchId from URL
   const { branchId } = useParams();
+
+  // ✅ Listen for auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        toast.warning("You must be logged in!");
+        navigate("/login"); // Redirect to login page if no user
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup on unmount
+  }, [auth, navigate]);
 
   useEffect(() => {
     if (currentUser && branchId) {
@@ -24,10 +38,9 @@ const SubUsers = () => {
     }
   }, [currentUser, branchId]);
 
-  // ✅ Check if subUsers subcollection exists, create it if not
   const checkAndFetchSubUsers = async () => {
     if (!currentUser || !branchId) return;
-    
+
     setLoading(true);
     try {
       const subUsersRef = collection(db, `users/${currentUser.uid}/branches/${branchId}/subUsers`);
@@ -51,14 +64,13 @@ const SubUsers = () => {
     setLoading(false);
   };
 
-  // ✅ Fetch sub-users
   const fetchSubUsers = async () => {
     if (!currentUser || !branchId) {
       console.error("❌ Error: User or Branch ID is missing", { currentUser, branchId });
       toast.error("User or Branch ID is missing.");
       return;
     }
-  
+
     setLoading(true);
     
     try {
@@ -82,7 +94,6 @@ const SubUsers = () => {
     setLoading(false);
   };
 
-  // ✅ Add a new sub-user
   const handleAddSubUser = async (values) => {
     if (!currentUser || !branchId) {
       toast.error("Invalid user or branch ID.");
@@ -93,7 +104,7 @@ const SubUsers = () => {
       const subUsersRef = collection(db, `users/${currentUser.uid}/branches/${branchId}/subUsers`);
       await addDoc(subUsersRef, values);
       toast.success("Sub User added successfully!");
-      fetchSubUsers(); // Refresh list
+      fetchSubUsers(); 
       setIsSubUserModalOpen(false);
       form.resetFields();
     } catch (error) {
@@ -102,7 +113,6 @@ const SubUsers = () => {
     }
   };
 
-  // ✅ Delete a sub-user
   const handleDeleteSubUser = async (subUserId) => {
     if (!currentUser || !branchId) {
       toast.error("Invalid user or branch ID.");
@@ -143,7 +153,6 @@ const SubUsers = () => {
         loading={loading}
       />
 
-      {/* Modal for Adding Sub User */}
       <Modal title="Add Sub User" open={isSubUserModalOpen} onCancel={() => setIsSubUserModalOpen(false)} footer={null}>
         <Form form={form} layout="vertical" onFinish={handleAddSubUser}>
           <Form.Item name="name" label="Name" rules={[{ required: true, message: "Please enter name" }]}>
@@ -163,4 +172,3 @@ const SubUsers = () => {
 };
 
 export default SubUsers;
-  
