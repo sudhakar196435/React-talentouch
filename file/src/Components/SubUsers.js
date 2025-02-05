@@ -3,15 +3,19 @@ import { getAuth } from "firebase/auth";
 import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Table, Button, Modal, Input, Form } from "antd";
+import { useParams } from "react-router-dom";  // <-- Import useParams
 import { toast } from "react-toastify";
 
-const SubUsers = ({ branchId }) => {
+const SubUsers = () => {
   const [subUsers, setSubUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSubUserModalOpen, setIsSubUserModalOpen] = useState(false);
   const [form] = Form.useForm();
   const auth = getAuth();
   const currentUser = auth.currentUser;
+
+  // Get branchId from URL
+  const { branchId } = useParams();
 
   useEffect(() => {
     if (currentUser && branchId) {
@@ -159,3 +163,4 @@ const SubUsers = ({ branchId }) => {
 };
 
 export default SubUsers;
+  
