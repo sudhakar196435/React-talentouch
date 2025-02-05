@@ -21,10 +21,6 @@ import AdminSettings from "./Components/AdminSettings";
 import UserAuditHistory from "./Components/UserAuditHistory"; // Import the component
 import Upload from "./Components/UploadActs";
 import CompleteProfile from "./Components/CompleteProfile";
-import AuditorHome from "./Components/AuditorHome";
-import AuditorUsers from "./Components/AuditorUsers";
-import AuditorUserDetail from "./Components/AuditorUserDetails";
-import AuditorSettings from "./Components/AuditorSettings";
 import SubUsers from "./Components/SubUsers";
 import Branches from "./Components/Branches";
 
@@ -56,10 +52,6 @@ const App = () => {
           <Route path="/user-audit-history/:userId" element={<UserAuditHistory />} />
           <Route path="/UploadActs" element={<Upload />} />
           <Route path="/complete-profile" element={<CompleteProfile />} />
-          <Route path="/auditorhome" element={<AuditorHome />} />
-          <Route path="/auditorusers" element={<AuditorUsers />} />
-          <Route path="/auditor/user/:userId" element={<AuditorUserDetail />} />
-          <Route path="/auditorsettings" element={<AuditorSettings />} />
 
           {/* Ensure clicking "Sub Users" first leads to the Branches page */}
           <Route path="/subusers" element={<Branches />} />
