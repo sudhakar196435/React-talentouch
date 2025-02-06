@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"; // Added imports
 import { collection, getDocs, addDoc, deleteDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Table, Button, Modal, Input, Form } from "antd";
@@ -75,8 +75,18 @@ const SubUsers = () => {
     }
 
     try {
+      // Create Firebase Auth user with email and default password
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, "123456");
+      const user = userCredential.user;
+
+      // Send email verification
+      await sendEmailVerification(user);
+      toast.success("Verification email sent to the sub-user!");
+
+      // Add the sub-user data to Firestore
       const subUsersRef = collection(db, `users/${currentUser.uid}/branches/${branchId}/subUsers`);
-      await addDoc(subUsersRef, values);
+      await addDoc(subUsersRef, { ...values, uid: user.uid }); // Add UID to Firestore document
+
       toast.success("Sub User added successfully!");
       fetchSubUsers(); 
       setIsSubUserModalOpen(false);
