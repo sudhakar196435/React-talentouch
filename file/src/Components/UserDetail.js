@@ -6,17 +6,18 @@ import AdminNav from "./AdminNav";
 import { FaSearch } from "react-icons/fa";
 import { Button, message, Popconfirm, Spin, Descriptions, Select } from "antd";
 import { ToastContainer, toast } from "react-toastify";
+import '../Styles/UserDetail.css';
 
 const UserDetail = () => {
   const { userId } = useParams();
   const [user, setUser] = useState(null);
   const [branches, setBranches] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState(null);
+  const [selectedBranchDetails, setSelectedBranchDetails] = useState(null); // New state for selected branch details
   const [acts, setActs] = useState([]);
   const [selectedActs, setSelectedActs] = useState([]);
   const [role, setRole] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -24,7 +25,6 @@ const UserDetail = () => {
       if (userDoc.exists()) {
         setUser(userDoc.data());
         setRole(userDoc.data().role || "user");
-        
       } else {
         console.error("User not found");
       }
@@ -58,6 +58,7 @@ const UserDetail = () => {
     setSelectedBranch(branchId);
     const branchDoc = await getDoc(doc(db, "users", userId, "branches", branchId));
     if (branchDoc.exists()) {
+      setSelectedBranchDetails(branchDoc.data()); // Set the selected branch details
       setSelectedActs(branchDoc.data().acts || []);
     }
   };
@@ -92,20 +93,24 @@ const UserDetail = () => {
   };
 
   if (!user) {
-    return <Spin size="large" />;
+    return  <div className="loading-container">
+            <Spin size="large" />
+          </div>;
   }
 
   return (
     <div>
       <AdminNav />
       <div className="user-detail-container">
-        <h1>User Details</h1>
+        
+        <h1 className="admin-home-title">User Details</h1>
         <Descriptions bordered column={2}>
           <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
           <Descriptions.Item label="Company Name">{user.companyName}</Descriptions.Item>
           <Descriptions.Item label="Company Address">{user.companyAddress}</Descriptions.Item>
           <Descriptions.Item label="Industry Type">{user.industryType}</Descriptions.Item>
         </Descriptions>
+
         <h3>Assign User Role</h3>
         <Select value={role} onChange={setRole} style={{ width: 200 }}>
           <Select.Option value="user">User</Select.Option>
@@ -124,6 +129,23 @@ const UserDetail = () => {
                 <Select.Option key={branch.id} value={branch.id}>{branch.branchName}</Select.Option>
               ))}
             </Select>
+
+            {selectedBranchDetails && (
+              <div className="branch-details">
+                <h4>Branch Details</h4>
+                <Descriptions bordered column={2}>
+                  <Descriptions.Item label="Branch Name">{selectedBranchDetails.branchName}</Descriptions.Item>
+                  <Descriptions.Item label="Location">{selectedBranchDetails.location}</Descriptions.Item>
+                </Descriptions>
+              </div>
+            )}
+
+            {selectedBranch && selectedBranchDetails && (
+              <div>
+                 <h1 className="admin-home-title">Assign Acts for {selectedBranchDetails.branchName}</h1>
+             
+              </div>
+            )}
 
             <h3>Assign Acts</h3>
             <div className="search-bar">
@@ -166,8 +188,6 @@ const UserDetail = () => {
             </Button>
           </>
         )}
-
-       
       </div>
       <ToastContainer />
     </div>

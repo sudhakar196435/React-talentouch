@@ -104,7 +104,7 @@ const Branches = () => {
       render: (_, record) => (
         <>
           <Button type="primary" onClick={() => handleBranchClick(record.id)}>
-            View Sub Users
+            Manage Sub Users
           </Button>
           <Button danger onClick={() => handleDeleteBranch(record.id)} style={{ marginLeft: 8 }}>
             Delete
@@ -117,7 +117,9 @@ const Branches = () => {
   return (
     <div>
       <UserNav/>
-      <h2>Branches</h2>
+      <div className="admin-container"> 
+      <h1 className="admin-home-title">Branches</h1>
+      
       <Button type="primary" onClick={openModal} style={{ marginBottom: 16 }}>
         Add Branch
       </Button>
@@ -139,6 +141,7 @@ const Branches = () => {
       </Modal>
 
       <ToastContainer />
+    </div>
     </div>
   );
 };

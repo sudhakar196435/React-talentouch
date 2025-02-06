@@ -49,13 +49,13 @@
   }
   
   .ant-modal .ant-modal-header {
-    background-color: #1890ff;
+   
     color: white;
     border-radius: 10px 10px 0 0;
   }
   
   .ant-modal .ant-modal-title {
-    color: white;
+    color: rgb(8, 8, 8);
     font-size: 18px;
     text-align: center;
   }
