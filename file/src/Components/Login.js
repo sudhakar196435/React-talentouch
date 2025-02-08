@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
-import { db } from "../firebase"; // Firestore instance
+import { doc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
 import "../Styles/Login.css";
 import logo from "../Assets/logo.png";
-import Navbar from "./Navbar";
+import UserNav from "./UserNav";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -18,50 +17,71 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
+    setError("");
 
     try {
+      // 🔐 Firebase Authentication
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      if (user.emailVerified) {
-        // Fetch user data from Firestore
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          
-          // Check if the user has completed their profile
-          if (!userData.profileCompleted) {
-            // Redirect to profile completion page if profile is not completed
-            navigate("/complete-profile");
-            toast.info("Please complete your profile.");
-          } else if (userData.role === "admin") {
-            navigate("/adminhome"); // Redirect to admin home
-            toast.success("Welcome, Admin!");
-          } else {
-            navigate("/home"); // Redirect to user home
-            toast.success("Login successful!");
-          }
-        } else {
-          setError("User data not found.");
-          toast.error("User data not found.");
-        }
-      } else {
+      if (!user.emailVerified) {
         setError("Please verify your email before logging in.");
-        toast.error("Please verify your email before logging in.");
+        toast.error("Please verify your email.");
+        return;
       }
+
+      // 🔍 Check if user exists in "users" collection
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        
+        if (userData.role === "admin") {
+          navigate("/adminhome");
+          toast.success("Welcome, Admin!");
+          return;
+        } else {
+          navigate("/home");
+          toast.success("Login successful!");
+          return;
+        }
+      }
+
+      // 🔍 Check if user is a Sub-User under any branch
+      const usersCollection = await getDocs(collection(db, "users"));
+
+      for (const userDoc of usersCollection.docs) {
+        const branchesCollection = collection(db, `users/${userDoc.id}/branches`);
+        const branchesSnapshot = await getDocs(branchesCollection);
+
+        for (const branchDoc of branchesSnapshot.docs) {
+          const subUsersRef = collection(db, `users/${userDoc.id}/branches/${branchDoc.id}/subUsers`);
+          const subUserQuery = query(subUsersRef, where("email", "==", email));
+          const subUserSnapshot = await getDocs(subUserQuery);
+
+          if (!subUserSnapshot.empty) {
+            navigate("/subuserhome");
+            toast.success("Welcome, Sub-User!");
+            return;
+          }
+        }
+      }
+
+      // ❌ User Not Found
+      setError("User data not found.");
+      toast.error("User data not found.");
+
     } catch (err) {
-      setError("Invalid email or password. Please try again.");
-      toast.error("Invalid email or password. Please try again.");
+      setError("Invalid email or password.");
+      toast.error("Invalid email or password.");
     }
   };
 
   return (
     <div>
-      <Navbar />
+      <UserNav />
       <div className="login-container">
         <form onSubmit={handleLogin} className="login-form">
-          {/* Logo Image */}
           <div className="logo-container">
             <img src={logo} alt="Logo" className="login-logo" />
           </div>
@@ -96,7 +116,6 @@ const Login = () => {
         </form>
       </div>
 
-      {/* Toast Container for showing toasts */}
       <ToastContainer />
     </div>
   );
