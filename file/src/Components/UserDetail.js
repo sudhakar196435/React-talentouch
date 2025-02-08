@@ -4,7 +4,7 @@ import { db } from "../firebase";
 import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
 import AdminNav from "./AdminNav";
 import { FaSearch } from "react-icons/fa";
-import { Button, message, Popconfirm, Spin, Descriptions, Select } from "antd";
+import { Button, message, Popconfirm, Spin, Descriptions, Select ,Table, Empty} from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import '../Styles/UserDetail.css';
 
@@ -13,11 +13,12 @@ const UserDetail = () => {
   const [user, setUser] = useState(null);
   const [branches, setBranches] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState(null);
-  const [selectedBranchDetails, setSelectedBranchDetails] = useState(null); // New state for selected branch details
+  const [selectedBranchDetails, setSelectedBranchDetails] = useState(null);
   const [acts, setActs] = useState([]);
   const [selectedActs, setSelectedActs] = useState([]);
   const [role, setRole] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [subUsers, setSubUsers] = useState([]); // Store sub-users
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -58,9 +59,16 @@ const UserDetail = () => {
     setSelectedBranch(branchId);
     const branchDoc = await getDoc(doc(db, "users", userId, "branches", branchId));
     if (branchDoc.exists()) {
-      setSelectedBranchDetails(branchDoc.data()); // Set the selected branch details
+      setSelectedBranchDetails(branchDoc.data());
       setSelectedActs(branchDoc.data().acts || []);
+      fetchSubUsers(branchId); // Fetch sub-users
     }
+  };
+
+  const fetchSubUsers = async (branchId) => {
+    const subUsersSnapshot = await getDocs(collection(db, "users", userId, "branches", branchId, "subUsers"));
+    const subUsersData = subUsersSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    setSubUsers(subUsersData);
   };
 
   const handleCheckboxChange = (actId) => {
@@ -93,16 +101,17 @@ const UserDetail = () => {
   };
 
   if (!user) {
-    return  <div className="loading-container">
-            <Spin size="large" />
-          </div>;
+    return (
+      <div className="loading-container">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (
     <div>
       <AdminNav />
       <div className="user-detail-container">
-        
         <h1 className="admin-home-title">User Details</h1>
         <Descriptions bordered column={2}>
           <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
@@ -123,6 +132,7 @@ const UserDetail = () => {
 
         {role !== "auditor" && role !== "admin" && (
           <>
+          
             <h3>Select Branch</h3>
             <Select style={{ width: 200 }} onChange={handleBranchChange} placeholder="Select a Branch">
               {branches.map((branch) => (
@@ -132,20 +142,35 @@ const UserDetail = () => {
 
             {selectedBranchDetails && (
               <div className="branch-details">
-                <h4>Branch Details</h4>
+                 <h1 className="admin-home-title">Branch Details</h1>
+               
                 <Descriptions bordered column={2}>
                   <Descriptions.Item label="Branch Name">{selectedBranchDetails.branchName}</Descriptions.Item>
                   <Descriptions.Item label="Location">{selectedBranchDetails.location}</Descriptions.Item>
                 </Descriptions>
               </div>
             )}
+{branches.length > 0 && selectedBranch && (
+  <>
+   
+    <h1 className="admin-home-title">Sub-Users</h1>
+    {subUsers.length > 0 ? (
+      <Table
+        dataSource={subUsers}
+        columns={[
+          { title: "Name", dataIndex: "name", key: "name" },
+          { title: "Email", dataIndex: "email", key: "email" },
+          { title: "Role", dataIndex: "role", key: "role" },
+        ]}
+        rowKey="id"
+        pagination={{ pageSize: 5 }}
+      />
+    ) : (
+      <Empty description="No sub-users found for this branch." />
+    )}
+  </>
+)}
 
-            {selectedBranch && selectedBranchDetails && (
-              <div>
-                 <h1 className="admin-home-title">Assign Acts for {selectedBranchDetails.branchName}</h1>
-             
-              </div>
-            )}
 
             <h3>Assign Acts</h3>
             <div className="search-bar">
