@@ -35,7 +35,7 @@ const Login = () => {
 
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        
+
         if (userData.role === "admin") {
           navigate("/adminhome");
           toast.success("Welcome, Admin!");
@@ -70,7 +70,7 @@ const Login = () => {
       // ❌ User Not Found
       setError("User data not found.");
       toast.error("User data not found.");
-
+      
     } catch (err) {
       setError("Invalid email or password.");
       toast.error("Invalid email or password.");
