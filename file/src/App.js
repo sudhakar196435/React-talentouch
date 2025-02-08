@@ -25,6 +25,7 @@ import SubUsers from "./Components/SubUsers";
 import Branches from "./Components/Branches";
 import BranchActs from "./Components/BranchActs";
 import AuditorAudit from "./Components/AuditorAudit";
+import AuditorsList from "./Components/AuditorsList";
 
 const App = () => {
   return (
@@ -63,6 +64,7 @@ const App = () => {
          <Route path="/sub-users/:branchId" element={<SubUsers />} />
          <Route path="/branch-acts/:branchId" element={<BranchActs />} /> 
          <Route path="/AuditorAudit" element={<AuditorAudit />} /> 
+         <Route path="/aud" element={<AuditorsList />} /> 
 
         </Routes>
       </div>
