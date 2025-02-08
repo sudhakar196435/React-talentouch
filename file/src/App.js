@@ -29,6 +29,8 @@ import AuditorsList from "./Components/AuditorsList";
 import AssignBranches from "./Components/AssignBranches";
 import SubUserHome from "./Components/SubUserHome";
 import SubUserForm from "./Components/SubUserForm";
+import Subuserprofile from "./Components/Subuserprofile";
+
 
 const App = () => {
   return (
@@ -73,6 +75,7 @@ const App = () => {
         <Route path="/subuserform" element={<SubUserForm/>}/>
          <Route path="/subuserhome" element={<SubUserHome/>}/>
         <Route path="/subuserform" element={<SubUserForm/>}/>
+        <Route path="/subuserprofile" element={<Subuserprofile />} />
         </Routes>
       </div>
     </Router>

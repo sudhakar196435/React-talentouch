@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import '../Styles/SubUserHome.css';
-import UserNav from "./UserNav";
+
 import { ToastContainer, toast } from 'react-toastify';
 import { Spin } from 'antd';
+import Subusernav from "./Subusernav";
 
 const SubUserHome = () => {
   const [branch, setBranch] = useState(null);
@@ -67,14 +68,14 @@ const SubUserHome = () => {
 
   return (
     <div>
-      <UserNav />
+      <Subusernav/>
       <div className="subuser-container">
         <h1 className="subuser-title">Welcome to Your Branch</h1>
         {branch ? (
           <div className="branch-details">
-            <h2>Branch Name: {branch.name}</h2>
+            <h2>Branch Name: {branch.branchName}</h2>
             <p>Location: {branch.location}</p>
-            <p>Description: {branch.description}</p>
+           
           </div>
         ) : (
           <p>No branch assigned.</p>

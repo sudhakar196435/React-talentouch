@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { doc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
 import "../Styles/Login.css";
 import logo from "../Assets/logo.png";
-import UserNav from "./UserNav";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Navbar from "./Navbar";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -79,7 +79,7 @@ const Login = () => {
 
   return (
     <div>
-      <UserNav />
+      <Navbar/>
       <div className="login-container">
         <form onSubmit={handleLogin} className="login-form">
           <div className="logo-container">
