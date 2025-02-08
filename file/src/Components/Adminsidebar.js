@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, Button } from 'antd';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { UserOutlined, UnorderedListOutlined, PlusOutlined,UploadOutlined, UserSwitchOutlined,LogoutOutlined } from '@ant-design/icons';
+import { UserOutlined, UnorderedListOutlined, PlusOutlined,UploadOutlined, UserSwitchOutlined,LogoutOutlined,AuditOutlined } from '@ant-design/icons';
 import { getAuth, signOut } from 'firebase/auth'; // Import Firebase authentication
 
 const items = [
@@ -44,8 +44,13 @@ const items = [
     ),
   },
   {
-    key: 'hiringProcessWorkflow',
-    label: <Link to="/settings/security">Hiring Process Workflow</Link>,
+    key: "hiringProcessWorkflow",
+    label: (
+      <Link to="/aud">
+        <AuditOutlined style={{ marginRight: 8 }} /> {/* Added Audit icon */}
+        Auditors List
+      </Link>
+    ),
   },
 ];
 
