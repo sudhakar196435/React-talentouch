@@ -60,7 +60,7 @@ const Login = () => {
           const subUserSnapshot = await getDocs(subUserQuery);
 
           if (!subUserSnapshot.empty) {
-            navigate("/subuserhome");
+            navigate("/subuserform");
             toast.success("Welcome, Sub-User!");
             return;
           }

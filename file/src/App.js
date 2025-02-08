@@ -26,6 +26,12 @@ import Branches from "./Components/Branches";
 import BranchActs from "./Components/BranchActs";
 import AuditorAudit from "./Components/AuditorAudit";
 import AuditorsList from "./Components/AuditorsList";
+<<<<<<< Updated upstream
+import AssignBranches from "./Components/AssignBranches";
+=======
+import SubUserHome from "./Components/SubUserHome";
+import SubUserForm from "./Components/SubUserForm";
+>>>>>>> Stashed changes
 
 const App = () => {
   return (
@@ -65,7 +71,12 @@ const App = () => {
          <Route path="/branch-acts/:branchId" element={<BranchActs />} /> 
          <Route path="/AuditorAudit" element={<AuditorAudit />} /> 
          <Route path="/aud" element={<AuditorsList />} /> 
-
+<<<<<<< Updated upstream
+         <Route path="/assign-branches/:auditorId" element={<AssignBranches />} />
+=======
+         <Route path="/subuserhome" element={<SubUserHome/>}/>
+        <Route path="/subuserform" element={<SubUserForm/>}/>
+>>>>>>> Stashed changes
         </Routes>
       </div>
     </Router>
