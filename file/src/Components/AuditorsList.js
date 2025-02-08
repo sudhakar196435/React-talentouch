@@ -53,13 +53,11 @@ const AuditorsList = () => {
 
   return (
     <div>
-        <AdminNav/>
-        <div className="user-detail-container">
-        
+      <AdminNav />
+      <div className="user-detail-container">
         <h1 className="admin-home-title">Auditors List</h1>
-   
-      <Table dataSource={auditors} columns={columns} rowKey="id" />
-    </div>
+        <Table dataSource={auditors} columns={columns} rowKey="id" />
+      </div>
     </div>
   );
 };
