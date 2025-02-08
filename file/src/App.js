@@ -23,8 +23,7 @@ import Upload from "./Components/UploadActs";
 import CompleteProfile from "./Components/CompleteProfile";
 import SubUsers from "./Components/SubUsers";
 import Branches from "./Components/Branches";
-import BranchActs from "./Components/BranchActs";
-import AuditorAudit from "./Components/AuditorAudit";
+import AuditorsList from "./Components/AuditorsList";
 
 const App = () => {
   return (
@@ -61,10 +60,8 @@ const App = () => {
           {/* Clicking a branch navigates to its sub-users */}
           <Route path="/branches" element={<Branches />} />
          <Route path="/sub-users/:branchId" element={<SubUsers />} />
+         <Route path="/aud" element={<AuditorsList />} />
         
-         <Route path="/branch-acts/:branchId" element={<BranchActs />} /> 
-         <Route path="/AuditorAudit" element={<AuditorAudit />} /> 
-
         </Routes>
       </div>
     </Router>
