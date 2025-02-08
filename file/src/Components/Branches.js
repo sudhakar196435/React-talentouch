@@ -94,6 +94,9 @@ const Branches = () => {
   const handleBranchClick = (branchId) => {
     navigate(`/sub-users/${branchId}`);
   };
+  const handleViewActs = (branchId) => {
+    navigate(`/branch-acts/${branchId}`);
+  };
 
   const columns = [
     { title: "Branch Name", dataIndex: "branchName", key: "branchName" },
@@ -105,6 +108,9 @@ const Branches = () => {
         <>
           <Button type="primary" onClick={() => handleBranchClick(record.id)}>
             Manage Sub Users
+          </Button>
+          <Button type="primary" onClick={() => handleViewActs(record.id)}>
+            view acts
           </Button>
           <Button danger onClick={() => handleDeleteBranch(record.id)} style={{ marginLeft: 8 }}>
             Delete
