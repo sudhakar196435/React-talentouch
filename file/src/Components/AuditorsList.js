@@ -48,7 +48,9 @@ const AuditorsList = () => {
   ];
 
   if (loading) {
-    return <Spin size="large" style={{ display: "block", margin: "20px auto" }} />;
+    return <div className="loading-container">
+             <Spin size="large" />
+           </div> ;
   }
 
   return (
