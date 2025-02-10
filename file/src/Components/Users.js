@@ -156,15 +156,21 @@ const Users = () => {
       </div>
 
       <Modal
-        title={`${actionType === "activate" ? "Activate" : "Deactivate"} User`}
-        visible={isModalVisible}
-        onOk={handleModalOk}
-        onCancel={handleModalCancel}
-        okText="Confirm"
-        cancelText="Cancel"
-      >
-        <p>Are you sure you want to {actionType === "activate" ? "activate" : "deactivate"} this user?</p>
-      </Modal>
+  title={`${actionType === "activate" ? "Activate" : "Deactivate"} User`}
+  open={isModalVisible} // Updated 'visible' to 'open' (latest Ant Design version)
+  onCancel={handleModalCancel}
+  footer={[
+    <Button key="cancel" onClick={handleModalCancel}>
+      Cancel
+    </Button>,
+    <Button key="confirm" type="primary" onClick={handleModalOk}>
+      Confirm
+    </Button>,
+  ]}
+>
+  <p>Are you sure you want to {actionType === "activate" ? "activate" : "deactivate"} this user?</p>
+</Modal>
+
 
       <ToastContainer />
     </div>

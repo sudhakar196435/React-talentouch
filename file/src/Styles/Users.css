@@ -98,5 +98,15 @@
       font-size: 0.9rem;
     }
   }
+  .ant-modal-footer {
+    display: flex !important;
+    justify-content: flex-end;
+  }
+  
+  .ant-btn {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
   
   
