@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, Button } from 'antd';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { UserOutlined,LogoutOutlined } from '@ant-design/icons';
+import { UserOutlined, LogoutOutlined, FileTextOutlined } from '@ant-design/icons'; // Import FileTextOutlined for View Acts icon
 import { getAuth, signOut } from 'firebase/auth'; // Import Firebase authentication
 
 const items = [
@@ -10,7 +10,6 @@ const items = [
     label: 'Menu',
     type: 'group',
   },
-  // Custom items for acts
   {
     type: 'divider',
   },
@@ -19,7 +18,11 @@ const items = [
     icon: <UserOutlined />,
     label: <Link to="/AuditorSettings">My Account</Link>,
   },
- 
+  {
+    key: 'viewActs',
+    icon: <FileTextOutlined />,
+    label: <Link to="/auditorviewacts">View Acts</Link>, // Link to View Acts page
+  },
 ];
 
 const Auditorsidebar = () => {
@@ -55,7 +58,7 @@ const Auditorsidebar = () => {
         items={items}
       />
       <Button
-        style={{ marginTop: 20, width: '100%' ,}}
+        style={{ marginTop: 20, width: '100%' }}
         onClick={handleLogout} // Trigger the logout function
         icon={<LogoutOutlined />} // Add the Logout icon
       >
