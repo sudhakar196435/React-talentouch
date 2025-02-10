@@ -35,10 +35,14 @@ const Login = () => {
 
       if (userDoc.exists()) {
         const userData = userDoc.data();
-
+  
         if (userData.role === "admin") {
           navigate("/adminhome");
           toast.success("Welcome, Admin!");
+          return;
+        } else if (userData.role === "auditor") {
+          navigate("/auditorhome");
+          toast.success("Welcome, Auditor!");
           return;
         } else {
           navigate("/home");

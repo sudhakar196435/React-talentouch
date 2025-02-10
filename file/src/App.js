@@ -30,6 +30,9 @@ import AssignBranches from "./Components/AssignBranches";
 import SubUserHome from "./Components/SubUserHome";
 import SubUserForm from "./Components/SubUserForm";
 import Subuserprofile from "./Components/Subuserprofile";
+import AuditorHome from "./Components/AuditorHome";
+import AuditorSettings from "./Components/AuditorSettings";
+import Unauthorized from "./Components/Unauthorized";
 
 
 const App = () => {
@@ -73,9 +76,10 @@ const App = () => {
          <Route path="/assign-branches/:auditorId" element={<AssignBranches />} />
          <Route path="/subuserhome" element={<SubUserHome/>}/>
         <Route path="/subuserform" element={<SubUserForm/>}/>
-         <Route path="/subuserhome" element={<SubUserHome/>}/>
-        <Route path="/subuserform" element={<SubUserForm/>}/>
         <Route path="/subuserprofile" element={<Subuserprofile />} />
+        <Route path="/AuditorHome" element={<AuditorHome />} />
+        <Route path="/AuditorSettings" element={<AuditorSettings />} />
+        <Route path="/AccessDenied" element={<Unauthorized />} />
         </Routes>
       </div>
     </Router>
