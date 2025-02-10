@@ -33,7 +33,7 @@ import Subuserprofile from "./Components/Subuserprofile";
 import AuditorHome from "./Components/AuditorHome";
 import AuditorSettings from "./Components/AuditorSettings";
 import Unauthorized from "./Components/Unauthorized";
-
+import AuditorActs from "./Components/AuditorActs";
 
 const App = () => {
   return (
@@ -80,6 +80,7 @@ const App = () => {
         <Route path="/AuditorHome" element={<AuditorHome />} />
         <Route path="/AuditorSettings" element={<AuditorSettings />} />
         <Route path="/AccessDenied" element={<Unauthorized />} />
+        <Route path="/auditorviewacts" element={<AuditorActs/>}/>
         </Routes>
       </div>
     </Router>
