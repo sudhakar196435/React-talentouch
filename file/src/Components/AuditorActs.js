@@ -141,14 +141,18 @@ const AuditorActs = () => {
     { title: 'Act Name', dataIndex: 'name', key: 'name' },
     { title: 'Act Code', dataIndex: 'code', key: 'code' },
     {
-      title: 'Audit',
-      key: 'audit',
+      title: "Audit",
+      key: "audit",
       render: (_, record) => (
-        <Button type="primary" onClick={() => navigate(`/audit-act/${record.userId}/${record.branchId}/${record.id}`)}>
+        <Button
+          type="primary"
+          onClick={() => navigate(`/audit-act/${record.userId}/${record.branchId}/${record.id}`)}
+        >
           Audit
         </Button>
       ),
     },
+    
   ];
 
   return (

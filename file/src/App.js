@@ -34,6 +34,7 @@ import AuditorHome from "./Components/AuditorHome";
 import AuditorSettings from "./Components/AuditorSettings";
 import Unauthorized from "./Components/Unauthorized";
 import AuditorActs from "./Components/AuditorActs";
+import AuditQuestions from "./Components/AuditQuestions";
 
 const App = () => {
   return (
@@ -81,6 +82,7 @@ const App = () => {
         <Route path="/AuditorSettings" element={<AuditorSettings />} />
         <Route path="/AccessDenied" element={<Unauthorized />} />
         <Route path="/auditorviewacts" element={<AuditorActs/>}/>
+        <Route path="/audit-act/:userId/:branchId/:actId" element={<AuditQuestions />} />
         </Routes>
       </div>
     </Router>
