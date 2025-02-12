@@ -5,7 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
-import UserNav from './UserNav';
+import AuditorNav from './AuditorNav';
 
 const AuditorActs = () => {
   const [branches, setBranches] = useState([]);
@@ -157,7 +157,7 @@ const AuditorActs = () => {
 
   return (
     <div>
-      <UserNav />
+     <AuditorNav/>
       <div className="admin-container">
         <h1 className="admin-home-title">Assigned Branches</h1>
         {loading ? (
