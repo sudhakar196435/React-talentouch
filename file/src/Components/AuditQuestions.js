@@ -69,15 +69,18 @@ const AuditQuestions = () => {
     try {
       const answersRef = collection(db, `users/${userId}/branches/${branchId}/answers`);
       const answersSnapshot = await getDocs(answersRef);
-
-      if (!answersSnapshot.empty) {
+  
+      // Check if the current act's audit has been submitted
+      const isAlreadySubmitted = answersSnapshot.docs.some((doc) => doc.data().actId === actId);
+      
+      if (isAlreadySubmitted) {
         setAlreadySubmitted(true);
       }
     } catch (error) {
       console.error("❌ Error checking submission status:", error);
     }
-  }, [userId, branchId, db]);
-
+  }, [userId, branchId, actId, db]);
+  
   // Handle Status Change
   const handleStatusChange = (questionId, value) => {
     setSelectedStatus(new Map(selectedStatus.set(questionId, value)));
@@ -91,15 +94,25 @@ const AuditQuestions = () => {
   // Submit Answers
   const handleSubmitAudit = async () => {
     if (alreadySubmitted) {
-      toast.warning("You have already submitted this audit.");
+      toast.warning("You have already submitted this audit for this Act.");
       return;
     }
-
+  
     const answersRef = collection(db, `users/${userId}/branches/${branchId}/answers`);
-
+  
     try {
+      // Check if submission for this specific act already exists
+      const submissionDocRef = doc(answersRef, actId); // Reference the submission by actId
+      const submissionDocSnapshot = await getDoc(submissionDocRef);
+      
+      if (submissionDocSnapshot.exists()) {
+        toast.warning("Audit already submitted for this specific Act and Branch.");
+        return; // Prevent submitting if already exists
+      }
+  
+      // Store answers for the specific actId
       for (const question of questions) {
-        const answerDocRef = doc(answersRef, question.id); // Store each answer under its question ID
+        const answerDocRef = doc(answersRef, `${actId}_${question.id}`); // Use a unique ID for each answer
         await setDoc(answerDocRef, {
           questionText: question.text,
           registerForm: question.registerForm,
@@ -107,17 +120,20 @@ const AuditQuestions = () => {
           status: selectedStatus.get(question.id) || "Not Provided",
           remarks: remarks.get(question.id) || "No remarks",
           timestamp: new Date(),
+          actId: actId,  // Store actId to ensure correct submission
+          branchId: branchId,  // Store branchId for validation
         });
       }
-
+  
       setAlreadySubmitted(true);
       setSubmissionSuccess(true);
-      toast.success("Audit submitted successfully!");
+      toast.success("Audit submitted successfully for this Act!");
     } catch (error) {
       console.error("❌ Error submitting audit:", error);
       toast.error("Failed to submit audit.");
     }
   };
+  
 
   useEffect(() => {
     fetchActDetails();
