@@ -1,238 +1,362 @@
-import React, { useState, useEffect } from "react";
-import { db } from "../firebase";
-import { Spin } from "antd";
-import { collection, doc, getDocs, getDoc, addDoc, deleteDoc, updateDoc } from "firebase/firestore";
-import { useParams } from "react-router-dom";
-import AdminNav from "./AdminNav";
-import { ToastContainer, toast } from 'react-toastify';
-import "../Styles/AdminQuestions.css";
+import React, { useEffect, useState, useCallback } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  addDoc
+} from "firebase/firestore";
+import { Alert, Empty, Result, Button } from "antd";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AuditorNav from "./AuditorNav";
 
-const AdminQuestions = () => {
-  const { id } = useParams();
+const AuditQuestions = () => {
+  console.log("DEBUG: AuditQuestions component is starting");
+
+  const { userId, branchId, actId } = useParams();
+  const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
-  const [newQuestion, setNewQuestion] = useState("");
-  const [registerForm, setRegisterForm] = useState("");
-  const [timeLimit, setTimeLimit] = useState("");
-  const [risk, setRisk] = useState(""); // Default empty for Risk dropdown
-  const [type, setType] = useState(""); // Default empty for Type dropdown
-  const [section, setSection] = useState(""); // Section input state
-  const [editMode, setEditMode] = useState(null); // Track the question being edited
-  const [editedText, setEditedText] = useState("");
-  const [editedRegisterForm, setEditedRegisterForm] = useState("");
-  const [editedTimeLimit, setEditedTimeLimit] = useState("");
-  const [editedRisk, setEditedRisk] = useState("");
-  const [editedType, setEditedType] = useState("");
-  const [editedSection, setEditedSection] = useState("");
+  const [actDetails, setActDetails] = useState({});
+  const [alreadySubmitted, setAlreadySubmitted] = useState(false);
+  const [submissionSuccess, setSubmissionSuccess] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(new Map());
+  const [remarks, setRemarks] = useState(new Map());
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [actData, setActData] = useState(null); // Store Act data (Code and Name)
+  // Holds the audit frequency (in minutes) for the current branch
+  const [branchAuditFrequency, setBranchAuditFrequency] = useState(null);
 
+  const db = getFirestore();
+
+  // -------------------------------
+  // Fetch Branch Details including auditFrequency
+  // -------------------------------
   useEffect(() => {
-    const fetchActData = async () => {
-      const actRef = doc(db, `acts`, id);  // Assuming act details are stored in 'acts' collection
-      const actDoc = await getDoc(actRef);
-      if (actDoc.exists()) {
-        setActData(actDoc.data());
-      } else {
-        toast.error("Act not found!");
+    const fetchBranchDetails = async () => {
+      console.log("DEBUG: AuditQuestions component is starting");
+      try {
+        const branchDocRef = doc(db, `users/${userId}/branches/${branchId}`);
+        const branchSnapshot = await getDoc(branchDocRef);
+        if (branchSnapshot.exists()) {
+          const data = branchSnapshot.data();
+          if (data.auditFrequency) {
+            const freq = Number(data.auditFrequency);
+            setBranchAuditFrequency(freq);
+            console.log("Fetched auditFrequency:", freq, "minute(s)");
+          } else {
+            console.warn("auditFrequency not set on branch document. Defaulting to 1 minute.");
+            setBranchAuditFrequency(1);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching branch details:", error);
       }
     };
-
-    const fetchQuestions = async () => {
-      const questionsRef = collection(db, `acts/${id}/questions`);
-      const querySnapshot = await getDocs(questionsRef);
-      const fetchedQuestions = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setQuestions(fetchedQuestions);
-      setLoading(false);
-    };
-
-    fetchActData();  // Fetch Act data
-    fetchQuestions();  // Fetch Questions
-  }, [id]);
-
-  const handleAddQuestion = async () => {
-    if (newQuestion.trim() === "") {
-      toast.error("Question text cannot be empty!");
-      return;
+    if (branchId) {
+      fetchBranchDetails();
     }
+  }, [db, userId, branchId]);
 
-    const questionsRef = collection(db, `acts/${id}/questions`);
-    const docRef = await addDoc(questionsRef, { 
-      text: newQuestion, 
-      registerForm, 
-      timeLimit, 
-      risk, 
-      type,
-      section 
-    });
+  // -------------------------------
+  // Fetch Act Details
+  // -------------------------------
+  const fetchActDetails = useCallback(async () => {
+    try {
+      const actDocRef = doc(db, `acts/${actId}`);
+      const actSnapshot = await getDoc(actDocRef);
 
-    setQuestions([...questions, { id: docRef.id, text: newQuestion, registerForm, timeLimit, risk, type, section }]);
-    toast.success("Question added successfully!");
-    setNewQuestion("");
-    setRegisterForm("");
-    setTimeLimit("");
-    setRisk("");
-    setType("");
-    setSection("");
+      if (actSnapshot.exists()) {
+        setActDetails(actSnapshot.data());
+      } else {
+        toast.error("Act details not found.");
+      }
+    } catch (error) {
+      toast.error("Error fetching act details.");
+      console.error("Error:", error);
+    }
+  }, [actId, db]);
+
+  // -------------------------------
+  // Fetch Questions
+  // -------------------------------
+  const fetchQuestions = useCallback(async () => {
+    try {
+      console.log("DEBUG: AuditQuestions component is starting");
+      const questionsCollection = collection(db, `acts/${actId}/questions`);
+      const questionsSnapshot = await getDocs(questionsCollection);
+
+      if (questionsSnapshot.empty) {
+        toast.warning("No questions found for this act.");
+        return;
+      }
+
+      let questionData = [];
+      questionsSnapshot.docs.forEach((doc) => {
+        questionData.push({
+          id: doc.id,
+          text: doc.data().text || "No text available",
+          registerForm: doc.data().registerForm || "N/A",
+          timeLimit: doc.data().timeLimit || "N/A",
+        });
+      });
+
+      setQuestions(questionData);
+    } catch (error) {
+      toast.error("Error fetching questions.");
+      console.error("Error:", error);
+    }
+  }, [actId, db]);
+
+  // -------------------------------
+  // Check Submission Status
+  // -------------------------------
+  const checkSubmissionStatus = useCallback(async () => {
+    try {
+      const answersRef = collection(db, `users/${userId}/branches/${branchId}/answers`);
+      const markerDocRef = doc(answersRef, `${actId}_submissionMarker`);
+      const markerSnapshot = await getDoc(markerDocRef);
+
+      // Use effective frequency: if branchAuditFrequency is null, default to 1 minute.
+      const effectiveFreq = branchAuditFrequency || 1;
+      const allowedMs = effectiveFreq * 60 * 1000;
+
+      if (markerSnapshot.exists()) {
+        const lastSubmissionTimestamp = markerSnapshot.data().timestamp;
+        let lastSubmission;
+        if (lastSubmissionTimestamp && typeof lastSubmissionTimestamp.toDate === "function") {
+          lastSubmission = lastSubmissionTimestamp.toDate();
+        } else {
+          lastSubmission = new Date(lastSubmissionTimestamp);
+        }
+        const now = new Date();
+        const elapsed = now.getTime() - lastSubmission.getTime();
+        console.log("Check Submission Status:");
+        console.log("Branch Audit Frequency (min):", effectiveFreq);
+        console.log("Last submission:", lastSubmission);
+        console.log("Elapsed (ms):", elapsed, "Allowed (ms):", allowedMs);
+        if (elapsed < allowedMs) {
+          setAlreadySubmitted(true);
+        } else {
+          setAlreadySubmitted(false);
+        }
+      } else {
+        setAlreadySubmitted(false);
+      }
+    } catch (error) {
+      console.error("Error checking submission status:", error);
+    }
+  }, [userId, branchId, actId, db, branchAuditFrequency]);
+
+  // -------------------------------
+  // Handlers for Status and Remarks changes
+  // -------------------------------
+  const handleStatusChange = (questionId, value) => {
+    setSelectedStatus(new Map(selectedStatus.set(questionId, value)));
   };
 
-  const handleSaveEdit = async (questionId) => {
-    const questionRef = doc(db, `acts/${id}/questions`, questionId);
-    await updateDoc(questionRef, { 
-      text: editedText, 
-      registerForm: editedRegisterForm, 
-      timeLimit: editedTimeLimit, 
-      risk: editedRisk, 
-      type: editedType,
-      section: editedSection 
-    });
-
-    setQuestions(questions.map((q) => (q.id === questionId ? { ...q, text: editedText, registerForm: editedRegisterForm, timeLimit: editedTimeLimit, risk: editedRisk, type: editedType, section: editedSection } : q)));
-    toast.success("Question updated successfully!");
-    setEditMode(null);  // Exit edit mode
+  const handleRemarksChange = (questionId, value) => {
+    setRemarks(new Map(remarks.set(questionId, value)));
   };
 
-  const handleCancelEdit = () => {
-    setEditMode(null);
-    setEditedText("");
-    setEditedRegisterForm("");
-    setEditedTimeLimit("");
-    setEditedRisk("");
-    setEditedType("");
-    setEditedSection("");
+  // -------------------------------
+  // Submit Audit
+  // -------------------------------
+  const handleSubmitAudit = async () => {
+    try {
+      console.log("DEBUG: AuditQuestions component is starting");
+      const answersRef = collection(db, `users/${userId}/branches/${branchId}/answers`);
+      const markerDocRef = doc(answersRef, `${actId}_submissionMarker`);
+      const markerSnapshot = await getDoc(markerDocRef);
+      const now = new Date();
+
+      // Use effective frequency: if branchAuditFrequency is null, default to 1 minute.
+      const effectiveFreq = branchAuditFrequency || 1;
+      const allowedMs = effectiveFreq * 60 * 1000;
+
+      if (markerSnapshot.exists()) {
+        const lastSubmissionTimestamp = markerSnapshot.data().timestamp;
+        let lastSubmission;
+        if (lastSubmissionTimestamp && typeof lastSubmissionTimestamp.toDate === "function") {
+          lastSubmission = lastSubmissionTimestamp.toDate();
+        } else {
+          lastSubmission = new Date(lastSubmissionTimestamp);
+        }
+        const elapsed = now.getTime() - lastSubmission.getTime();
+        console.log("Attempting submission:");
+        console.log("Branch Audit Frequency (min):", effectiveFreq);
+        console.log("Elapsed (ms):", elapsed, "Allowed (ms):", allowedMs);
+        if (elapsed < allowedMs) {
+          toast.warning(
+            `Audit already submitted. Next submission allowed after ${new Date(lastSubmission.getTime() + allowedMs).toLocaleTimeString()}`
+          );
+          return;
+        }
+      }
+      // For each question, add a new answer document so that previous records are preserved.
+      for (const question of questions) {
+        await addDoc(answersRef, {
+          questionText: question.text,
+          registerForm: question.registerForm,
+          timeLimit: question.timeLimit,
+          status: selectedStatus.get(question.id) || "Not Provided",
+          remarks: remarks.get(question.id) || "No remarks",
+          timestamp: now,
+          actId: actId,
+          branchId: branchId,
+        });
+      }
+      // Update (or create) the marker document with the current timestamp.
+      await setDoc(markerDocRef, { timestamp: now });
+      setSubmissionSuccess(true);
+      toast.success("Audit submitted successfully for this Act!");
+    } catch (error) {
+      console.error("Error submitting audit:", error);
+      toast.error("Failed to submit audit.");
+    }
   };
 
-  const handleDeleteQuestion = async (questionId) => {
-    const questionRef = doc(db, `acts/${id}/questions`, questionId);
-    await deleteDoc(questionRef);
-    setQuestions(questions.filter((q) => q.id !== questionId));
-    toast.success("Question deleted successfully!");
-  };
+  // -------------------------------
+  // Initial Data Fetch & Periodic Status Check
+  // -------------------------------
+  useEffect(() => {
+    fetchActDetails();
+    fetchQuestions();
+    checkSubmissionStatus();
+    // Re-check every 10 seconds
+    const interval = setInterval(() => {
+      checkSubmissionStatus();
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [fetchActDetails, fetchQuestions, checkSubmissionStatus]);
 
-  if (loading) return <div className="loading-container"><Spin size="large" /></div>;
+  // -------------------------------
+  // Filter Questions based on search query
+  // -------------------------------
+  const filteredQuestions = questions.filter((q) =>
+    q.text.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
+  // -------------------------------
+  // Render Success Screen if submission is successful
+  // -------------------------------
+  if (submissionSuccess) {
+    return (
+      <Result
+        status="success"
+        title="Audit Submitted Successfully!"
+        subTitle="Your answers have been submitted successfully. Thank you for completing the audit."
+        extra={[
+          <Button type="primary" key="view" onClick={() => navigate("/myaudit")}>
+            View Details
+          </Button>,
+          <Button key="back" onClick={() => navigate("/home")}>
+            Back to Home
+          </Button>,
+        ]}
+      />
+    );
+  }
+
+  // -------------------------------
+  // Render the Audit Questions UI
+  // -------------------------------
   return (
     <div>
-      <AdminNav />
-      <div className="admin-questions-page">
-        <h1 className="page-title">Manage Questions</h1>
-        
-        {/* Display Act Code and Name */}
-        {actData && (
-          <div className="act-details">
-            <div className="act-details-container">
-              <p><strong>Act Code:</strong> {actData.actCode}</p>
-              <p><strong>Act Name:</strong> {actData.actName}</p>
-            </div>
+      <AuditorNav />
+      <div className="user-audit-wrapper">
+        <h1 className="admin-home-title">Audit Questions for Act</h1>
+        {/* Display Act Details */}
+        <div className="act-details-container">
+          <p>
+            <strong>Act Code:</strong> {actDetails.actCode || "N/A"}
+          </p>
+          <p>
+            <strong>Act Name:</strong> {actDetails.actName || "N/A"}
+          </p>
+        </div>
+        <div className="audit-content-container">
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search questions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
           </div>
-        )}
-
-        {/* Add Question Section */}
-        <div className="add-question-section">
-          <label className="input-label">Section:</label>
-          <input type="text" value={section} onChange={(e) => setSection(e.target.value)} placeholder="Section" className="input-field" />
-          <label className="input-label">Question:</label>
-          <input type="text" value={newQuestion} onChange={(e) => setNewQuestion(e.target.value)} placeholder="Enter question" className="input-field" />
-          <label className="input-label">Register/Form:</label>
-          <input type="text" value={registerForm} onChange={(e) => setRegisterForm(e.target.value)} placeholder="Register or Form" className="input-field" />
-          <label className="input-label">Risk:</label>
-          <select value={risk} onChange={(e) => setRisk(e.target.value)} className="input-field">
-            <option value="">Please select risk</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
-          <label className="input-label">Time Limit:</label>
-          <input type="text" value={timeLimit} onChange={(e) => setTimeLimit(e.target.value)} placeholder="Time Limit" className="input-field" />
-          <label className="input-label">Type:</label>
-          <select value={type} onChange={(e) => setType(e.target.value)} className="input-field">
-            <option value="">Please select type</option>
-            <option value="Display">Display</option>
-            <option value="Licence">Licence</option>
-            <option value="Register">Register</option>
-            <option value="Remittance">Remittance</option>
-            <option value="Return">Return</option>
-            <option value="Rule">Rule</option>
-            <option value="Activity">Activity</option>
-          </select>
-          <button onClick={handleAddQuestion} className="add-button">Add Question</button>
+          {alreadySubmitted && (
+            <Alert
+              message="Audit Already Submitted"
+              description="You have already submitted the audit for this Act within the allowed frequency interval. Please wait before re‑submitting."
+              type="warning"
+              showIcon
+            />
+          )}
+          {filteredQuestions.length === 0 ? (
+            <Empty description="No questions available" className="empty-state" />
+          ) : (
+            <>
+              <table className="audit-questions-table">
+                <thead>
+                  <tr>
+                    <th className="sno-column-header">S.No</th>
+                    <th className="question-column-header">Question</th>
+                    <th className="question-column-header">Register or Form</th>
+                    <th className="question-column-header">Time Limit</th>
+                    <th className="status-column-header">Status</th>
+                    <th className="remarks-column-header">Remarks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredQuestions.map((question, index) => (
+                    <tr key={question.id}>
+                      <td className="sno-cell">{index + 1}</td>
+                      <td className="question-text">{question.text}</td>
+                      <td className="question-text">{question.registerForm}</td>
+                      <td className="question-text">{question.timeLimit}</td>
+                      <td className="status-cell">
+                        <select
+                          value={selectedStatus.get(question.id) || ""}
+                          onChange={(e) => handleStatusChange(question.id, e.target.value)}
+                          className="status-dropdown"
+                          disabled={alreadySubmitted}
+                        >
+                          <option value="">Select Status</option>
+                          <option value="Complied">Complied</option>
+                          <option value="Not Complied">Not Complied</option>
+                          <option value="Partial Complied">Partial Complied</option>
+                          <option value="Not Applicable">Not Applicable</option>
+                        </select>
+                      </td>
+                      <td className="remarks-cell">
+                        <textarea
+                          value={remarks.get(question.id) || ""}
+                          onChange={(e) => handleRemarksChange(question.id, e.target.value)}
+                          placeholder="Add remarks"
+                          className="remarks-textarea"
+                          rows={2}
+                          disabled={alreadySubmitted}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {!alreadySubmitted && (
+                <button onClick={handleSubmitAudit} className="submit-audit-button">
+                  Submit Audit
+                </button>
+              )}
+            </>
+          )}
         </div>
-
-        {/* Search Section */}
-        <div className="search-section">
-          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search questions..." className="search-input" />
-        </div>
-
-        {/* Display Questions */}
-        {questions.length > 0 ? (
-          <table className="questions-table">
-            <thead>
-              <tr>
-                <th>Section</th>
-                <th>Question</th>
-                <th>Register/Form</th>
-                <th>Time Limit</th>
-                <th>Risk</th>
-                <th>Type</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {questions.map((q) => (
-                <tr key={q.id}>
-                  <td>{editMode === q.id ? 
-                    <input type="text" value={editedSection} onChange={(e) => setEditedSection(e.target.value)} className="edit-field" /> : q.section || "N/A"}</td>
-                  <td>{editMode === q.id ? 
-                    <input type="text" value={editedText} onChange={(e) => setEditedText(e.target.value)} className="edit-field" /> : q.text}</td>
-                  <td>{editMode === q.id ? 
-                    <input type="text" value={editedRegisterForm} onChange={(e) => setEditedRegisterForm(e.target.value)} className="edit-field" /> : q.registerForm}</td>
-                  <td>{editMode === q.id ? 
-                    <input type="text" value={editedTimeLimit} onChange={(e) => setEditedTimeLimit(e.target.value)} className="edit-field" /> : q.timeLimit}</td>
-                  <td>{editMode === q.id ? 
-                    <select value={editedRisk} onChange={(e) => setEditedRisk(e.target.value)} className="edit-field">
-                      <option value="">Select Risk</option>
-                      <option value="High">High</option>
-                      <option value="Medium">Medium</option>
-                      <option value="Low">Low</option>
-                    </select> : q.risk}</td>
-                  <td>{editMode === q.id ? 
-                    <select value={editedType} onChange={(e) => setEditedType(e.target.value)} className="edit-field">
-                      <option value="">Select Type</option>
-                      <option value="Display">Display</option>
-                      <option value="Licence">Licence</option>
-                      <option value="Register">Register</option>
-                      <option value="Remittance">Remittance</option>
-                      <option value="Return">Return</option>
-                      <option value="Rule">Rule</option>
-                      <option value="Activity">Activity</option>
-                    </select> : q.type}</td>
-                  <td>
-                    {editMode === q.id ? (
-                      <>
-                        <button onClick={() => handleSaveEdit(q.id)} className="save-button">Save</button>
-                        <button onClick={handleCancelEdit} className="cancel-button">Cancel</button>
-                      </>
-                    ) : (
-                      <>
-                        <button onClick={() => { setEditMode(q.id); setEditedText(q.text); setEditedRegisterForm(q.registerForm); setEditedTimeLimit(q.timeLimit); setEditedRisk(q.risk); setEditedType(q.type); setEditedSection(q.section); }} className="edit-button">Edit</button>
-                        <button onClick={() => handleDeleteQuestion(q.id)} className="delete-button">Delete</button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>No questions available</p>
-        )}
       </div>
       <ToastContainer />
     </div>
   );
 };
 
-export default AdminQuestions;
+export default AuditQuestions;

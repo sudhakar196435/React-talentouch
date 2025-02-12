@@ -1,8 +1,17 @@
 import React from 'react';
 import { Menu, Button } from 'antd';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { UserOutlined, LogoutOutlined, FileTextOutlined } from '@ant-design/icons'; // Import FileTextOutlined for View Acts icon
-import { getAuth, signOut } from 'firebase/auth'; // Import Firebase authentication
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  DashboardOutlined,
+  UserOutlined,
+  FileTextOutlined,
+  HistoryOutlined,
+  BarChartOutlined,
+  BellOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+} from '@ant-design/icons';
+import { getAuth, signOut } from 'firebase/auth';
 
 const items = [
   {
@@ -14,22 +23,47 @@ const items = [
     type: 'divider',
   },
   {
+    key: 'dashboard',
+    icon: <DashboardOutlined />,
+    label: <Link to="/auditor/dashboard">Dashboard</Link>,
+  },
+  {
     key: 'myAccount',
     icon: <UserOutlined />,
     label: <Link to="/AuditorSettings">My Account</Link>,
   },
   {
-    key: 'viewActs',
+    key: 'myBranches',
     icon: <FileTextOutlined />,
-    label: <Link to="/auditorviewacts">My branches</Link>, // Link to View Acts page
+    label: <Link to="/auditorviewacts">My Branches</Link>,
+  },
+  {
+    key: 'auditHistory',
+    icon: <HistoryOutlined />,
+    label: <Link to="/auditor/audit-history">Audit History</Link>,
+  },
+  {
+    key: 'reports',
+    icon: <BarChartOutlined />,
+    label: <Link to="/auditor/reports">Reports</Link>,
+  },
+  {
+    key: 'notifications',
+    icon: <BellOutlined />,
+    label: <Link to="/auditor/notifications">Notifications</Link>,
+  },
+  {
+    key: 'settings',
+    icon: <SettingOutlined />,
+    label: <Link to="/auditor/settings">Settings</Link>,
   },
 ];
 
 const Auditorsidebar = () => {
-  const navigate = useNavigate(); // Use navigate hook for redirection
-  
+  const navigate = useNavigate();
+
   const onClick = (e) => {
-    console.log('click ', e);
+    console.log('Menu item clicked:', e);
   };
 
   // Logout function
@@ -49,18 +83,15 @@ const Auditorsidebar = () => {
     <div>
       <Menu
         onClick={onClick}
-        style={{
-          width: 256,
-        }}
-        defaultSelectedKeys={['1']}
-        defaultOpenKeys={['sub1']}
+        style={{ width: 256 }}
+        defaultSelectedKeys={['dashboard']}
         mode="inline"
         items={items}
       />
       <Button
         style={{ marginTop: 20, width: '100%' }}
-        onClick={handleLogout} // Trigger the logout function
-        icon={<LogoutOutlined />} // Add the Logout icon
+        onClick={handleLogout}
+        icon={<LogoutOutlined />}
       >
         Logout
       </Button>
