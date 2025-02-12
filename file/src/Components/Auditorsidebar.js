@@ -21,7 +21,7 @@ const items = [
   {
     key: 'viewActs',
     icon: <FileTextOutlined />,
-    label: <Link to="/auditorviewacts">View Acts</Link>, // Link to View Acts page
+    label: <Link to="/auditorviewacts">My branches</Link>, // Link to View Acts page
   },
 ];
 

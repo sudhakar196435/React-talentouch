@@ -1,6 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { collection, getDocs, getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+} from "firebase/firestore";
 import { Alert, Empty, Result, Button } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -18,6 +25,27 @@ const AuditQuestions = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const db = getFirestore();
+
+  // Unique key for saving progress in localStorage
+  const storageKey = `auditProgress_${userId}_${branchId}_${actId}`;
+
+  // Load saved progress from localStorage (if any)
+  useEffect(() => {
+    const savedProgress = localStorage.getItem(storageKey);
+    if (savedProgress) {
+      try {
+        const progress = JSON.parse(savedProgress);
+        if (progress.selectedStatus) {
+          setSelectedStatus(new Map(progress.selectedStatus));
+        }
+        if (progress.remarks) {
+          setRemarks(new Map(progress.remarks));
+        }
+      } catch (error) {
+        console.error("Error loading saved progress", error);
+      }
+    }
+  }, [storageKey]);
 
   // Fetch Act Details
   const fetchActDetails = useCallback(async () => {
@@ -67,12 +95,17 @@ const AuditQuestions = () => {
   // Check if audit is already submitted
   const checkSubmissionStatus = useCallback(async () => {
     try {
-      const answersRef = collection(db, `users/${userId}/branches/${branchId}/answers`);
+      const answersRef = collection(
+        db,
+        `users/${userId}/branches/${branchId}/answers`
+      );
       const answersSnapshot = await getDocs(answersRef);
-  
+
       // Check if the current act's audit has been submitted
-      const isAlreadySubmitted = answersSnapshot.docs.some((doc) => doc.data().actId === actId);
-      
+      const isAlreadySubmitted = answersSnapshot.docs.some(
+        (doc) => doc.data().actId === actId
+      );
+
       if (isAlreadySubmitted) {
         setAlreadySubmitted(true);
       }
@@ -80,7 +113,7 @@ const AuditQuestions = () => {
       console.error("❌ Error checking submission status:", error);
     }
   }, [userId, branchId, actId, db]);
-  
+
   // Handle Status Change
   const handleStatusChange = (questionId, value) => {
     setSelectedStatus(new Map(selectedStatus.set(questionId, value)));
@@ -91,25 +124,38 @@ const AuditQuestions = () => {
     setRemarks(new Map(remarks.set(questionId, value)));
   };
 
+  // Save Audit Progress to localStorage
+  const handleSaveAudit = () => {
+    const progress = {
+      selectedStatus: Array.from(selectedStatus.entries()),
+      remarks: Array.from(remarks.entries()),
+    };
+    localStorage.setItem(storageKey, JSON.stringify(progress));
+    toast.success("Progress saved successfully!");
+  };
+
   // Submit Answers
   const handleSubmitAudit = async () => {
     if (alreadySubmitted) {
       toast.warning("You have already submitted this audit for this Act.");
       return;
     }
-  
-    const answersRef = collection(db, `users/${userId}/branches/${branchId}/answers`);
-  
+
+    const answersRef = collection(
+      db,
+      `users/${userId}/branches/${branchId}/answers`
+    );
+
     try {
       // Check if submission for this specific act already exists
       const submissionDocRef = doc(answersRef, actId); // Reference the submission by actId
       const submissionDocSnapshot = await getDoc(submissionDocRef);
-      
+
       if (submissionDocSnapshot.exists()) {
         toast.warning("Audit already submitted for this specific Act and Branch.");
         return; // Prevent submitting if already exists
       }
-  
+
       // Store answers for the specific actId
       for (const question of questions) {
         const answerDocRef = doc(answersRef, `${actId}_${question.id}`); // Use a unique ID for each answer
@@ -120,11 +166,14 @@ const AuditQuestions = () => {
           status: selectedStatus.get(question.id) || "Not Provided",
           remarks: remarks.get(question.id) || "No remarks",
           timestamp: new Date(),
-          actId: actId,  // Store actId to ensure correct submission
-          branchId: branchId,  // Store branchId for validation
+          actId: actId, // Store actId to ensure correct submission
+          branchId: branchId, // Store branchId for validation
         });
       }
-  
+
+      // Optionally clear saved progress after successful submission
+      localStorage.removeItem(storageKey);
+
       setAlreadySubmitted(true);
       setSubmissionSuccess(true);
       toast.success("Audit submitted successfully for this Act!");
@@ -133,7 +182,6 @@ const AuditQuestions = () => {
       toast.error("Failed to submit audit.");
     }
   };
-  
 
   useEffect(() => {
     fetchActDetails();
@@ -225,7 +273,9 @@ const AuditQuestions = () => {
                       <td className="status-cell">
                         <select
                           value={selectedStatus.get(question.id) || ""}
-                          onChange={(e) => handleStatusChange(question.id, e.target.value)}
+                          onChange={(e) =>
+                            handleStatusChange(question.id, e.target.value)
+                          }
                           className="status-dropdown"
                           disabled={alreadySubmitted}
                         >
@@ -239,7 +289,9 @@ const AuditQuestions = () => {
                       <td className="remarks-cell">
                         <textarea
                           value={remarks.get(question.id) || ""}
-                          onChange={(e) => handleRemarksChange(question.id, e.target.value)}
+                          onChange={(e) =>
+                            handleRemarksChange(question.id, e.target.value)
+                          }
                           placeholder="Add remarks"
                           className="remarks-textarea"
                           rows={2}
@@ -252,9 +304,20 @@ const AuditQuestions = () => {
               </table>
 
               {!alreadySubmitted && (
-                <button onClick={handleSubmitAudit} className="submit-audit-button">
-                  Submit Audit
-                </button>
+                <div className="action-buttons">
+                  <button
+                    onClick={handleSaveAudit}
+                    className="save-audit-button"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={handleSubmitAudit}
+                    className="submit-audit-button"
+                  >
+                    Submit Audit
+                  </button>
+                </div>
               )}
             </>
           )}
