@@ -95,19 +95,43 @@ const AuditQuestions = () => {
   // Check if audit is already submitted
   const checkSubmissionStatus = useCallback(async () => {
     try {
-      const answersRef = collection(
-        db,
-        `users/${userId}/branches/${branchId}/answers`
-      );
-      const answersSnapshot = await getDocs(answersRef);
-
-      // Check if the current act's audit has been submitted
-      const isAlreadySubmitted = answersSnapshot.docs.some(
-        (doc) => doc.data().actId === actId
-      );
-
-      if (isAlreadySubmitted) {
-        setAlreadySubmitted(true);
+      const branchRef = doc(db, `users/${userId}/branches/${branchId}`);
+      const branchSnap = await getDoc(branchRef);
+  
+      if (!branchSnap.exists()) {
+        console.error("Branch not found.");
+        return;
+      }
+  
+      const auditFrequency = branchSnap.data().auditFrequency || "1"; // Default to "1" if not set
+      const frequencyInMinutes = parseInt(auditFrequency, 10); // Convert string to integer
+  
+      // Use the submissions collection so previous submissions are preserved
+      const submissionsRef = collection(db, `users/${userId}/branches/${branchId}/submissions`);
+      const submissionsSnapshot = await getDocs(submissionsRef);
+  
+      let lastSubmissionTime = null;
+  
+      submissionsSnapshot.docs.forEach((doc) => {
+        if (doc.data().actId === actId) {
+          const timestamp = doc.data().timestamp.toDate();
+          if (!lastSubmissionTime || timestamp > lastSubmissionTime) {
+            lastSubmissionTime = timestamp;
+          }
+        }
+      });
+  
+      if (lastSubmissionTime) {
+        const currentTime = new Date();
+        const timeDifference = (currentTime - lastSubmissionTime) / (1000 * 60); // Convert ms to minutes
+  
+        if (timeDifference < frequencyInMinutes) {
+          setAlreadySubmitted(true);
+        } else {
+          setAlreadySubmitted(false); // Allow submission
+        }
+      } else {
+        setAlreadySubmitted(false); // No previous submission, allow submission
       }
     } catch (error) {
       console.error("❌ Error checking submission status:", error);
@@ -137,46 +161,37 @@ const AuditQuestions = () => {
   // Submit Answers
   const handleSubmitAudit = async () => {
     if (alreadySubmitted) {
-      toast.warning("You have already submitted this audit for this Act.");
+      toast.warning("You have already submitted this audit recently. Please wait for the next allowed submission.");
       return;
     }
-
-    const answersRef = collection(
-      db,
-      `users/${userId}/branches/${branchId}/answers`
-    );
-
+  
     try {
-      // Check if submission for this specific act already exists
-      const submissionDocRef = doc(answersRef, actId); // Reference the submission by actId
-      const submissionDocSnapshot = await getDoc(submissionDocRef);
-
-      if (submissionDocSnapshot.exists()) {
-        toast.warning("Audit already submitted for this specific Act and Branch.");
-        return; // Prevent submitting if already exists
-      }
-
-      // Store answers for the specific actId
-      for (const question of questions) {
-        const answerDocRef = doc(answersRef, `${actId}_${question.id}`); // Use a unique ID for each answer
-        await setDoc(answerDocRef, {
-          questionText: question.text,
-          registerForm: question.registerForm,
-          timeLimit: question.timeLimit,
+      // Store each submission separately in the submissions collection
+      const submissionsRef = collection(db, `users/${userId}/branches/${branchId}/submissions`);
+      const submissionTime = new Date();
+      const submissionDocRef = doc(submissionsRef, `${actId}_${submissionTime.getTime()}`);
+  
+      const submissionData = {
+        actId,
+        branchId,
+        userId,
+        timestamp: submissionTime,
+        // Only store questionId, status, and remarks to prevent redundancy
+        answers: questions.map((question) => ({
+          questionId: question.id,
           status: selectedStatus.get(question.id) || "Not Provided",
           remarks: remarks.get(question.id) || "No remarks",
-          timestamp: new Date(),
-          actId: actId, // Store actId to ensure correct submission
-          branchId: branchId, // Store branchId for validation
-        });
-      }
-
-      // Optionally clear saved progress after successful submission
+        })),
+      };
+  
+      await setDoc(submissionDocRef, submissionData);
+  
+      // Clear saved progress
       localStorage.removeItem(storageKey);
-
+  
       setAlreadySubmitted(true);
       setSubmissionSuccess(true);
-      toast.success("Audit submitted successfully for this Act!");
+      toast.success("Audit submitted successfully!");
     } catch (error) {
       console.error("❌ Error submitting audit:", error);
       toast.error("Failed to submit audit.");
