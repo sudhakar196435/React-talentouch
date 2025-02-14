@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@shadcn/ui": "^0.0.4",
     "@zxing/library": "^0.21.3",
     "antd": "^5.23.3",
     "cra-template": "1.2.0",
+    "date-fns": "^4.1.0",
     "emailjs-com": "^3.2.0",
     "firebase": "^11.2.0",
     "jspdf": "^2.5.2",
