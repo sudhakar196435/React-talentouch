@@ -40,7 +40,7 @@ const items = [
   {
     key: 'auditHistory',
     icon: <HistoryOutlined />,
-    label: <Link to="/auditor/audit-history">Audit History</Link>,
+    label: <Link to="/auditorsubmissions">Audit History</Link>,
   },
   {
     key: 'reports',
