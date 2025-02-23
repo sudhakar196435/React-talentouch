@@ -1,89 +1,151 @@
-.auditor-home-container {
-    padding: 20px;
-    background-color: rgb(247, 255, 255);
-    height: 100vh;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+/* Main container for auditor home */
+.auditor-home {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 60px 80px;
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
 }
 
-.auditor-home-title {
-    text-align: center;
-    font-size: 1.4rem;
+/* Left side content */
+.auditor-info {
+    flex: 1;
+    text-align: left;
+    max-width: 500px;
+}
+
+.auditor-heading {
+    font-size: 32px;
+    font-weight: bold;
+    color: #bb0016;
+    margin-bottom: 15px;
+}
+
+.auditor-description {
+    font-size: 18px;
+    color: #555;
     margin-bottom: 20px;
-    color: #ffffff;
-    background-color: #6c5ce7;
-    /* Purple shade for differentiation */
-    padding: 10px;
-    border-radius: 4px;
-    font-family: 'Poppins', sans-serif;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    letter-spacing: 2px;
+    line-height: 1.5;
 }
 
-.stats-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    justify-items: center;
+.auditor-welcome {
+    font-size: 20px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 25px;
 }
 
-.stat-card {
-    background: #ffffff;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
+/* Right side image */
+.auditor-image-container {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.auditor-image {
+    max-width: 480px;
     width: 100%;
-    max-width: 300px;
+    height: auto;
+    border-radius: 10px;
 }
 
-.stat-card h2 {
-    font-size: 1rem;
-    color: #333333;
-    font-family: 'Lato', sans-serif;
+/* Loading state */
+.auditor-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* View Branches Button */
+.start-audit-btn {
+    background-color: #007bff; /* Primary blue color */
+    color: #fff; /* White text */
+    font-size: 16px;
     font-weight: 600;
-    padding-top: 4px;
+    padding: 12px 24px;
+    border: none;
+   
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    display: inline-block;
+    text-align: center;
+    width: 160px; /* Set a fixed width */
+    height: 50px; /* Set a fixed height */
 }
 
-.stat-card p {
-    font-size: 1.6rem;
-    color: #2f2f2f;
-    font-family: 'Lato', sans-serif;
-    margin-top: 10px;
-    font-weight: 600;
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+    .start-audit-btn {
+        width: 160px;
+        height: 45px;
+        font-size: 14px;
+    }
 }
 
-.stat-card.verified {
-    border-left: 5px solid #28a745;
-    /* Green border for verified reports */
+@media screen and (max-width: 480px) {
+    .start-audit-btn {
+        width: 100%; /* Full width on smaller screens */
+        height: 42px;
+        font-size: 14px;
+        padding: 10px;
+    }
 }
 
-.stat-card.verified p {
-    color: #28a745;
+/* Responsive Design */
+@media screen and (max-width: 1024px) {
+    .auditor-home {
+        flex-direction: column;
+        padding: 40px;
+        text-align: center;
+    }
+
+    .auditor-info {
+        max-width: 100%;
+    }
+
+    .auditor-heading {
+        font-size: 28px;
+    }
+
+    .auditor-description {
+        font-size: 16px;
+    }
+
+    .auditor-welcome {
+        font-size: 18px;
+    }
+
+    .auditor-image-container {
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .auditor-image {
+        max-width: 90%;
+    }
 }
 
-.stat-card.pending {
-    border-left: 5px solid #ffc107;
-    /* Yellow border for pending reports */
-}
+@media screen and (max-width: 600px) {
+    .auditor-home {
+        padding: 20px;
+    }
 
-.stat-card.pending p {
-    color: #ffc107;
-}
+    .auditor-heading {
+        font-size: 24px;
+    }
 
-.stat-card.rejected {
-    border-left: 5px solid #dc3545;
-    /* Red border for rejected reports */
-}
+    .auditor-description {
+        font-size: 14px;
+    }
 
-.stat-card.rejected p {
-    color: #dc3545;
-}
+    .auditor-welcome {
+        font-size: 16px;
+    }
 
-.stat-card.total {
-    border-left: 5px solid #6c5ce7;
-    /* Purple border for total reports */
-}
-
-.stat-card.total p {
-    color: #6c5ce7;
+    .auditor-image {
+        max-width: 100%;
+        border-radius: 5px;
+    }
 }

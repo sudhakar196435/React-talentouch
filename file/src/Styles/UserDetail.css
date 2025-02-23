@@ -36,7 +36,8 @@
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400; /* Semi-bold */
   }
   
   .acts-table th, .acts-table td {
@@ -182,14 +183,9 @@
   border: 1px solid #ddd;
   border-radius: 4px;
 }
-.branch-details {
+.branch-detail {
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
-.branch-details h4 {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
 

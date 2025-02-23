@@ -163,7 +163,7 @@ const UserDetail = () => {
             </div>
 
             {selectedBranchDetails && (
-              <div className="branch-details">
+              <div className="branch-detail">
                 <h1 className="admin-home-title">Branch Details</h1>
                 <Descriptions bordered column={2}>
                   <Descriptions.Item label="Branch Name">{selectedBranchDetails.branchName}</Descriptions.Item>

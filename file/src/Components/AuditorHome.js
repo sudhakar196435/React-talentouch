@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../firebase"; // Ensure Firebase is set up correctly
-import { doc, onSnapshot } from "firebase/firestore"; // For fetching and listening to user status
-import { Spin } from "antd";
-import "../Styles/Home.css";
-
+import { auth, db } from "../firebase";
+import { doc, onSnapshot } from "firebase/firestore";
+import { Spin, Button } from "antd";
+import "../Styles/AuditorHome.css"; // New CSS
 import AuditorNav from "./AuditorNav";
+import auditImage from "../Assets/image.png";
 
 const AuditorHome = () => {
   const navigate = useNavigate();
-  const [fullName, setFullName] = useState(""); // Full name state
+  const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,37 +19,32 @@ const AuditorHome = () => {
     unsubscribeAuth = auth.onAuthStateChanged(async (currentUser) => {
       if (currentUser) {
         const userDocRef = doc(db, "users", currentUser.uid);
-
-        // Use onSnapshot to listen for changes in user data
         unsubscribeFromStatus = onSnapshot(
           userDocRef,
           (docSnap) => {
             if (docSnap.exists()) {
               const userData = docSnap.data();
-              setFullName(userData.fullName || "Auditor"); // Update full name
+              setFullName(userData.fullName || "Auditor");
 
-              // Redirect if the user is not an auditor
               if (userData.role !== "auditor") {
                 navigate("/login");
               }
             } else {
-              console.log("No user data found!");
-              navigate("/login"); // Redirect if user data is missing
+              navigate("/login");
             }
-            setLoading(false); // Stop loading once data is fetched
+            setLoading(false);
           },
           (error) => {
             console.error("Error fetching user data:", error);
             setLoading(false);
-            navigate("/login"); // Redirect on error
+            navigate("/login");
           }
         );
       } else {
-        navigate("/login"); // Redirect if no user is logged in
+        navigate("/login");
       }
     });
 
-    // Clean up the listeners on unmount
     return () => {
       if (unsubscribeAuth) unsubscribeAuth();
       if (unsubscribeFromStatus) unsubscribeFromStatus();
@@ -58,7 +53,7 @@ const AuditorHome = () => {
 
   if (loading) {
     return (
-      <div className="loading-container">
+      <div className="auditor-loading">
         <Spin size="large" />
       </div>
     );
@@ -66,12 +61,32 @@ const AuditorHome = () => {
 
   return (
     <div>
-      <AuditorNav/>
-      <div className="home-container">
-        <h2>Welcome, Auditor!</h2>
-        <p>This is your home page.</p>
-        {fullName && <p><strong>Hello</strong>, {fullName}!</p>}
+      <AuditorNav />
+      <div className="auditor-home">
+        {/* Left Content */}
+        <div className="auditor-info">
+        <h1 className="auditor-heading">Welcome, {fullName || "Auditor"}!</h1>
+
+        <p className="auditor-description">
+  Easily manage your audit tasks with a user-friendly dashboard.  
+  View detailed reports, analyze key data, and track performance.  
+  Stay organized and make informed decisions with real-time insights.  
+</p>
+
+         
+          <div className="auditor-buttons">
+            <Button type="primary" className="start-audit-btn" onClick={() => navigate("/auditorviewacts")}>
+              View Branches
+            </Button>
+          </div>
+        </div>
+
+        {/* Right Image */}
+        <div className="auditor-image-container">
+          <img src={auditImage} alt="Audit Process" className="auditor-image" />
+        </div>
       </div>
+     
     </div>
   );
 };
