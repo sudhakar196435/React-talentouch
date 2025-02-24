@@ -4,9 +4,9 @@ import { collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import '../Styles/SubUserHome.css';
-
+import auditImage from "../Assets/image.png";
 import { ToastContainer, toast } from 'react-toastify';
-import { Spin } from 'antd';
+import { Spin,Button } from 'antd';
 import Subusernav from "./Subusernav";
 
 const SubUserHome = () => {
@@ -69,18 +69,47 @@ const SubUserHome = () => {
   return (
     <div>
       <Subusernav/>
-      <div className="subuser-container">
-        <h1 className="subuser-title">Welcome to Your Branch</h1>
-        {branch ? (
-          <div className="branch-details">
-            <h2>Branch Name: {branch.branchName}</h2>
-            <p>Location: {branch.location}</p>
-           
+
+    
+      <div className="auditor-home">
+
+        {/* Left Content */}
+        <div className="auditor-info">
+        <div className="subuser-container">
+       
+       {branch ? (
+         <div className="branch-details">
+           <h2>Branch Name: {branch.branchName}</h2>
+           <p>Location: {branch.location}</p>
+          
+         </div>
+       ) : (
+         <p>No branch assigned.</p>
+       )}
+     </div>
+       
+
+        <p className="auditor-description">
+  Easily manage your audit tasks with a user-friendly dashboard.  
+  View detailed reports, analyze key data, and track performance.  
+  Stay organized and make informed decisions with real-time insights.  
+</p>
+
+         
+          <div className="auditor-buttons">
+            <Button type="primary" className="start-audit-btn" onClick={() => navigate("/ss")}>
+              My Branch Audits
+            </Button>
           </div>
-        ) : (
-          <p>No branch assigned.</p>
-        )}
+        </div>
+
+        {/* Right Image */}
+        <div className="auditor-image-container">
+          <img src={auditImage} alt="Audit Process" className="auditor-image" />
+        </div>
       </div>
+      
+
       <ToastContainer />
     </div>
   );

@@ -13,74 +13,74 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-
+    setLoading(true); // Start loading
+  
     try {
-      // 🔐 Firebase Authentication
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+  
       if (!user.emailVerified) {
         setError("Please verify your email before logging in.");
         toast.error("Please verify your email.");
+        setLoading(false);
         return;
       }
-
-      // 🔍 Check if user exists in "users" collection
+  
       const userDoc = await getDoc(doc(db, "users", user.uid));
-
+  
       if (userDoc.exists()) {
         const userData = userDoc.data();
   
         if (userData.role === "admin") {
           navigate("/adminhome");
           toast.success("Welcome, Admin!");
-          return;
         } else if (userData.role === "auditor") {
           navigate("/auditorhome");
           toast.success("Welcome, Auditor!");
-          return;
         } else {
           navigate("/home");
           toast.success("Login successful!");
-          return;
         }
+        setLoading(false);
+        return;
       }
-
-      // 🔍 Check if user is a Sub-User under any branch
+  
+      // Check if user is a Sub-User under any branch
       const usersCollection = await getDocs(collection(db, "users"));
-
+  
       for (const userDoc of usersCollection.docs) {
         const branchesCollection = collection(db, `users/${userDoc.id}/branches`);
         const branchesSnapshot = await getDocs(branchesCollection);
-
+  
         for (const branchDoc of branchesSnapshot.docs) {
           const subUsersRef = collection(db, `users/${userDoc.id}/branches/${branchDoc.id}/subUsers`);
           const subUserQuery = query(subUsersRef, where("email", "==", email));
           const subUserSnapshot = await getDocs(subUserQuery);
-
+  
           if (!subUserSnapshot.empty) {
             navigate("/subuserform");
             toast.success("Welcome, Sub-User!");
+            setLoading(false);
             return;
           }
         }
       }
-
-      // ❌ User Not Found
+  
       setError("User data not found.");
       toast.error("User data not found.");
-      
     } catch (err) {
       setError("Invalid email or password.");
       toast.error("Invalid email or password.");
     }
+  
+    setLoading(false); // Stop loading
   };
-
   return (
     <div>
       <Navbar/>
@@ -107,9 +107,10 @@ const Login = () => {
             required
             className="input-field"
           />
-          <button type="submit" className="login-button">
-            Login
-          </button>
+        <button type="submit" className="login-button" disabled={loading}>
+  {loading ? "Logging in..." : "Login"}
+</button>
+
           {error && <p className="error-message">{error}</p>}
           <p className="register-message">
             Don't have an account? <a href="/register">Register here</a>

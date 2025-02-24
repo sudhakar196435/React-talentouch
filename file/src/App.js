@@ -37,6 +37,7 @@ import AuditorActs from "./Components/AuditorActs";
 import AuditQuestions from "./Components/AuditQuestions";
 import Submissions from "./Components/Submissions";
 import AuditorSubmissions from "./Components/AuditorSubmission";
+import SubUserSubmission from "./Components/SubUserSubmission";
 
 const App = () => {
   return (
@@ -87,6 +88,8 @@ const App = () => {
         <Route path="/audit-act/:userId/:branchId/:actId" element={<AuditQuestions />} />
         <Route path="/submissions/:uid/:branchId/:submissionId" element={<Submissions/>}/>
         <Route path="/AuditorSubmissions" element={<AuditorSubmissions />} />
+        <Route path="/ss" element={<SubUserSubmission />} />
+       
         </Routes>
       </div>
     </Router>
