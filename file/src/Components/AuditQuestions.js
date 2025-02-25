@@ -82,6 +82,8 @@ const AuditQuestions = () => {
           text: doc.data().text || "No text available",
           registerForm: doc.data().registerForm || "N/A",
           timeLimit: doc.data().timeLimit || "N/A",
+          risk: doc.data().risk || "N/A",  // Fetching Risk
+        type: doc.data().type || "N/A",  // Fetching Type
         });
       });
 
@@ -181,6 +183,7 @@ const AuditQuestions = () => {
           questionId: question.id,
           status: selectedStatus.get(question.id) || "Not Provided",
           remarks: remarks.get(question.id) || "No remarks",
+          
         })),
       };
   
@@ -274,6 +277,8 @@ const AuditQuestions = () => {
                     <th className="question-column-header">Question</th>
                     <th className="question-column-header">Register or Form</th>
                     <th className="question-column-header">Time Limit</th>
+                    <th className="question-column-header">Risk</th>
+                    <th className="question-column-header">Type</th>
                     <th className="status-column-header">Status</th>
                     <th className="remarks-column-header">Remarks</th>
                   </tr>
@@ -285,6 +290,8 @@ const AuditQuestions = () => {
                       <td className="question-text">{question.text}</td>
                       <td className="question-text">{question.registerForm}</td>
                       <td className="question-text">{question.timeLimit}</td>
+                      <td className="question-text">{question.risk}</td>
+                      <td className="question-text">{question.type}</td>
                       <td className="status-cell">
                         <select
                           value={selectedStatus.get(question.id) || ""}
