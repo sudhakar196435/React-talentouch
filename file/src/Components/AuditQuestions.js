@@ -12,7 +12,7 @@ import { Alert, Empty, Result, Button } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AuditorNav from "./AuditorNav";
-
+import '../Styles/UserDetail.css'
 const AuditQuestions = () => {
   const { userId, branchId, actId } = useParams(); // Extract IDs from URL
   const navigate = useNavigate();
@@ -270,28 +270,28 @@ const AuditQuestions = () => {
             <Empty description="No questions available" className="empty-state" />
           ) : (
             <>
-              <table className="audit-questions-table">
+              <table className="acts-table">
                 <thead>
                   <tr>
-                    <th className="sno-column-header">S.No</th>
-                    <th className="question-column-header">Question</th>
-                    <th className="question-column-header">Register or Form</th>
-                    <th className="question-column-header">Time Limit</th>
-                    <th className="question-column-header">Risk</th>
-                    <th className="question-column-header">Type</th>
-                    <th className="status-column-header">Status</th>
-                    <th className="remarks-column-header">Remarks</th>
+                    <th>S.No</th>
+                    <th>Question</th>
+                    <th>Register or Form</th>
+                    <th>Time Limit</th>
+                    <th>Risk</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredQuestions.map((question, index) => (
                     <tr key={question.id}>
                       <td className="sno-cell">{index + 1}</td>
-                      <td className="question-text">{question.text}</td>
-                      <td className="question-text">{question.registerForm}</td>
-                      <td className="question-text">{question.timeLimit}</td>
-                      <td className="question-text">{question.risk}</td>
-                      <td className="question-text">{question.type}</td>
+                      <td>{question.text}</td>
+                      <td>{question.registerForm}</td>
+                      <td>{question.timeLimit}</td>
+                      <td>{question.risk}</td>
+                      <td>{question.type}</td>
                       <td className="status-cell">
                         <select
                           value={selectedStatus.get(question.id) || ""}
@@ -308,7 +308,7 @@ const AuditQuestions = () => {
                           <option value="Not Applicable">Not Applicable</option>
                         </select>
                       </td>
-                      <td className="remarks-cell">
+                      <td className="status-cell">
                         <textarea
                           value={remarks.get(question.id) || ""}
                           onChange={(e) =>
@@ -316,7 +316,7 @@ const AuditQuestions = () => {
                           }
                           placeholder="Add remarks"
                           className="remarks-textarea"
-                          rows={2}
+                          rows={3}
                           disabled={alreadySubmitted}
                         />
                       </td>

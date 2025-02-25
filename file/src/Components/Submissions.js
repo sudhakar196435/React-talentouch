@@ -139,7 +139,7 @@ const Submissions = () => {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <table className="questions-table">
+          <table className="acts-table">
             <thead>
               <tr>
                 <th>S.No</th>

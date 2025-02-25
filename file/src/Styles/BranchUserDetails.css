@@ -1,0 +1,70 @@
+/* Background and Layout */
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+
+/* Table Styling */
+.profile-table {
+  font-size: 16px;
+}
+
+/* Table Cells */
+.profile-table .ant-descriptions-item-label {
+  font-weight: bold;
+  background-color: #e6f0ff;
+  color: #333;
+  padding: 12px;
+  word-wrap: break-word;
+}
+
+.profile-table .ant-descriptions-item-content {
+  background-color: #ffffff;
+  padding: 12px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Error Alert */
+.error-alert {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Loading Spinner */
+.loading-container1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* 🔥 RESPONSIVE TABLE FIX */
+@media (max-width: 768px) {
+  .profile-card {
+    width: 95%;
+  }
+  .profile-card .ant-card-head {
+    font-size: 18px;
+    padding: 12px;
+  }
+  .profile-table {
+    font-size: 14px;
+  }
+  
+  /* Make Table Display as a Block for Small Screens */
+  .profile-table .ant-descriptions-view {
+    display: block !important;
+  }
+  
+  .profile-table .ant-descriptions-item-label,
+  .profile-table .ant-descriptions-item-content {
+    display: block !important;
+    width: 100%;
+    padding: 10px;
+    text-align: left !important;
+  }
+}

@@ -189,3 +189,51 @@
 }
 
 
+/* Status Dropdown Styles */
+.status-cell {
+  position: relative;
+  min-width: 180px; /* Ensures enough space for full text */
+}
+
+.status-dropdown {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis; /* Ensures text doesn't overflow */
+}
+
+/* Ensures dropdown width expands if needed */
+.status-dropdown:focus {
+  border-color: #4A90E2;
+  outline: none;
+}
+
+/* Disable styling */
+.status-dropdown:disabled {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+/* Dropdown Options */
+.status-dropdown option {
+  padding: 10px;
+  font-size: 14px;
+  background-color: #ffffff;
+  white-space: normal; /* Allows full text to wrap */
+}
+
+/* Hover effect */
+.status-dropdown:hover {
+  border-color: #4A90E2;
+  transition: 0.3s;
+}

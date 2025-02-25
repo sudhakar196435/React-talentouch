@@ -122,6 +122,16 @@ const UserDetail = () => {
           <Descriptions.Item label="Company Name">{user.companyName}</Descriptions.Item>
           <Descriptions.Item label="Company Address">{user.companyAddress}</Descriptions.Item>
           <Descriptions.Item label="Industry Type">{user.industryType}</Descriptions.Item>
+          <Descriptions.Item label="coordinatorName">{user.coordinatorName}</Descriptions.Item>
+          <Descriptions.Item label="directorName">{user.directorName}</Descriptions.Item>
+          <Descriptions.Item label="hazardous">{user.hazardous}</Descriptions.Item>
+          <Descriptions.Item label="hpAndManPower">{user.hpAndManPower}</Descriptions.Item>
+          <Descriptions.Item label="industryType">{user.industryType}</Descriptions.Item>
+          <Descriptions.Item label="licenseNo">{user.licenseNo}</Descriptions.Item>
+          <Descriptions.Item label="medicalAdvisorName">{user.medicalAdvisorName}</Descriptions.Item>
+          <Descriptions.Item label="occupierName">{user.occupierName}</Descriptions.Item>
+          <Descriptions.Item label="safetyOfficerName">{user.safetyOfficerName}</Descriptions.Item>
+          <Descriptions.Item label="welfareOfficerName">{user.welfareOfficerName}</Descriptions.Item>
         </Descriptions>
 
         <h3>Assign User Role</h3>

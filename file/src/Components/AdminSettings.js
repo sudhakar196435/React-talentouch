@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../Styles/Adminsettings.css'; // Import your CSS for styling
-import { Spin } from 'antd';
+import { Spin,Descriptions } from 'antd';
 import AdminNav from './AdminNav';
 import Adminsidebar from './Adminsidebar';
 
@@ -66,11 +66,23 @@ const AdminSettings = () => {
           <h2 className="admin-home-title">My Account</h2>
         
           {userData ? (
-            <div className="admin-info">
-              <p><strong>Name:</strong> {userData.fullName}</p>
-              <p><strong>Email:</strong> {userData.email}</p>
-              <p><strong>Phone Number:</strong> {userData.mobileNumber}</p>
-            </div>
+             <div className="admin-info">
+             <Descriptions bordered column={2} className="profile-table">
+               <Descriptions.Item label="Email">{userData.email}</Descriptions.Item>
+               <Descriptions.Item label="Company Name">{userData.companyName}</Descriptions.Item>
+               <Descriptions.Item label="Company Address">{userData.companyAddress}</Descriptions.Item>
+               <Descriptions.Item label="Industry Type">{userData.industryType}</Descriptions.Item>
+               <Descriptions.Item label="Coordinator Name">{userData.coordinatorName}</Descriptions.Item>
+               <Descriptions.Item label="Director Name">{userData.directorName}</Descriptions.Item>
+               <Descriptions.Item label="Hazardous">{userData.hazardous}</Descriptions.Item>
+               <Descriptions.Item label="HP & Man Power">{userData.hpAndManPower}</Descriptions.Item>
+               <Descriptions.Item label="License No">{userData.licenseNo}</Descriptions.Item>
+               <Descriptions.Item label="Medical Advisor Name">{userData.medicalAdvisorName}</Descriptions.Item>
+               <Descriptions.Item label="Occupier Name">{userData.occupierName}</Descriptions.Item>
+               <Descriptions.Item label="Safety Officer Name">{userData.safetyOfficerName}</Descriptions.Item>
+               <Descriptions.Item label="Welfare Officer Name">{userData.welfareOfficerName}</Descriptions.Item>
+             </Descriptions>
+           </div>
           ) : (
             <p>Loading user data...</p>
           )}

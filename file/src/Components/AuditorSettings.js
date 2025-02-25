@@ -1,81 +1,91 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../Styles/Adminsettings.css'; // Import your CSS for styling
-import { Spin } from 'antd';
-
-import { auth, db } from '../firebase'; // Assuming auth and db are properly initialized
+import '../Styles/Adminsettings.css'; // Import CSS for styling
+import { Spin, Descriptions } from 'antd';
+import { auth, db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import AuditorNav from './AuditorNav';
 import Auditorsidebar from './Auditorsidebar';
 
 const AuditorSettings = () => {
-  const [userData, setUserData] = useState(null); // State to store user data
-  const [loading, setLoading] = useState(true); // State to track loading status
-  const navigate = useNavigate(); // Hook for navigation
+  const [userData, setUserData] = useState(null); // Store user data
+  const [loading, setLoading] = useState(true); // Track loading state
+  const navigate = useNavigate(); // React Router navigation hook
 
-  // Fetch user data from Firestore
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (!user) {
-        // If there is no logged-in user, redirect to login page
-        navigate('/login');
+        navigate('/login'); // Redirect if no user is logged in
         return;
       }
 
-      // Fetch user data from Firestore if user is authenticated
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
+      try {
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
 
-      if (userSnap.exists()) {
-        const userData = userSnap.data();
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          
+          // Redirect if not an auditor
+          if (userData.role !== 'auditor') {
+            navigate('/login');
+            return;
+          }
 
-        // Check if user has the "admin" role
-        if (userData.role !== 'auditor') {
-          // If the user is not an admin, redirect to login page
+          setUserData(userData);
+        } else {
+          console.log("No such document!");
           navigate('/login');
-          return;
         }
-
-        setUserData(userData);
-      } else {
-        console.log("No such document!");
+      } catch (error) {
+        console.error("Error fetching user data:", error);
         navigate('/login');
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     });
 
-    // Cleanup the listener on component unmount
+    // Cleanup listener on component unmount
     return () => unsubscribe();
-  }, [navigate]); // Dependency on navigate to update when navigation changes
+  }, [navigate]);
 
   if (loading) {
-    return    <div className="loading-container">
-    <Spin size="large" />
-  </div>;
+    return (
+      <div className="loading-container">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (
     <div>
-      <AuditorNav/>
+      <AuditorNav />
       <div className="setting-container">
-      <Auditorsidebar/>
-
-        {/* Main content */}
+        <Auditorsidebar />
         <div className="setting-content">
           <h2 className="admin-home-title">My Account</h2>
-        
+
           {userData ? (
             <div className="admin-info">
-              <p><strong>Name:</strong> {userData.fullName}</p>
-              <p><strong>Email:</strong> {userData.email}</p>
-              <p><strong>Phone Number:</strong> {userData.mobileNumber}</p>
+              <Descriptions bordered column={2} className="profile-table">
+                <Descriptions.Item label="Email">{userData.email}</Descriptions.Item>
+                <Descriptions.Item label="Company Name">{userData.companyName}</Descriptions.Item>
+                <Descriptions.Item label="Company Address">{userData.companyAddress}</Descriptions.Item>
+                <Descriptions.Item label="Industry Type">{userData.industryType}</Descriptions.Item>
+                <Descriptions.Item label="Coordinator Name">{userData.coordinatorName}</Descriptions.Item>
+                <Descriptions.Item label="Director Name">{userData.directorName}</Descriptions.Item>
+                <Descriptions.Item label="Hazardous">{userData.hazardous}</Descriptions.Item>
+                <Descriptions.Item label="HP & Man Power">{userData.hpAndManPower}</Descriptions.Item>
+                <Descriptions.Item label="License No">{userData.licenseNo}</Descriptions.Item>
+                <Descriptions.Item label="Medical Advisor Name">{userData.medicalAdvisorName}</Descriptions.Item>
+                <Descriptions.Item label="Occupier Name">{userData.occupierName}</Descriptions.Item>
+                <Descriptions.Item label="Safety Officer Name">{userData.safetyOfficerName}</Descriptions.Item>
+                <Descriptions.Item label="Welfare Officer Name">{userData.welfareOfficerName}</Descriptions.Item>
+              </Descriptions>
             </div>
           ) : (
             <p>Loading user data...</p>
           )}
-
-          
         </div>
       </div>
     </div>

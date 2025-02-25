@@ -2,7 +2,6 @@ import React from 'react';
 import { Menu, Button } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  DashboardOutlined,
   UserOutlined,
   FileTextOutlined,
   HistoryOutlined,
@@ -22,11 +21,7 @@ const items = [
   {
     type: 'divider',
   },
-  {
-    key: 'dashboard',
-    icon: <DashboardOutlined />,
-    label: <Link to="/auditor/dashboard">Dashboard</Link>,
-  },
+  
   {
     key: 'myAccount',
     icon: <UserOutlined />,

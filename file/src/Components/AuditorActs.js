@@ -127,15 +127,25 @@ const AuditorActs = () => {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
-        <Button
-          type={selectedBranch?.id === record.id ? 'default' : 'primary'}
-          onClick={() => fetchActs(record)}
-        >
-          {selectedBranch?.id === record.id ? 'Hide Acts' : 'View Acts'}
-        </Button>
+        <>
+          <Button
+            type={selectedBranch?.id === record.id ? 'default' : 'primary'}
+            onClick={() => fetchActs(record)}
+            style={{ marginRight: '10px' }}
+          >
+            {selectedBranch?.id === record.id ? 'Hide Acts' : 'View Acts'}
+          </Button>
+          <Button
+            type="default"
+            onClick={() => navigate(`/branch-user/${record.userId}`, { state: { userId: record.userId } })}
+          >
+            View Company Details
+          </Button>
+        </>
       ),
     },
   ];
+  
 
   const actColumns = [
     { title: 'Act Name', dataIndex: 'name', key: 'name' },
