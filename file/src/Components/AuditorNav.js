@@ -39,6 +39,7 @@ const AuditorNav = () => {
         <ul className={`nav-links ${isMobile ? 'active' : ''}`}>
           <li><Link to="/AuditorHome" className="nav-link">Home</Link></li>
           <li><Link to="/AuditorSettings" className="nav-link">Menu</Link></li>
+          <li><Link to="/Submissions" className="nav-link">Submissions</Link></li>
           <li>
             {/* Logout Button */}
             <button className="log-out" onClick={handleLogout}>
