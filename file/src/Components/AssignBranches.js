@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Table, Checkbox, Button, Spin, message, Result } from "antd";
 import AdminNav from "./AdminNav";
-import { useNavigate } from "react-router-dom";
+
 const AssignBranches = () => {
   const { auditorId } = useParams();
   const [branches, setBranches] = useState([]);
@@ -12,35 +12,40 @@ const AssignBranches = () => {
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const usersCollection = await getDocs(collection(db, "users"));
+        // Fetch branches from all users.
+        const usersSnapshot = await getDocs(collection(db, "users"));
         let allBranches = [];
-
-        for (const userDoc of usersCollection.docs) {
-          const branchesCollection = collection(db, `users/${userDoc.id}/branches`);
-          const branchesSnapshot = await getDocs(branchesCollection);
-
+        for (const userDoc of usersSnapshot.docs) {
+          const branchesSnapshot = await getDocs(collection(db, `users/${userDoc.id}/branches`));
           branchesSnapshot.docs.forEach((branchDoc) => {
-            allBranches.push({
-              id: branchDoc.id,
-              name: branchDoc.data().branchName, // Assuming branches have a "branchName" field
-              ownerId: userDoc.id,
-            });
+            // Each branch is identified by its document ID.
+            if (branchDoc.data().branchName) {
+              allBranches.push({
+                id: branchDoc.id,
+                name: branchDoc.data().branchName,
+                ownerId: userDoc.id,
+              });
+            }
           });
         }
+        // Remove duplicates based on branch id (if any)
+        const uniqueBranches = Array.from(new Map(allBranches.map(item => [item.id, item])).values());
+        setBranches(uniqueBranches);
 
-        setBranches(allBranches);
-
-        // Fetch already assigned branches for this auditor
-        const assignedBranchesCollection = collection(db, `users/${auditorId}/assignedBranches`);
-        const assignedBranchesSnapshot = await getDocs(assignedBranchesCollection);
-        const assignedBranchIds = assignedBranchesSnapshot.docs.map((doc) => doc.id);
-
+        // Fetch already assigned branches for this auditor.
+        const assignedSnapshot = await getDocs(collection(db, `users/${auditorId}/assignedBranches`));
+        // Expect that we always store the branch ID in a field called "branchId".
+        const assignedBranchIds = assignedSnapshot.docs
+          .map(doc => doc.data().branchId)
+          .filter(id => id);
         setSelectedBranches(assignedBranchIds);
       } catch (error) {
         message.error("Error fetching branches");
+        console.error("Fetch error:", error);
       }
       setLoading(false);
     };
@@ -49,41 +54,42 @@ const AssignBranches = () => {
   }, [auditorId]);
 
   const handleCheckboxChange = (branchId) => {
-    setSelectedBranches((prev) =>
+    setSelectedBranches(prev =>
       prev.includes(branchId)
-        ? prev.filter((id) => id !== branchId) // Remove if unchecked
-        : [...prev, branchId] // Add if checked
+        ? prev.filter(id => id !== branchId)
+        : [...prev, branchId]
     );
   };
 
   const handleSave = async () => {
     try {
-      const assignedBranchesCollection = collection(db, `users/${auditorId}/assignedBranches`);
+      const assignedCollection = collection(db, `users/${auditorId}/assignedBranches`);
+      const existingSnapshot = await getDocs(assignedCollection);
+      const existingBranchIds = existingSnapshot.docs
+        .map(doc => doc.data().branchId)
+        .filter(id => id);
 
-      // Get the current assigned branches from Firestore
-      const existingDocs = await getDocs(assignedBranchesCollection);
-      const existingBranchIds = existingDocs.docs.map((doc) => doc.id);
+      // Determine which branches to add and which to remove.
+      const branchesToAdd = selectedBranches.filter(id => !existingBranchIds.includes(id));
+      const branchesToRemove = existingBranchIds.filter(id => !selectedBranches.includes(id));
 
-      // Determine which branches to add and remove
-      const branchesToAdd = selectedBranches.filter((id) => !existingBranchIds.includes(id));
-      const branchesToRemove = existingBranchIds.filter((id) => !selectedBranches.includes(id));
-
-      // Add new assigned branches
+      // Add new assignments.
       for (const branchId of branchesToAdd) {
         const branchRef = doc(db, `users/${auditorId}/assignedBranches`, branchId);
-        await setDoc(branchRef, { branchId }); // Store branchId as a field
+        await setDoc(branchRef, { branchId });
       }
 
-      // Remove unassigned branches
+      // Remove unassigned branches.
       for (const branchId of branchesToRemove) {
         const branchRef = doc(db, `users/${auditorId}/assignedBranches`, branchId);
         await deleteDoc(branchRef);
       }
 
       message.success("Branches assigned successfully");
-      setIsSaved(true); // Show success message instead of table
+      setIsSaved(true);
     } catch (error) {
       message.error("Error assigning branches");
+      console.error("Assignment error:", error);
     }
   };
 
@@ -106,9 +112,11 @@ const AssignBranches = () => {
   ];
 
   if (loading) {
-    return <div className="loading-container">
-          <Spin size="large" />
-        </div> 
+    return (
+      <div className="loading-container">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (
@@ -117,20 +125,19 @@ const AssignBranches = () => {
       <div className="user-detail-container">
         {isSaved ? (
           <Result
-          status="success"
-          title="Branches Assigned Successfully!"
-          subTitle={
-            selectedBranches.length > 1
-              ? `Great job! You have successfully assigned ${selectedBranches.length} branches to the auditor.`
-              : "Your changes have been saved."
-          }
-          extra={[
-            <Button type="primary" key="back" onClick={() => navigate(`/aud`)}>
-              Done
-            </Button>,
-          ]}
-        />
-        
+            status="success"
+            title="Branches Assigned Successfully!"
+            subTitle={
+              selectedBranches.length > 1
+                ? `Great job! You have successfully assigned ${selectedBranches.length} branches to the auditor.`
+                : "Your changes have been saved."
+            }
+            extra={[
+              <Button type="primary" key="back" onClick={() => navigate(`/aud`)}>
+                Done
+              </Button>,
+            ]}
+          />
         ) : (
           <>
             <h1 className="admin-home-title">Assign Branches</h1>
