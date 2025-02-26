@@ -24,9 +24,9 @@ const items = [
   
   {
     key: 'myAccount',
-    icon: <UserOutlined />,
-    label: <Link to="/AuditorSettings">My Account</Link>,
-  },
+    icon: <UserOutlined style={{ color: 'blue' }} />, // Icon color
+    label: <Link to="/AuditorSettings" style={{ color: 'blue' }}>My Account</Link>, // Text color
+  },  
   {
     key: 'myBranches',
     icon: <FileTextOutlined />,

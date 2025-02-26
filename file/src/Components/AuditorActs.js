@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Skeleton, Alert, Spin } from 'antd';
+import { Table, Button, Skeleton, Alert, Modal, Breadcrumb } from 'antd';
+import { HomeOutlined, BankOutlined } from '@ant-design/icons';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import AuditorNav from './AuditorNav';
 
@@ -13,28 +14,17 @@ const AuditorActs = () => {
   const [error, setError] = useState(null);
   const [acts, setActs] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState(null);
+  const [actsLoading, setActsLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const navigate = useNavigate();
   const auth = getAuth();
   const db = getFirestore();
 
-  useEffect(() => {
-    fetchBranches();
-  }, []);
-
-  const fetchBranches = async () => {
+  const fetchBranches = useCallback(async (userId) => {
     setLoading(true);
     try {
-      if (!auth.currentUser) {
-        throw new Error('No authenticated user found.');
-      }
-
-      const auditorRef = doc(db, 'users', auth.currentUser.uid);
-      const auditorSnap = await getDoc(auditorRef);
-
-      if (!auditorSnap.exists()) {
-        throw new Error('Auditor not found in database.');
-      }
-
+      const auditorRef = doc(db, 'users', userId);
       const assignedBranchesRef = collection(auditorRef, 'assignedBranches');
       const assignedBranchesSnap = await getDocs(assignedBranchesRef);
 
@@ -74,27 +64,46 @@ const AuditorActs = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [db]);
 
-  const fetchActs = async (branch) => {
-    if (selectedBranch?.id === branch.id) {
-      setSelectedBranch(null);
-      setActs([]);
-      return;
-    }
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        navigate('/login');
+        return;
+      }
 
-    if (branch.actIds.length === 0) {
-      toast.warn('No acts assigned to this branch.');
-      setSelectedBranch(branch);
-      setActs([]);
-      return;
-    }
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
 
-    setLoading(true);
-    setActs([]);
+        if (userSnap.exists() && userSnap.data().role === 'auditor') {
+          fetchBranches(user.uid);
+        } else {
+          navigate('/login');
+        }
+      } catch (err) {
+        console.error('Error fetching user role:', err);
+        navigate('/login');
+      }
+    });
+
+    return () => unsubscribe();
+  }, [auth, db, navigate, fetchBranches]);
+
+  const fetchActs = useCallback(async (branch) => {
+    setActsLoading(true);
     setSelectedBranch(branch);
+    setIsModalVisible(true);
 
     try {
+      if (branch.actIds.length === 0) {
+        toast.warn('No acts assigned to this branch.');
+        setActs([]);
+        setActsLoading(false);
+        return;
+      }
+
       let actDetails = [];
       for (const actId of branch.actIds) {
         const actRef = doc(db, 'acts', actId);
@@ -116,9 +125,9 @@ const AuditorActs = () => {
       console.error('❌ Error fetching acts:', error);
       toast.error('Failed to load acts.');
     } finally {
-      setLoading(false);
+      setActsLoading(false);
     }
-  };
+  }, [db]);
 
   const branchColumns = [
     { title: 'Branch Name', dataIndex: 'name', key: 'name' },
@@ -129,11 +138,11 @@ const AuditorActs = () => {
       render: (_, record) => (
         <>
           <Button
-            type={selectedBranch?.id === record.id ? 'default' : 'primary'}
+            type="primary"
             onClick={() => fetchActs(record)}
             style={{ marginRight: '10px' }}
           >
-            {selectedBranch?.id === record.id ? 'Hide Acts' : 'View Acts'}
+            View Acts
           </Button>
           <Button
             type="default"
@@ -145,11 +154,11 @@ const AuditorActs = () => {
       ),
     },
   ];
-  
 
   const actColumns = [
-    { title: 'Act Name', dataIndex: 'name', key: 'name' },
     { title: 'Act Code', dataIndex: 'code', key: 'code' },
+    { title: 'Act Name', dataIndex: 'name', key: 'name' },
+   
     {
       title: "Audit",
       key: "audit",
@@ -162,27 +171,42 @@ const AuditorActs = () => {
         </Button>
       ),
     },
-    
   ];
 
   return (
     <div>
-     <AuditorNav/>
+      <AuditorNav />
       <div className="admin-container">
         <h1 className="admin-home-title">Assigned Branches</h1>
+
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb style={{ marginBottom: '20px' }}>
+          <Breadcrumb.Item href="/AuditorHome">
+            <HomeOutlined /> Home
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <BankOutlined /> Assigned Branches
+          </Breadcrumb.Item>
+        </Breadcrumb>
+
         {loading ? (
           <Skeleton active />
         ) : error ? (
           <Alert message={error} type="error" />
         ) : (
-          <Table dataSource={branches} columns={branchColumns} rowKey="id" />
+          <Table dataSource={branches} columns={branchColumns} rowKey="id" pagination={{ position: ['bottomCenter'] }}/>
         )}
-        {selectedBranch && (
-          <div>
-            <h2>Acts for {selectedBranch.name}</h2>
-            {loading ? <Spin size="large" /> : <Table dataSource={acts} columns={actColumns} rowKey="id" />}
-          </div>
-        )}
+
+        {/* Acts Modal */}
+        <Modal
+          title={`Acts for ${selectedBranch?.name}`}
+          visible={isModalVisible}
+          onCancel={() => setIsModalVisible(false)}
+          footer={null}
+          width={1200}
+        >
+          {actsLoading ? <Skeleton active /> : <Table dataSource={acts} columns={actColumns} rowKey="id" pagination={{ position: ['bottomCenter'] }} />}
+        </Modal>
       </div>
       <ToastContainer />
     </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
 import { doc, onSnapshot } from "firebase/firestore";
-import { Spin, Button } from "antd";
+import { Skeleton, Button } from "antd";
 import "../Styles/AuditorHome.css"; // New CSS
 import AuditorNav from "./AuditorNav";
 import auditImage from "../Assets/image.png";
@@ -51,42 +51,34 @@ const AuditorHome = () => {
     };
   }, [navigate]);
 
-  if (loading) {
-    return (
-      <div className="auditor-loading">
-        <Spin size="large" />
-      </div>
-    );
-  }
-
   return (
     <div>
       <AuditorNav />
       <div className="auditor-home">
         {/* Left Content */}
         <div className="auditor-info">
-        <h1 className="auditor-heading">Welcome, {fullName || "Auditor"}!</h1>
-
-        <p className="auditor-description">
-  Easily manage your audit tasks with a user-friendly dashboard.  
-  View detailed reports, analyze key data, and track performance.  
-  Stay organized and make informed decisions with real-time insights.  
-</p>
-
-         
-          <div className="auditor-buttons">
-            <Button type="primary" className="start-audit-btn" onClick={() => navigate("/auditorviewacts")}>
-              View Branches
-            </Button>
-          </div>
+          {loading ? (
+            <Skeleton active paragraph={{ rows: 3 }} />
+          ) : (
+            <>
+              <h1 className="auditor-heading">Welcome, {fullName || "Auditor"}!</h1>
+              <p className="auditor-description">
+                Easily manage your audit tasks with a user-friendly dashboard. View detailed reports, analyze key data, and track performance. Stay organized and make informed decisions with real-time insights.
+              </p>
+              <div className="auditor-buttons">
+                <Button type="primary" className="start-audit-btn" onClick={() => navigate("/auditorviewacts")}>
+                  View Branches
+                </Button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Right Image */}
         <div className="auditor-image-container">
-          <img src={auditImage} alt="Audit Process" className="auditor-image" />
+          {loading ? <Skeleton.Image style={{ width: 300, height: 200 }} /> : <img src={auditImage} alt="Audit Process" className="auditor-image" />}
         </div>
       </div>
-     
     </div>
   );
 };

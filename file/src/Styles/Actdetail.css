@@ -1,8 +1,8 @@
 /* Overall page layout */
 .admin-home-container {
   padding: 20px;
-  background-color: rgb(247, 255, 255);
-  height: 100vh;
+  
+  
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 

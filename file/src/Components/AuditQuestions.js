@@ -8,11 +8,13 @@ import {
   getDoc,
   setDoc,
 } from "firebase/firestore";
-import { Alert, Empty, Result, Button } from "antd";
+import { Alert, Empty, Result, Button,Breadcrumb } from "antd";
+
+import { HomeOutlined, AuditOutlined,BankOutlined } from '@ant-design/icons';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AuditorNav from "./AuditorNav";
-import '../Styles/UserDetail.css'
+import '../Styles/AuditQuestions.css'
 const AuditQuestions = () => {
   const { userId, branchId, actId } = useParams(); // Extract IDs from URL
   const navigate = useNavigate();
@@ -219,10 +221,10 @@ const AuditQuestions = () => {
         title="Audit Submitted Successfully!"
         subTitle="Your answers have been submitted successfully. Thank you for completing the audit."
         extra={[
-          <Button type="primary" key="view" onClick={() => navigate("/myaudit")}>
+          <Button type="primary" key="view" onClick={() => navigate("/auditorsubmissions")}>
             View Details
           </Button>,
-          <Button key="back" onClick={() => navigate("/home")}>
+          <Button key="back" onClick={() => navigate("/AuditorHome")}>
             Back to Home
           </Button>,
         ]}
@@ -234,6 +236,18 @@ const AuditQuestions = () => {
       <AuditorNav />
       <div className="user-audit-wrapper">
         <h1 className="admin-home-title">Audit Questions for Act</h1>
+             {/* Breadcrumb Navigation */}
+             <Breadcrumb style={{ marginBottom: '20px' }}>
+          <Breadcrumb.Item href="/AuditorHome">
+            <HomeOutlined /> Home
+          </Breadcrumb.Item>
+          <Breadcrumb.Item href="/auditorviewacts">
+            <BankOutlined   /> Assigned Branches
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <AuditOutlined /> Audit
+          </Breadcrumb.Item>
+        </Breadcrumb>
 
         {/* Display Act Details */}
         <div className="act-details-container">
@@ -329,13 +343,13 @@ const AuditQuestions = () => {
                 <div className="action-buttons">
                   <button
                     onClick={handleSaveAudit}
-                    className="save-audit-button"
+                    className="save-audit-btn"
                   >
                     Save
                   </button>
                   <button
                     onClick={handleSubmitAudit}
-                    className="submit-audit-button"
+                    className="submit-audit-btn"
                   >
                     Submit Audit
                   </button>

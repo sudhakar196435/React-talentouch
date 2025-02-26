@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Styles/Adminsettings.css'; // Import CSS for styling
-import { Spin, Descriptions } from 'antd';
+import { Skeleton, Descriptions } from 'antd';
 import { auth, db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import AuditorNav from './AuditorNav';
@@ -49,14 +49,6 @@ const AuditorSettings = () => {
     return () => unsubscribe();
   }, [navigate]);
 
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <Spin size="large" />
-      </div>
-    );
-  }
-
   return (
     <div>
       <AuditorNav />
@@ -65,7 +57,9 @@ const AuditorSettings = () => {
         <div className="setting-content">
           <h2 className="admin-home-title">My Account</h2>
 
-          {userData ? (
+          {loading ? (
+            <Skeleton active paragraph={{ rows: 6 }} />
+          ) : userData ? (
             <div className="admin-info">
               <Descriptions bordered column={2} className="profile-table">
                 <Descriptions.Item label="Email">{userData.email}</Descriptions.Item>
@@ -84,7 +78,7 @@ const AuditorSettings = () => {
               </Descriptions>
             </div>
           ) : (
-            <p>Loading user data...</p>
+            <p>No user data found.</p>
           )}
         </div>
       </div>
