@@ -1,0 +1,49 @@
+/* SubmissionsView.css */
+.admin-home-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+  }
+  
+  .admin-home-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .ant-select {
+    margin-right: 20px;
+  }
+  
+  .ant-table {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .ant-table-thead > tr > th {
+    background-color: #fafafa;
+    font-weight: bold;
+  }
+  
+  .ant-btn-primary {
+    background-color: #1890ff;
+    border-color: #1890ff;
+  }
+  
+  .ant-btn-primary:hover {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+  }
+  
+  .empty-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+  }
+  
+  .skeleton-loader {
+    padding: 20px;
+  }
+  
