@@ -1,0 +1,61 @@
+.submissions-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .submissions-header {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .submission-timestamp {
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  
+  .submission-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .submission-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #f9f9f9;
+    border-left: 5px solid #4CAF50;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .submission-item:nth-child(even) {
+    border-left-color: #2196F3;
+  }
+  
+  .submission-item p {
+    margin: 5px 0;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .submission-item strong {
+    color: #222;
+    font-weight: 600;
+  }
+  
+  .no-answers {
+    text-align: center;
+    font-size: 18px;
+    color: #777;
+    margin-top: 20px;
+  }
+  
