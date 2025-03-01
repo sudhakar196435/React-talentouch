@@ -88,13 +88,13 @@ const App = () => {
         <Route path="/AuditorSettings" element={<AuditorSettings />} />
         <Route path="/AccessDenied" element={<Unauthorized />} />
         <Route path="/auditorviewacts" element={<AuditorActs/>}/>
-        <Route path="/audit-act/:userId/:branchId/:actId" element={<AuditQuestions />} />
-        <Route path="/submissions/:uid/:branchId/:submissionId" element={<Submissions/>}/>
+        <Route path="/audit-acts/:userId/:branchId" element={<AuditQuestions />} />
+        <Route path="/submissions/:uid/:branchId/:submissionId" element={<Submissions />} />
         <Route path="/AuditorSubmissions" element={<AuditorSubmissions />} />
         <Route path="/ss" element={<SubUserSubmission />} />
         <Route path="/branch-compliance/:userId/:branchId" element={<BranchCompliance />} />
         <Route path="/branch-user/:userId" element={<BranchUserDetails />} />
-       <Route path="/submissionsview" element={<SubmissionsView/>}/>
+        <Route path="/submissionsview" element={<SubmissionsView/>}/>
         </Routes>
       </div>
     </Router>

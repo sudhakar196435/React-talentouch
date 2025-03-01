@@ -1,7 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { collectionGroup, getDocs, deleteDoc, doc, getDoc, collection } from "firebase/firestore";
+import {
+  collectionGroup,
+  getDocs,
+  deleteDoc,
+  doc,
+  getDoc,
+  collection,
+} from "firebase/firestore";
 import { db, auth } from "../firebase";
-import { Table, Button, Empty, message, Skeleton, Select, DatePicker } from "antd";
+import {
+  Table,
+  Button,
+  Empty,
+  Skeleton,
+  Select,
+  DatePicker,
+  message,
+} from "antd";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import AuditorNav from "./AuditorNav";
@@ -32,14 +47,13 @@ const AuditorSubmissions = () => {
         setFilteredSubmissions([]);
       }
     });
-
     return () => unsubscribe();
   }, []);
 
   const fetchAssignedBranches = async (auditorId) => {
     try {
-      const assignedBranchesSnapshot = await getDocs(collection(db, `users/${auditorId}/assignedBranches`));
-      return assignedBranchesSnapshot.docs.map((doc) => doc.id);
+      const snapshot = await getDocs(collection(db, `users/${auditorId}/assignedBranches`));
+      return snapshot.docs.map((doc) => doc.id);
     } catch (error) {
       console.error("Error fetching assigned branches:", error);
       return [];
@@ -58,44 +72,58 @@ const AuditorSubmissions = () => {
         return;
       }
 
-      const submissionsQuerySnapshot = await getDocs(collectionGroup(db, "submissions"));
+      const submissionsSnapshot = await getDocs(collectionGroup(db, "submissions"));
+      const allSubmissions = submissionsSnapshot.docs.map((doc) => {
+        const data = doc.data();
+        const branchIdFromPath = doc.ref.parent.parent ? doc.ref.parent.parent.id : null;
+        const branchId = branchIdFromPath || data.branchId || "N/A";
+        return {
+          id: doc.id,
+          ...data,
+          branchId,
+        };
+      });
 
-      const rawSubmissions = submissionsQuerySnapshot.docs
-        .map((docSnapshot) => {
-          const data = docSnapshot.data();
-          const branchId = docSnapshot.ref.parent.parent?.id || "N/A";
-          return {
-            id: docSnapshot.id,
-            ...data,
-            branchId,
-          };
-        })
-        .filter((submission) => assignedBranchIds.includes(submission.branchId));
+      const relevantSubmissions = allSubmissions.filter((submission) =>
+        assignedBranchIds.includes(submission.branchId)
+      );
 
       const enhancedSubmissions = await Promise.all(
-        rawSubmissions.map(async (submission) => {
-          const userRef = doc(db, "users", submission.userId);
-          const userSnap = await getDoc(userRef);
-          const userName = userSnap.exists() ? userSnap.data().name || "Unknown User" : "Unknown User";
+        relevantSubmissions.map(async (submission) => {
+          let userName = "Unknown User";
+          let branchName = "Unknown Branch";
 
-          const branchRef = doc(db, `users/${submission.userId}/branches`, submission.branchId);
-          const branchSnap = await getDoc(branchRef);
-          const branchName = branchSnap.exists() ? branchSnap.data().branchName || "Unknown Branch" : "Unknown Branch";
+          try {
+            const userRef = doc(db, "users", submission.userId);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+              userName = userSnap.data().name || "Unknown User";
+            }
+          } catch (error) {
+            console.error("Error fetching user:", error);
+          }
 
-          const actRef = doc(db, "acts", submission.actId);
-          const actSnap = await getDoc(actRef);
-          const actName = actSnap.exists() ? actSnap.data().actName || "Unknown Act" : "Unknown Act";
+          try {
+            const branchRef = doc(db, "users", submission.userId, "branches", submission.branchId);
+            const branchSnap = await getDoc(branchRef);
+            if (branchSnap.exists()) {
+              branchName = branchSnap.data().branchName || "Unknown Branch";
+            }
+          } catch (error) {
+            console.error("Error fetching branch:", error);
+          }
+
+          const timestamp = submission.timestamp
+            ? submission.timestamp.toDate
+              ? submission.timestamp.toDate()
+              : new Date(submission.timestamp)
+            : null;
 
           return {
             ...submission,
             userName,
             branchName,
-            actName,
-            timestamp: submission.timestamp
-              ? submission.timestamp.toDate
-                ? submission.timestamp.toDate()
-                : new Date(submission.timestamp)
-              : null,
+            timestamp,
           };
         })
       );
@@ -117,13 +145,10 @@ const AuditorSubmissions = () => {
       setFilteredSubmissions([]);
       return;
     }
-
     let filtered = submissions;
-
     if (selectedBranch) {
       filtered = filtered.filter((sub) => sub.branchName === selectedBranch);
     }
-
     if (dateRange && dateRange.length === 2) {
       const [start, end] = dateRange;
       filtered = filtered.filter((sub) => {
@@ -131,7 +156,6 @@ const AuditorSubmissions = () => {
         return moment(sub.timestamp).isBetween(start, end, "day", "[]");
       });
     }
-
     setFilteredSubmissions(filtered);
   }, [selectedBranch, dateRange, submissions]);
 
@@ -164,15 +188,11 @@ const AuditorSubmissions = () => {
       key: "branchName",
     },
     {
-      title: "Act",
-      dataIndex: "actName",
-      key: "actName",
-    },
-    {
       title: "Timestamp",
       dataIndex: "timestamp",
       key: "timestamp",
-      render: (timestamp) => (timestamp ? moment(timestamp).format("YYYY-MM-DD HH:mm:ss") : "N/A"),
+      render: (timestamp) =>
+        timestamp ? moment(timestamp).format("YYYY-MM-DD HH:mm:ss") : "N/A",
     },
     {
       title: "Actions",
@@ -190,9 +210,7 @@ const AuditorSubmissions = () => {
           <Button
             danger
             style={{ marginLeft: 8 }}
-            onClick={() =>
-              handleDelete(record.id, record.branchId, record.userId)
-            }
+            onClick={() => handleDelete(record.id, record.branchId, record.userId)}
           >
             Delete
           </Button>
@@ -206,9 +224,14 @@ const AuditorSubmissions = () => {
       <AuditorNav />
       <div className="admin-home-container">
         <h1 className="admin-home-title">Submissions</h1>
-
-        {/* Filter Controls */}
-        <div style={{ marginBottom: 16, display: "flex", gap: "10px", alignItems: "center" }}>
+        <div
+          style={{
+            marginBottom: 16,
+            display: "flex",
+            gap: "10px",
+            alignItems: "center",
+          }}
+        >
           <Select
             placeholder="Filter by Branch"
             onChange={(value) => setSelectedBranch(value)}
@@ -222,19 +245,16 @@ const AuditorSubmissions = () => {
               </Select.Option>
             ))}
           </Select>
-
           <RangePicker
             onChange={(dates) => setDateRange(dates)}
             value={dateRange}
             style={{ width: 250 }}
             allowClear
           />
-
           <Button onClick={handleClearFilters} style={{ marginLeft: 8 }}>
             Clear Filters
           </Button>
         </div>
-
         {loading ? (
           <Skeleton active />
         ) : filteredSubmissions.length === 0 ? (
