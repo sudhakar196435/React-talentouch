@@ -52,43 +52,34 @@ const ActDetailPage = () => {
           const parsedData = XLSX.utils.sheet_to_json(sheet);
 
           for (const entry of parsedData) {
-            if (entry.actCode && entry.actName && entry.questions) {
-              // Check if act already exists
-              const actQuery = query(collection(db, "acts"), where("actCode", "==", entry.actCode));
-              const actSnapshot = await getDocs(actQuery);
-
-              if (actSnapshot.empty) {
-                const actRef = await addDoc(collection(db, "acts"), {
-                  actCode: entry.actCode,
-                  actName: entry.actName,
-                });
-
-                const questions = entry.questions.split(';').map(q => q.trim());
-                const uniqueQuestions = [...new Set(questions)];
-                
-                const questionPromises = uniqueQuestions.map(async (question) => {
-                  await addDoc(collection(db, `acts/${actRef.id}/questions`), { text: question });
-                });
-
-                await Promise.all(questionPromises);
-              } else {
-                const actRef = actSnapshot.docs[0].ref;
-                const existingQuestionsSnapshot = await getDocs(collection(db, `acts/${actRef.id}/questions`));
-                const existingQuestions = existingQuestionsSnapshot.docs.map(doc => doc.data().text);
-                
-                const newQuestions = entry.questions.split(';').map(q => q.trim()).filter(q => !existingQuestions.includes(q));
-                const uniqueNewQuestions = [...new Set(newQuestions)];
-
-                const questionPromises = uniqueNewQuestions.map(async (question) => {
-                  await addDoc(collection(db, `acts/${actRef.id}/questions`), { text: question });
-                });
-
-                await Promise.all(questionPromises);
+            if (entry.actCode && entry.actName && entry.question) {
+              const q = query(collection(db, "acts"), where("actCode", "==", entry.actCode));
+              const existingActs = await getDocs(q);
+              
+              if (!existingActs.empty) {
+                message.warning(`Act with code ${entry.actCode} already exists!`);
+                continue;
               }
+              
+              const actRef = await addDoc(collection(db, "acts"), {
+                actCode: entry.actCode,
+                actName: entry.actName,
+              });
+
+              const questionData = {
+                section: entry.section || "",
+                text: entry.question || "",
+                registerForm: entry["Register/Form"] || "",
+                timeLimit: entry["Time Limit"] || "",
+                risk: entry.risk || "",
+                type: entry.type || "",
+              };
+              
+              await addDoc(collection(db, `acts/${actRef.id}/questions`), questionData);
             }
           }
 
-          message.success("Acts and questions uploaded successfully! Duplicates were skipped.");
+          message.success("Acts and questions uploaded successfully!");
           window.location.reload();
         } catch (error) {
           console.error("Error uploading acts and questions: ", error);
@@ -151,9 +142,9 @@ const ActDetailPage = () => {
 export default ActDetailPage;
 
 // Excel Format Example
-// | actCode | actName            | questions                            |
-// |---------|--------------------|--------------------------------------|
-// | A001    | Environmental Act  | What is pollution?; Types of waste?  |
-// | A002    | Labor Act          | What is minimum wage?; Labor rights? |
+// | actCode | actName            | section | question                    | Register/Form | Time Limit | risk     | type   |
+// |---------|--------------------|---------|----------------------------|----------------|-------------|----------|--------|
+// | A001    | Environmental Act  | Sec 1   | What is pollution?         | Form A         | 7 days      | High     | MCQ    |
+// | A002    | Labor Act          | Sec 2   | What is minimum wage?      | Form B         | 14 days     | Medium   | Text   |
 
 // Save this as an Excel file (.xlsx) and upload it!
