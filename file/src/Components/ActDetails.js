@@ -52,15 +52,12 @@ const ActDetailPage = () => {
           const parsedData = XLSX.utils.sheet_to_json(sheet);
     
           for (const entry of parsedData) {
-            // Ensure the required fields are present.
             if (entry.actCode && entry.actName && entry.question) {
-              // Query for existing act based on actCode.
               const actQuery = query(collection(db, "acts"), where("actCode", "==", entry.actCode));
               const existingActs = await getDocs(actQuery);
     
               let actRef;
               if (existingActs.empty) {
-                // Create a new act and include additional fields.
                 actRef = await addDoc(collection(db, "acts"), {
                   actCode: entry.actCode,
                   actName: entry.actName,
@@ -70,11 +67,9 @@ const ActDetailPage = () => {
                   enactYear: entry["Enact Year"] || ""
                 });
               } else {
-                // Use existing act document reference.
                 actRef = existingActs.docs[0].ref;
               }
     
-              // Prepare the question data.
               const questionData = {
                 section: entry.section || "",
                 text: entry.question || "",
@@ -84,7 +79,6 @@ const ActDetailPage = () => {
                 type: entry.type || ""
               };
     
-              // Check if the question already exists in the act.
               const questionsQuery = query(
                 collection(db, `acts/${actRef.id}/questions`),
                 where("text", "==", questionData.text)
@@ -92,7 +86,6 @@ const ActDetailPage = () => {
               const existingQuestions = await getDocs(questionsQuery);
     
               if (existingQuestions.empty) {
-                // Add the question if it doesn't exist.
                 await addDoc(collection(db, `acts/${actRef.id}/questions`), questionData);
                 message.success(`New question added to Act ${entry.actCode}`);
               } else {
@@ -133,6 +126,7 @@ const ActDetailPage = () => {
           <table className="acts-table">
             <thead>
               <tr>
+                <th>S.No.</th>
                 <th>Act Code</th>
                 <th>Act Name</th>
                 <th>Action</th>
@@ -141,6 +135,7 @@ const ActDetailPage = () => {
             <tbody>
               {acts.map((act, index) => (
                 <tr key={index}>
+                  <td>{index + 1}</td>
                   <td>{act.actCode}</td>
                   <td>{act.actName}</td>
                   <td>
@@ -163,10 +158,8 @@ const ActDetailPage = () => {
 
 export default ActDetailPage;
 
-// Excel Format Example
+// Excel Format Example remains the same
 // | actCode | actName            | section | question                    | Register/Form | Time Limit | risk     | type   |
 // |---------|--------------------|---------|----------------------------|----------------|-------------|----------|--------|
 // | A001    | Environmental Act  | Sec 1   | What is pollution?         | Form A         | 7 days      | High     | MCQ    |
 // | A002    | Labor Act          | Sec 2   | What is minimum wage?      | Form B         | 14 days     | Medium   | Text   |
-
-// Save this as an Excel file (.xlsx) and upload it!
