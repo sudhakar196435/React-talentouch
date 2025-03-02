@@ -4,16 +4,32 @@ import { db } from "../firebase";
 import { Table, Empty, Skeleton, Button, Select, Collapse, Card } from "antd";
 import { useNavigate } from "react-router-dom";
 import AuditorNav from "./AuditorNav";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { format } from "date-fns";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const { Option } = Select;
 const { Panel } = Collapse;
 
+const STATUS_COLORS = {
+  "Complied": "#28a745",
+  "Not Complied": "#dc3545",
+  "Partial Complied": "#ffc107",
+  "Not Applicable": "#007bff",
+};
+
 const SubmissionsView = () => {
   const [companies, setCompanies] = useState([]);
   const [branches, setBranches] = useState([]);
-  // All combined submissions for a branch
   const [submissionsData, setSubmissionsData] = useState([]);
-  // The selected submission to view
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -26,10 +42,11 @@ const SubmissionsView = () => {
   const [actQuestions, setActQuestions] = useState({});
   // Track which act's questions have been fetched
   const [fetchedActs, setFetchedActs] = useState({});
+  const [statusData, setStatusData] = useState([]);
 
   const navigate = useNavigate();
 
-  // Fetch companies from the "users" collection. Adjust filtering as needed.
+  // Fetch companies from "users" collection (only those with companyName)
   const fetchCompanies = async () => {
     try {
       const snapshot = await getDocs(collection(db, "users"));
@@ -38,7 +55,6 @@ const SubmissionsView = () => {
           id: doc.id,
           ...doc.data(),
         }))
-        // Only include users that have a companyName field.
         .filter((company) => company.companyName);
       setCompanies(companyList);
     } catch (error) {
@@ -74,7 +90,7 @@ const SubmissionsView = () => {
           id: doc.id,
           ...doc.data(),
         }));
-        // Sort by timestamp descending.
+        // Sort submissions by timestamp descending.
         submissionsList.sort((a, b) => {
           if (a.timestamp && b.timestamp) {
             return b.timestamp.seconds - a.timestamp.seconds;
@@ -96,6 +112,7 @@ const SubmissionsView = () => {
     if (!submission || !submission.answers) {
       setGroupedAnswers({});
       setActMapping({});
+      setStatusData([]);
       return;
     }
     const answers = submission.answers;
@@ -122,6 +139,22 @@ const SubmissionsView = () => {
     );
     setGroupedAnswers(groups);
     setActMapping(actMap);
+    processStatusData(answers);
+  };
+
+  // Compute status data for the pie chart.
+  const processStatusData = (answersArray) => {
+    const statusCount = answersArray.reduce((acc, { status }) => {
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {});
+    const formattedData = Object.keys(STATUS_COLORS)
+      .map((status) => ({
+        name: status,
+        value: statusCount[status] || 0,
+      }))
+      .filter((item) => item.value > 0);
+    setStatusData(formattedData);
   };
 
   // Fetch questions for a given act when its panel is expanded.
@@ -143,7 +176,7 @@ const SubmissionsView = () => {
     }
   };
 
-  // Merge answers with question details for an act.
+  // Merge answers with their corresponding question details.
   const mergeAnswersWithQuestions = (actId, answersForAct) => {
     if (!actQuestions[actId]) return answersForAct;
     return answersForAct.map((answer) => {
@@ -159,7 +192,7 @@ const SubmissionsView = () => {
     });
   };
 
-  // When a panel is expanded, fetch questions for that act if not already fetched.
+  // When a panel is expanded, fetch questions for that act if not already done.
   const handlePanelChange = (activeKey) => {
     if (!activeKey || (Array.isArray(activeKey) && activeKey.length === 0)) return;
     const actId = Array.isArray(activeKey) ? activeKey[0] : activeKey;
@@ -168,7 +201,7 @@ const SubmissionsView = () => {
     }
   };
 
-  // When a submission is selected, process it.
+  // Process submission whenever the selected submission changes.
   React.useEffect(() => {
     processSubmission(selectedSubmission);
   }, [selectedSubmission]);
@@ -291,6 +324,38 @@ const SubmissionsView = () => {
                       : "N/A"}
                   </p>
                 </Card>
+                {/* Graph for aggregated status data */}
+                <Card style={{ marginBottom: 20 }}>
+                  <div
+                    className="chart-container"
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "300px",
+                    }}
+                  >
+                    <ResponsiveContainer width={300} height={300}>
+                      <PieChart>
+                        <Pie
+                          data={statusData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={80}
+                          label
+                        >
+                          {statusData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.name]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </Card>
                 <Collapse accordion onChange={handlePanelChange}>
                   {Object.entries(groupedAnswers).map(([actId, answersForAct]) => (
                     <Panel header={actMapping[actId] || "Unknown Act"} key={actId}>
@@ -300,6 +365,7 @@ const SubmissionsView = () => {
                         rowKey={(record, index) =>
                           record.questionId ? record.questionId : index
                         }
+                        pagination={false}
                       />
                     </Panel>
                   ))}
@@ -309,6 +375,7 @@ const SubmissionsView = () => {
           </>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };
