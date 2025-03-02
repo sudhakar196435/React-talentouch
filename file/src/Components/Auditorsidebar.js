@@ -5,7 +5,7 @@ import {
   UserOutlined,
   FileTextOutlined,
   HistoryOutlined,
-  BarChartOutlined,
+  LockOutlined,
   BellOutlined,
   SettingOutlined,
   LogoutOutlined,
@@ -38,9 +38,9 @@ const items = [
     label: <Link to="/auditorsubmissions">Audit History</Link>,
   },
   {
-    key: 'reports',
-    icon: <BarChartOutlined />,
-    label: <Link to="/auditor/reports">Reports</Link>,
+    key: 'changepassword',
+    icon: <LockOutlined />,
+    label: <Link to="/changepassword">Change Password</Link>,
   },
   {
     key: 'notifications',
