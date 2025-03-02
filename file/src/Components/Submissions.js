@@ -2,13 +2,15 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
-import { Spin, Card, Table } from "antd";
+import { Spin, Card, Table, Collapse } from "antd";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserNav from "./UserNav";
 import "../Styles/Submissions.css";
+
+const { Panel } = Collapse;
 
 const STATUS_COLORS = {
   "Complied": "#28a745",
@@ -23,13 +25,14 @@ const Submissions = () => {
   const [timestamp, setTimestamp] = useState(null);
   // questions mapping: { [questionId]: { text, risk, type, registerForm, timeLimit } }
   const [questions, setQuestions] = useState({});
-  // For combined submission, we now store act names in an array.
-  const [actNames, setActNames] = useState([]);
+  // actMapping: { [actId]: actName }
+  const [actMapping, setActMapping] = useState({});
   const [loading, setLoading] = useState(true);
   const [statusData, setStatusData] = useState([]);
+  // Track which act's questions have been fetched
+  const [fetchedActs, setFetchedActs] = useState({});
 
   useEffect(() => {
-    console.log("URL Parameters:", { uid, branchId, submissionId });
     fetchSubmission();
   }, [uid, branchId, submissionId]);
 
@@ -42,19 +45,15 @@ const Submissions = () => {
     try {
       const submissionRef = doc(db, `users/${uid}/branches/${branchId}/submissions/${submissionId}`);
       const submissionSnap = await getDoc(submissionRef);
-      console.log("Submission document exists:", submissionSnap.exists());
       if (!submissionSnap.exists()) {
         toast.error("No such submission found!");
         setLoading(false);
         return;
       }
       const data = submissionSnap.data();
-      console.log("Fetched submission data:", data);
       setAnswers(data.answers || []);
       setTimestamp(data.timestamp ? data.timestamp.toDate() : null);
-      
-      // Combined submission: there is no top-level actId.
-      // Instead, extract unique actIds from each answer.
+
       if (data.answers && data.answers.length > 0) {
         const actIdSet = new Set();
         data.answers.forEach((answer) => {
@@ -63,56 +62,38 @@ const Submissions = () => {
           }
         });
         const actIds = Array.from(actIdSet);
-        console.log("Unique actIds from answers:", actIds);
-        
-        // Fetch act details for each actId to get act names.
-        const actNamesFetched = await Promise.all(
+        const actMap = {};
+        await Promise.all(
           actIds.map(async (actId) => {
             try {
               const actRef = doc(db, "acts", actId);
               const actSnap = await getDoc(actRef);
               if (actSnap.exists()) {
-                console.log(`Fetched act details for ${actId}:`, actSnap.data());
-                return actSnap.data().actName || "Unknown Act";
+                actMap[actId] = actSnap.data().actName || "Unknown Act";
               } else {
-                console.log(`No act found for actId: ${actId}`);
-                return "Unknown Act";
+                actMap[actId] = "Unknown Act";
               }
             } catch (error) {
-              console.error(`Error fetching act ${actId}:`, error);
-              return "Unknown Act";
+              actMap[actId] = "Unknown Act";
             }
           })
         );
-        console.log("Fetched act names:", actNamesFetched);
-        setActNames(actNamesFetched);
-        
-        // Fetch questions for each act and merge into a single mapping.
-        await Promise.all(
-          actIds.map(async (actId) => {
-            await fetchQuestionsForAct(actId);
-          })
-        );
-      } else {
-        console.log("No answers found in submission.");
+        setActMapping(actMap);
       }
-      
+
       processStatusData(data.answers || []);
     } catch (error) {
-      console.error("Error fetching submission:", error);
       toast.error("Error fetching submission.");
     }
     setLoading(false);
   };
 
-  // Fetch questions from the questions subcollection for the given actId.
   const fetchQuestionsForAct = async (actId) => {
     try {
       const questionsRef = collection(db, `acts/${actId}/questions`);
       const questionsSnap = await getDocs(questionsRef);
       let questionsMap = {};
       questionsSnap.forEach((doc) => {
-        console.log("Fetched question document:", doc.id, doc.data());
         const qData = doc.data();
         questionsMap[doc.id] = {
           text: qData.text || "No text available",
@@ -122,16 +103,13 @@ const Submissions = () => {
           type: qData.type || "N/A",
         };
       });
-      console.log(`Questions fetched for act ${actId}:`, questionsMap);
-      // Merge with any existing questions.
       setQuestions((prev) => ({ ...prev, ...questionsMap }));
+      setFetchedActs((prev) => ({ ...prev, [actId]: true }));
     } catch (error) {
-      console.error("Error fetching questions for act", actId, ":", error);
       toast.error("Error fetching questions.");
     }
   };
 
-  // Process answers to create aggregated status data for the pie chart.
   const processStatusData = (answersArray) => {
     const statusCount = answersArray.reduce((acc, { status }) => {
       acc[status] = (acc[status] || 0) + 1;
@@ -143,8 +121,30 @@ const Submissions = () => {
         value: statusCount[status] || 0,
       }))
       .filter((item) => item.value > 0);
-    console.log("Processed status data:", formattedData);
     setStatusData(formattedData);
+  };
+
+  // Group answers by actId.
+  const groupAnswersByAct = () => {
+    const groups = {};
+    answers.forEach((ans) => {
+      if (!ans.actId) return;
+      if (!groups[ans.actId]) groups[ans.actId] = [];
+      groups[ans.actId].push(ans);
+    });
+    return groups;
+  };
+
+  const groupedAnswers = groupAnswersByAct();
+
+  const handlePanelChange = (activeKey) => {
+    if (!activeKey || (Array.isArray(activeKey) && activeKey.length === 0)) {
+      return;
+    }
+    const actId = Array.isArray(activeKey) ? activeKey[0] : activeKey;
+    if (actId && !fetchedActs[actId]) {
+      fetchQuestionsForAct(actId);
+    }
   };
 
   const columns = [
@@ -153,19 +153,31 @@ const Submissions = () => {
       title: "Question",
       key: "question",
       render: (_, answer) =>
-        questions[answer.questionId]?.text || "Loading..."
+        questions[answer.questionId]?.text || "Loading...",
+    },
+    {
+      title: "Register/Form",
+      key: "registerForm",
+      render: (_, answer) =>
+        questions[answer.questionId]?.registerForm || "N/A",
+    },
+    {
+      title: "Time Limit",
+      key: "timeLimit",
+      render: (_, answer) =>
+        questions[answer.questionId]?.timeLimit || "N/A",
     },
     {
       title: "Risk",
       key: "risk",
       render: (_, answer) =>
-        questions[answer.questionId]?.risk || "N/A"
+        questions[answer.questionId]?.risk || "N/A",
     },
     {
       title: "Type",
       key: "type",
       render: (_, answer) =>
-        questions[answer.questionId]?.type || "N/A"
+        questions[answer.questionId]?.type || "N/A",
     },
     { title: "Status", dataIndex: "status", key: "status" },
     { title: "Remarks", dataIndex: "remarks", key: "remarks" },
@@ -181,54 +193,31 @@ const Submissions = () => {
       ) : (
         <div className="admin-container">
           <h1 className="admin-home-title">Submission Details</h1>
-          {timestamp && (
-            <Card style={{ marginBottom: "20px" }}>
-              <p>
-                <strong>Act Name(s):</strong>{" "}
-                {actNames.length > 0 ? actNames.join(", ") : "N/A"}
-              </p>
-              <p>
-                <strong>Submission Timestamp:</strong>{" "}
-                {format(timestamp, "MMM d, yyyy, hh:mm:ss a")}
-              </p>
-            </Card>
-          )}
-          <div
-            className="chart-container"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "300px",
-            }}
-          >
-            <ResponsiveContainer width={300} height={300}>
-              <PieChart>
-                <Pie
-                  data={statusData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {statusData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.name]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <Table
-            dataSource={answers}
-            columns={columns}
-            rowKey={(record, index) =>
-              record.questionId ? record.questionId : index
-            }
-          />
+          <Card style={{ marginBottom: "20px" }}>
+            <p>
+              <strong>Combined Act Name(s):</strong>{" "}
+              {Object.values(actMapping).length > 0
+                ? Object.values(actMapping).join(", ")
+                : "N/A"}
+            </p>
+            <p>
+              <strong>Submission Timestamp:</strong>{" "}
+              {timestamp ? format(timestamp, "MMM d, yyyy, hh:mm:ss a") : "N/A"}
+            </p>
+          </Card>
+          <Collapse accordion onChange={handlePanelChange}>
+            {Object.entries(groupedAnswers).map(([actId, answersForAct]) => (
+              <Panel header={actMapping[actId] || "Unknown Act"} key={actId}>
+                <Table
+                  dataSource={answersForAct}
+                  columns={columns}
+                  rowKey={(record, index) =>
+                    record.questionId ? record.questionId : index
+                  }
+                />
+              </Panel>
+            ))}
+          </Collapse>
         </div>
       )}
       <ToastContainer />
