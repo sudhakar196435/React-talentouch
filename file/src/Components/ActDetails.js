@@ -50,22 +50,24 @@ const ActDetailPage = () => {
           const sheetName = workbook.SheetNames[0];
           const sheet = workbook.Sheets[sheetName];
           const parsedData = XLSX.utils.sheet_to_json(sheet);
-
+  
           for (const entry of parsedData) {
             if (entry.actCode && entry.actName && entry.question) {
-              const q = query(collection(db, "acts"), where("actCode", "==", entry.actCode));
-              const existingActs = await getDocs(q);
-              
-              if (!existingActs.empty) {
-                message.warning(`Act with code ${entry.actCode} already exists!`);
-                continue;
+              const actQuery = query(collection(db, "acts"), where("actCode", "==", entry.actCode));
+              const existingActs = await getDocs(actQuery);
+  
+              let actRef;
+              if (existingActs.empty) {
+                // Create new act if it doesn't exist
+                actRef = await addDoc(collection(db, "acts"), {
+                  actCode: entry.actCode,
+                  actName: entry.actName,
+                });
+              } else {
+                // Use existing act ID
+                actRef = existingActs.docs[0].ref;
               }
-              
-              const actRef = await addDoc(collection(db, "acts"), {
-                actCode: entry.actCode,
-                actName: entry.actName,
-              });
-
+  
               const questionData = {
                 section: entry.section || "",
                 text: entry.question || "",
@@ -74,12 +76,25 @@ const ActDetailPage = () => {
                 risk: entry.risk || "",
                 type: entry.type || "",
               };
-              
-              await addDoc(collection(db, `acts/${actRef.id}/questions`), questionData);
+  
+              // Check if the question already exists in the act
+              const questionsQuery = query(
+                collection(db, `acts/${actRef.id}/questions`),
+                where("text", "==", questionData.text)
+              );
+              const existingQuestions = await getDocs(questionsQuery);
+  
+              if (existingQuestions.empty) {
+                // Add the question only if it's unique
+                await addDoc(collection(db, `acts/${actRef.id}/questions`), questionData);
+                message.success(`New question added to Act ${entry.actCode}`);
+              } else {
+                message.warning(`Question already exists for Act ${entry.actCode}: ${questionData.text}`);
+              }
             }
           }
-
-          message.success("Acts and questions uploaded successfully!");
+  
+          message.success("Acts and questions processed successfully!");
           window.location.reload();
         } catch (error) {
           console.error("Error uploading acts and questions: ", error);
@@ -89,6 +104,14 @@ const ActDetailPage = () => {
       reader.readAsArrayBuffer(file);
     }
   };
+  
+  // This way:
+  // - New acts are added if actCode doesn’t exist.
+  // - Questions are added to existing acts only if they are unique.
+  // - You get a success message for added questions and a warning for duplicates.
+  
+  // Let me know if you want any adjustments or enhancements! 🚀
+  
 
   return (
     <div>
