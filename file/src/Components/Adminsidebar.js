@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, Button } from 'antd';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { UserOutlined, UnorderedListOutlined, PlusOutlined,UploadOutlined, UserSwitchOutlined,LogoutOutlined,AuditOutlined } from '@ant-design/icons';
+import { UserOutlined, UnorderedListOutlined, PlusOutlined,LockOutlined,UploadOutlined, UserSwitchOutlined,LogoutOutlined,AuditOutlined } from '@ant-design/icons';
 import { getAuth, signOut } from 'firebase/auth'; // Import Firebase authentication
 
 const items = [
@@ -51,6 +51,11 @@ const items = [
         Auditors List
       </Link>
     ),
+  },
+  {
+    key: 'changepassword',
+    icon: <LockOutlined />,
+    label: <Link to="/changepassword">Change Password</Link>,
   },
 ];
 

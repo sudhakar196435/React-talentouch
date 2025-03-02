@@ -1,147 +1,166 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Import Link for routing
-import "../Styles/ChangePassword.css";
-import UserNav from "./UserNav";
-import {
-  getAuth,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
-  updatePassword,
+import React, { useState, useEffect } from "react";
+import { 
+  getAuth, 
+  onAuthStateChanged, 
+  updatePassword, 
+  reauthenticateWithCredential, 
+  EmailAuthProvider 
 } from "firebase/auth";
-import { ToastContainer, toast } from "react-toastify"; // Import ToastContainer and toast
-import "react-toastify/dist/ReactToastify.css"; // Import the default toast styles
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import { Form, Input, Button, Card, Result,Spin } from "antd";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import '../Styles/ChangePassword.css'
 
-const Changepassword = () => {
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+const db = getFirestore();
 
+const ChangePassword = () => {
   const auth = getAuth();
-  const user = auth.currentUser;
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isPasswordUpdated, setIsPasswordUpdated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-
-    if (newPassword !== confirmPassword) {
-      setError("New passwords do not match");
-      setSuccess("");
-      toast.error("New passwords do not match"); // Show error toast
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      setError("Password must be at least 6 characters long");
-      setSuccess("");
-      toast.error("Password must be at least 6 characters long"); // Show error toast
-      return;
-    }
-
-    setIsLoading(true); // Start loading
-    try {
-      const credentials = EmailAuthProvider.credential(
-        user.email,
-        currentPassword
-      );
-      await reauthenticateWithCredential(user, credentials); // Reauthenticate user
-
-      await updatePassword(user, newPassword); // Update password
-      setSuccess("Password updated successfully!");
-      setError("");
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-
-      // Show success toast
-      toast.success("Password updated successfully!");
-    } catch (err) {
-      if (err.code === "auth/invalid-credential") {
-        setError("Current password is incorrect");
-        toast.error("Current password is incorrect"); // Show error toast
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        await fetchUserRole(currentUser.uid);
       } else {
-        setError("Error updating password: " + err.message);
-        toast.error("Error updating password: " + err.message); // Show error toast
+        navigate("/login"); // Redirect to login if no user
       }
-      setSuccess("");
-    } finally {
-      setIsLoading(false); // Stop loading
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [auth, navigate]);
+
+  const fetchUserRole = async (uid) => {
+    try {
+      const userDoc = await getDoc(doc(db, "users", uid));
+      if (userDoc.exists()) {
+        setUserRole(userDoc.data().role); // Assuming role is stored in Firestore
+      }
+    } catch (error) {
+      console.error("Error fetching user role:", error);
     }
   };
 
+  const onFinish = async (values) => {
+    if (values.newPassword !== values.confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        toast.error("User session expired. Please log in again.");
+        return;
+      }
+
+      // Reauthenticate the user
+      const credential = EmailAuthProvider.credential(currentUser.email, values.currentPassword);
+      await reauthenticateWithCredential(currentUser, credential);
+
+      // Now update the password
+      await updatePassword(currentUser, values.newPassword);
+      setIsPasswordUpdated(true);
+      toast.success("Password updated successfully!");
+    } catch (error) {
+      if (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
+        toast.error("Incorrect current password! Please try again.");
+      } else if (error.code === "auth/requires-recent-login") {
+        toast.error("Please log in again to change your password.");
+        navigate("/login"); // Redirect to login
+      } else {
+        toast.error(error.message);
+      }
+    }
+  };
+
+  const handleNavigate = () => {
+    if (userRole === "admin") {
+      navigate("/adminsettings");
+    } else if (userRole === "user") {
+      navigate("/settings");
+    } else if (userRole === "auditor") {
+      navigate("/AuditorSettings");
+    } else {
+      navigate("/Subuserprofile"); // Default for normal users
+    }
+  };
+
+  if (loading) {
+    return    <div className="loading-container">
+    <Spin size="large" />
+  </div>;
+  }
+
   return (
-    <div>
-      <UserNav />
-      <div className="settings-container">
-        <div className="settings-sidebar">
-          <ul className="settings-menu">
-            <li className="settings-menu-item">
-              <Link to="/settings">Profile</Link>
-            </li>
-            <li className="settings-menu-item active">
-              <Link to="/changepassword">Change Password</Link>
-            </li>
-            <li className="settings-menu-item">
-              <Link to="/two-step-verification">Two-Step Verification</Link>
-            </li>
-            <li className="settings-menu-item">
-              <Link to="/privacy-settings">Privacy Settings</Link>
-            </li>
-            <li className="settings-menu-item">
-              <Link to="/login">Logout</Link>
-            </li>
-          </ul>
-        </div>
+    <div className="pass">
+      <Button onClick={() => navigate(-1)} style={{ marginRight: 10 }}>
+  Go Back
+</Button>
 
-        <div className="settings-content">
-          <div className="pass-content">
-            <h2>Change Password</h2>
-            <form onSubmit={handlePasswordChange}>
-              <div className="form-group">
-                <label htmlFor="currentPassword">Current Password</label>
-                <input
-                  type="password"
-                  id="currentPassword"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="newPassword">New Password</label>
-                <input
-                  type="password"
-                  id="newPassword"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="confirmPassword">Confirm New Password</label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-              </div>
-              {error && <p className="error1">{error}</p>}
-              {success && <p className="success1">{success}</p>}
-              <button type="submit" disabled={isLoading}>
-                {isLoading ? "Changing Password..." : "Change Password"}
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      {/* Toast Container for showing toasts */}
+    <Card style={{ maxWidth: 400, margin: "auto", marginTop: "50px", padding: "20px" }}>
+      
       <ToastContainer />
+      {isPasswordUpdated ? (
+        <Result
+          status="success"
+          title="Password Updated Successfully!"
+          subTitle="Your password has been changed successfully. You can continue using your account."
+          extra={[
+            <Button type="primary" onClick={handleNavigate}>
+              Go to Dashboard
+            </Button>,
+          ]}
+        />
+      ) : (
+        <>
+        <h1 className="change-password-title">Change Password</h1>
+
+{user && <p className="change-password-email">📧 {user.email}</p>}
+
+          <Form layout="vertical" onFinish={onFinish}>
+            <Form.Item
+              label="Current Password"
+              name="currentPassword"
+              rules={[{ required: true, message: "Please enter your current password!" }]}
+            >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item
+              label="New Password"
+              name="newPassword"
+              rules={[{ required: true, message: "Please enter your new password!" }]}
+            >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item
+              label="Confirm Password"
+              name="confirmPassword"
+              rules={[{ required: true, message: "Please confirm your password!" }]}
+            >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item>
+              <Button type="primary" htmlType="submit" block>
+                Update Password
+              </Button>
+            </Form.Item>
+          </Form>
+        </>
+      )}
+    </Card>
     </div>
   );
 };
 
-export default Changepassword;
+export default ChangePassword;
