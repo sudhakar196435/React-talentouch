@@ -50,42 +50,49 @@ const ActDetailPage = () => {
           const sheetName = workbook.SheetNames[0];
           const sheet = workbook.Sheets[sheetName];
           const parsedData = XLSX.utils.sheet_to_json(sheet);
-  
+    
           for (const entry of parsedData) {
+            // Ensure the required fields are present.
             if (entry.actCode && entry.actName && entry.question) {
+              // Query for existing act based on actCode.
               const actQuery = query(collection(db, "acts"), where("actCode", "==", entry.actCode));
               const existingActs = await getDocs(actQuery);
-  
+    
               let actRef;
               if (existingActs.empty) {
-                // Create new act if it doesn't exist
+                // Create a new act and include additional fields.
                 actRef = await addDoc(collection(db, "acts"), {
                   actCode: entry.actCode,
                   actName: entry.actName,
+                  governmentType: entry["Government Type"] || "",
+                  status: entry.Status || "",
+                  actNature: entry["Act Nature"] || "",
+                  enactYear: entry["Enact Year"] || ""
                 });
               } else {
-                // Use existing act ID
+                // Use existing act document reference.
                 actRef = existingActs.docs[0].ref;
               }
-  
+    
+              // Prepare the question data.
               const questionData = {
                 section: entry.section || "",
                 text: entry.question || "",
                 registerForm: entry["Register/Form"] || "",
                 timeLimit: entry["Time Limit"] || "",
                 risk: entry.risk || "",
-                type: entry.type || "",
+                type: entry.type || ""
               };
-  
-              // Check if the question already exists in the act
+    
+              // Check if the question already exists in the act.
               const questionsQuery = query(
                 collection(db, `acts/${actRef.id}/questions`),
                 where("text", "==", questionData.text)
               );
               const existingQuestions = await getDocs(questionsQuery);
-  
+    
               if (existingQuestions.empty) {
-                // Add the question only if it's unique
+                // Add the question if it doesn't exist.
                 await addDoc(collection(db, `acts/${actRef.id}/questions`), questionData);
                 message.success(`New question added to Act ${entry.actCode}`);
               } else {
@@ -93,7 +100,7 @@ const ActDetailPage = () => {
               }
             }
           }
-  
+    
           message.success("Acts and questions processed successfully!");
           window.location.reload();
         } catch (error) {
@@ -105,14 +112,6 @@ const ActDetailPage = () => {
     }
   };
   
-  // This way:
-  // - New acts are added if actCode doesn’t exist.
-  // - Questions are added to existing acts only if they are unique.
-  // - You get a success message for added questions and a warning for duplicates.
-  
-  // Let me know if you want any adjustments or enhancements! 🚀
-  
-
   return (
     <div>
       <AdminNav />
