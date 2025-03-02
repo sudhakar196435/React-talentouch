@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, Button } from 'antd';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { UserOutlined, AuditOutlined, FileTextOutlined,LogoutOutlined ,BarChartOutlined} from '@ant-design/icons';
+import { UserOutlined, AuditOutlined, LockOutlined,LogoutOutlined ,BarChartOutlined} from '@ant-design/icons';
 import { getAuth, signOut } from 'firebase/auth'; // Import Firebase authentication
 
 const items = [
@@ -25,9 +25,9 @@ const items = [
     label: <Link to="/ss">Branch Audit</Link>,
   },
   {
-    key: 'AuditSubmissions',
-    icon: <FileTextOutlined />,
-    label: <Link to="/">Audit Submissions</Link>,
+    key: 'changepassword',
+    icon: <LockOutlined />,
+    label: <Link to="/changepassword">Change Password</Link>,
   },
   {
     key: 'report',
