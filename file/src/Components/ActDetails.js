@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
-import { collection, getDocs, deleteDoc, doc, addDoc, query, where } from "firebase/firestore";
-import { Link } from "react-router-dom";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import { message } from 'antd';
 import * as XLSX from 'xlsx';
 import '../Styles/Actdetail.css';
@@ -10,6 +10,7 @@ import AdminNav from "./AdminNav";
 const ActDetailPage = () => {
   const [acts, setActs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate(); // Initialize the useNavigate hook
 
   useEffect(() => {
     const fetchActs = async () => {
@@ -51,12 +52,19 @@ const ActDetailPage = () => {
   const handleFileUpload = (event) => {
     // ... (keep existing handleFileUpload implementation)
   };
-  
+
+  const handleBack = () => {
+    navigate(-1); // This will navigate back to the previous page
+  };
+
   return (
     <div>
       <AdminNav />
       <div className="admin-home-container">
         <div className="act-detail-page">
+          {/* Back Button */}
+          <button onClick={handleBack} className="back-button">Back</button>
+          
           <h1 className="page-title">Acts List</h1>
           <div className="action-buttons">
             <input

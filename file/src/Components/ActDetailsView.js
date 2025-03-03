@@ -7,13 +7,14 @@ import AdminNav from "./AdminNav";
 import UserNav from "./UserNav";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Spin } from 'antd';
+
 const ActDetailsView = () => {
   const { id } = useParams();
   const [act, setAct] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   const checkUserAuth = useCallback(() => {
     const auth = getAuth();
@@ -82,11 +83,15 @@ const ActDetailsView = () => {
     setAct((prev) => ({ ...prev, [key]: value }));
   };
 
+  const handleBack = () => {
+    navigate(-1); // This will take the user to the previous page
+  };
+
   if (loading) {
     return (
       <div className="loading-container">
-      <Spin size="large" />
-    </div>
+        <Spin size="large" />
+      </div>
     );
   }
 
@@ -100,6 +105,9 @@ const ActDetailsView = () => {
       {userRole === "admin" ? <AdminNav /> : <UserNav />}
 
       <div className="admin-home-container">
+        {/* Back Button */}
+        <button onClick={handleBack} className="back-button">Back</button>
+
         {act ? (
           <div className="act-detail">
             <h2 className="detail-title">Details for {act.actName}</h2>
