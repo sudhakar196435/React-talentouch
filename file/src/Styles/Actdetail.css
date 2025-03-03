@@ -136,3 +136,18 @@
   gap: 10px;
   margin-bottom: 20px;
 }
+.back-button {
+  margin-top: 20px;
+  margin-left: 20px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.back-button:hover {
+  background-color: #45a049;
+}
