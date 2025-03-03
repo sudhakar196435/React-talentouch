@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
-import { Table, Button, Modal, Input, Form, Skeleton } from "antd";
+import { Table, Button, Modal, Input, Form, Skeleton, Breadcrumb} from "antd";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserNav from "./UserNav";
-
+import { HomeOutlined,BankOutlined } from '@ant-design/icons';
 const Branches = () => {
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -127,6 +127,14 @@ const Branches = () => {
       <UserNav/>
       <div className="admin-container"> 
       <h1 className="admin-home-title">Branches</h1>
+      <Breadcrumb style={{ marginBottom: '20px' }}>
+        <Breadcrumb.Item href="/home">
+          <HomeOutlined /> Home
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <BankOutlined /> Branches
+        </Breadcrumb.Item>
+      </Breadcrumb>
       
       <Button type="primary" onClick={openModal} style={{ marginBottom: 16 }}>
         Add Branch

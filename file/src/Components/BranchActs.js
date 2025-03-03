@@ -3,9 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
-import { Table, Skeleton, Button } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Skeleton, Empty } from "antd";
 import UserNav from "./UserNav";
 
 const BranchActs = () => {
@@ -16,6 +16,46 @@ const BranchActs = () => {
   const auth = getAuth();
 
   useEffect(() => {
+    const fetchActs = async (uid) => {
+      if (!uid || !branchId) return;
+      setLoading(true);
+
+      try {
+        const branchRef = doc(db, `users/${uid}/branches`, branchId);
+        const branchSnap = await getDoc(branchRef);
+
+        if (!branchSnap.exists()) {
+          toast.error("Branch not found");
+          setLoading(false);
+          return;
+        }
+
+        const branchData = branchSnap.data();
+        if (!branchData.acts || branchData.acts.length === 0) {
+          setActs([]);
+          setLoading(false);
+          return;
+        }
+
+        const actsCollection = collection(db, "acts");
+        const actsSnapshot = await getDocs(actsCollection);
+        const actsList = actsSnapshot.docs
+          .filter((doc) => branchData.acts.includes(doc.id))
+          .map((doc, index) => ({
+            id: doc.id,
+            serialNo: index + 1,
+            ...doc.data(),
+          }));
+
+        setActs(actsList);
+      } catch (error) {
+        console.error("Error fetching acts:", error);
+        toast.error("Error fetching acts.");
+      }
+
+      setLoading(false);
+    };
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         navigate("/login");
@@ -27,56 +67,6 @@ const BranchActs = () => {
     return () => unsubscribe();
   }, [auth, navigate, userId, branchId]);
 
-  const fetchActs = async (uid) => {
-    if (!uid || !branchId) return;
-    setLoading(true);
-
-    try {
-      const branchRef = doc(db, `users/${uid}/branches`, branchId);
-      const branchSnap = await getDoc(branchRef);
-
-      if (!branchSnap.exists()) {
-        toast.error("Branch not found");
-        setLoading(false);
-        return;
-      }
-
-      const branchData = branchSnap.data();
-      if (!branchData.acts || branchData.acts.length === 0) {
-        setActs([]);
-        setLoading(false);
-        return;
-      }
-
-      const actsCollection = collection(db, "acts");
-      const actsSnapshot = await getDocs(actsCollection);
-      const actsList = actsSnapshot.docs
-        .filter((doc) => branchData.acts.includes(doc.id))
-        .map((doc) => ({ id: doc.id, ...doc.data() }));
-
-      setActs(actsList);
-    } catch (error) {
-      console.error("Error fetching acts:", error);
-      toast.error("Error fetching acts.");
-    }
-
-    setLoading(false);
-  };
-
-  const columns = [
-    { title: "Act Code", dataIndex: "actCode", key: "actCode" },
-    { title: "Act Name", dataIndex: "actName", key: "actName" },
-    {
-      title: "Audits",
-      key: "audits",
-      render: (_, record) => (
-        <Button type="primary" onClick={() => navigate(`/audits/${record.id}`)}>
-          View Audit
-        </Button>
-      ),
-    },
-  ];
-
   return (
     <div>
       <UserNav />
@@ -84,8 +74,33 @@ const BranchActs = () => {
         <h1 className="admin-home-title">Branch Acts</h1>
         {loading ? (
           <Skeleton active />
+        ) : acts.length > 0 ? (
+          <table className="acts-table">
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Act Code</th>
+                <th>Act Name</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {acts.map((act) => (
+                <tr key={act.id}>
+                  <td>{act.serialNo}</td>
+                  <td>{act.actCode}</td>
+                  <td>{act.actName}</td>
+                  <td>
+                    <a href={`/act/${act.id}`} className="view-link">
+                      View Act Details
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
-          <Table dataSource={acts} columns={columns} rowKey="id" />
+          <Empty description="No Acts Are Assigned" />
         )}
       </div>
       <ToastContainer />

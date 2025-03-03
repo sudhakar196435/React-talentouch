@@ -3,17 +3,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"; // Added imports
 import { collection, getDocs, addDoc, deleteDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import { Table, Button, Modal, Input, Form } from "antd";
+import { Table, Button, Modal, Input, Form,Breadcrumb} from "antd";
 import { toast } from "react-toastify";
 import '../Styles/SubUsers.css';
 import UserNav from "./UserNav";
-
+import { HomeOutlined,BankOutlined,UsergroupAddOutlined } from '@ant-design/icons';
 const SubUsers = () => {
   const [subUsers, setSubUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSubUserModalOpen, setIsSubUserModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [branchLocation, setBranchLocation] = useState(""); // Add state for location
+  const [branchName, setBranchName] = useState(""); // Add state for location
   const [form] = Form.useForm();
   
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const SubUsers = () => {
       const branchDocRef = doc(db, `users/${currentUser.uid}/branches`, branchId);
       const branchDocSnapshot = await getDoc(branchDocRef);
       if (branchDocSnapshot.exists()) {
-        setBranchLocation(branchDocSnapshot.data().location); // Store location from branch
+        setBranchName(branchDocSnapshot.data().branchName); // Store location from branch
       }
 
       // Fetch sub-users
@@ -117,7 +117,18 @@ const SubUsers = () => {
     <div>
       <UserNav/>
       <div className="admin-container"> 
-        <h1 className="admin-home-title">Manage Sub Users for Branch: {branchLocation}</h1> {/* Display location instead of branchId */}
+        <h1 className="admin-home-title">Manage Sub Users for Branch: {branchName}</h1> {/* Display location instead of branchId */}
+        <Breadcrumb style={{ marginBottom: '20px' }}>
+        <Breadcrumb.Item href="/home">
+          <HomeOutlined /> Home
+        </Breadcrumb.Item>
+        <Breadcrumb.Item href="/branches">
+          <BankOutlined /> Branches
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <UsergroupAddOutlined /> Manage Sub Users
+        </Breadcrumb.Item>
+      </Breadcrumb>
         <Button type="primary" onClick={() => setIsSubUserModalOpen(true)} style={{ marginBottom: 16 }}>
           Add Sub User
         </Button>
