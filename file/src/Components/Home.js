@@ -5,7 +5,8 @@ import { doc, onSnapshot } from "firebase/firestore"; // For fetching and listen
 import { Spin,Alert } from 'antd';
 import '../Styles/Home.css';
 import UserNav from "./UserNav";
-
+import branch from "../Assets/branch.png";
+import { Skeleton } from "antd";
 const Home = () => {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState(""); // Full name state
@@ -76,9 +77,37 @@ const Home = () => {
           className="already-submitted-alert"
         />
       )}
-        <div className="status-message-container">
-          {fullName && <p><strong>Hello</strong>, {fullName}!</p>}
-        </div>
+         <div className="dashboard-container">
+      {/* Left Content */}
+      <div className="dashboard-info">
+        {loading ? (
+          <Skeleton active paragraph={{ rows: 3 }} />
+        ) : (
+          <>
+            <h1 className="dashboard-title">Welcome, {fullName}!</h1>
+            <p className="dashboard-description">
+  Manage branches and subusers of your company seamlessly with our intuitive dashboard.  
+  Access detailed reports, analyze data, and track performance in real time.
+</p>
+
+            <div className="dashboard-actions">
+              <button type="primary" className="btn-view-branches" onClick={() => navigate("/branches")}>
+                View Branches
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+      
+      {/* Right Image */}
+      <div className="dashboard-image-wrapper">
+        {loading ? (
+          <Skeleton.Image style={{ width: "100%", height: "auto" }} />
+        ) : (
+          <img src={branch} alt="Audit Process" className="dashboard-image" />
+        )}
+      </div>
+    </div>
       </div>
     </div>
   );

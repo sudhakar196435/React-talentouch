@@ -4,7 +4,7 @@ import { db } from "../firebase";
 import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
 import AdminNav from "./AdminNav";
 import { FaSearch } from "react-icons/fa";
-import { Button, message, Popconfirm, Spin, Descriptions, Select, Table, Empty } from "antd";
+import { Button, message, Popconfirm, Spin, Descriptions, Select, Empty,Drawer } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import '../Styles/UserDetail.css';
 
@@ -20,6 +20,7 @@ const UserDetail = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [subUsers, setSubUsers] = useState([]); // Store sub-users
   const [auditFrequency, setAuditFrequency] = useState(null); // New state for audit frequency
+  const [drawerVisible, setDrawerVisible] = useState(false); // State for drawer visibility
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -77,6 +78,13 @@ const UserDetail = () => {
       prevSelected.includes(actId) ? prevSelected.filter((id) => id !== actId) : [...prevSelected, actId]
     );
   };
+  const showDrawer = () => {
+    setDrawerVisible(true);
+  };
+  
+  const closeDrawer = () => {
+    setDrawerVisible(false);
+  };
 
   const handleSaveActs = async () => {
     if (!selectedBranch || !auditFrequency) {
@@ -117,7 +125,37 @@ const UserDetail = () => {
       <AdminNav />
       <div className="user-detail-container">
         <h1 className="admin-home-title">User Details</h1>
-        <Descriptions bordered column={2}>
+      
+<table className="acts-table">
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Email</td>
+          <td>{user.email}</td>
+        </tr>
+        <tr>
+          <td>Company Name</td>
+          <td>{user.companyName}</td>
+        </tr>
+      </tbody>
+    </table>
+    <Button type="primary" onClick={showDrawer} style={{ marginBottom: "1rem" }}>
+        View Full Details
+</Button>
+       <Drawer
+  title="User Profile Preview"
+  width={800}
+  placement="right"
+  onClose={closeDrawer}
+  open={drawerVisible}
+>
+  
+<Descriptions bordered column={1} size="large" >
           <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
           <Descriptions.Item label="Company Name">{user.companyName}</Descriptions.Item>
           <Descriptions.Item label="Company Address">{user.companyAddress}</Descriptions.Item>
@@ -133,6 +171,7 @@ const UserDetail = () => {
           <Descriptions.Item label="safetyOfficerName">{user.safetyOfficerName}</Descriptions.Item>
           <Descriptions.Item label="welfareOfficerName">{user.welfareOfficerName}</Descriptions.Item>
         </Descriptions>
+</Drawer>
 
         <h3>Assign User Role</h3>
         <Select value={role} onChange={setRole} style={{ width: 200 }}>
@@ -175,7 +214,7 @@ const UserDetail = () => {
             {selectedBranchDetails && (
               <div className="branch-detail">
                 <h1 className="admin-home-title">Branch Details</h1>
-                <Descriptions bordered column={2}>
+                <Descriptions bordered column={1}>
                   <Descriptions.Item label="Branch Name">{selectedBranchDetails.branchName}</Descriptions.Item>
                   <Descriptions.Item label="Location">{selectedBranchDetails.location}</Descriptions.Item>
                 </Descriptions>
@@ -186,23 +225,32 @@ const UserDetail = () => {
               <>
                 <h1 className="admin-home-title">Sub-Users</h1>
                 {subUsers.length > 0 ? (
-                  <Table
-                    dataSource={subUsers}
-                    columns={[
-                      { title: "Name", dataIndex: "name", key: "name" },
-                      { title: "Email", dataIndex: "email", key: "email" },
-                      { title: "Role", dataIndex: "role", key: "role" },
-                    ]}
-                    rowKey="id"
-                    pagination={{ pageSize: 5 }}
-                  />
+                  <table className="acts-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {subUsers.map((user) => (
+                      <tr key={user.id}>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>{user.role}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                
                 ) : (
                   <Empty description="No sub-users found for this branch." />
                 )}
               </>
             )}
-
-            <h3>Assign Acts</h3>
+<br></br>
+<h1 className="admin-home-title">Assign Acts</h1>
             <div className="search-bar">
               <FaSearch className="search-icon" />
               <input
@@ -213,7 +261,7 @@ const UserDetail = () => {
                 className="search-input"
               />
             </div>
-
+              
             <table className="acts-table">
               <thead>
                 <tr>
@@ -223,10 +271,14 @@ const UserDetail = () => {
                 </tr>
               </thead>
               <tbody>
-                {acts
-                  .filter((act) => act.actName.includes(searchQuery))
-                  .map((act) => (
-                    <tr key={act.id}>
+              {acts
+      .filter(
+        (act) =>
+          act.actName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          act.actCode.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .map((act) => (
+        <tr key={act.id}>
                       <td>{act.actCode}</td>
                       <td>{act.actName}</td>
                       <td>

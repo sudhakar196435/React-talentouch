@@ -9,7 +9,7 @@
     font-size: 1.4rem;  /* Increased size for emphasis */
     margin-bottom: 20px;
     color: #ffffff;  /* White text color for contrast */
-    background-color: #00796b; 
+    background: linear-gradient(135deg, #3b82f6, #1e5393); /* Blue gradient */
     padding: 10px;
     border-radius: 4px;  /* Rounded corners for a smoother look */
     font-family: 'Poppins', sans-serif;  /* Modern sans-serif font */

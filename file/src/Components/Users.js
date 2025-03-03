@@ -9,6 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { Button, Modal, Spin } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import emailjs from 'emailjs-com';
+import { FaSearch } from "react-icons/fa";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -97,8 +98,8 @@ const Users = () => {
   };
 
   const filteredUsers = users.filter((user) =>
-    user.fullName?.toLowerCase().includes(search.toLowerCase()) ||
     user.email?.toLowerCase().includes(search.toLowerCase()) ||
+    user.companyName?.toLowerCase().includes(search.toLowerCase()) ||
     user.mobileNumber?.toString().includes(search)
   );
 
@@ -115,20 +116,24 @@ const Users = () => {
       <AdminNav />
       <div className="admin-container">
         <h1 className="admin-home-title">Manage Users</h1>
+        <div className="search-bar">
+          <FaSearch className="search-icon" />
         <input
           type="text"
-          placeholder="Search by Name, Email, or Mobile"
+          placeholder="Search by Company, Email, or Mobile"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
         />
-        <table>
+        </div>
+        <table className="acts-table">
           <thead>
             <tr>
               <th>S.No</th>
               <th>Company Name</th>
               <th>Email</th>
               <th>Mobile Number</th>
+              <th>Role</th>
               <th>Active Status</th>
               <th>Actions</th>
             </tr>
@@ -140,6 +145,7 @@ const Users = () => {
                 <td>{user.companyName}</td>
                 <td>{user.email}</td>
                 <td>{user.mobileNumber}</td>
+                <td>{user.role}</td>
                 <td>{user.active ? "Active" : "Inactive"}</td>
                 <td>
                   {user.active ? (

@@ -67,7 +67,7 @@ const AdminSettings = () => {
         
           {userData ? (
              <div className="admin-info">
-             <Descriptions bordered column={2} className="profile-table">
+             <Descriptions bordered column={1} className="profile-table">
                <Descriptions.Item label="Email">{userData.email}</Descriptions.Item>
                <Descriptions.Item label="Company Name">{userData.companyName}</Descriptions.Item>
                <Descriptions.Item label="Company Address">{userData.companyAddress}</Descriptions.Item>

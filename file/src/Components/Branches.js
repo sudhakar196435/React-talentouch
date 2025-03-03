@@ -101,6 +101,8 @@ const Branches = () => {
   const columns = [
     { title: "Branch Name", dataIndex: "branchName", key: "branchName" },
     { title: "Location", dataIndex: "location", key: "location" },
+    { title: "Audit Frequency", dataIndex: "auditFrequency", key: "auditFrequency" },
+    
     {
       title: "Actions",
       key: "actions",
