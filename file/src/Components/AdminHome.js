@@ -4,11 +4,11 @@ import { auth } from "../firebase";
 import { doc, getDoc, collection, getDocs } from "firebase/firestore"; // Firestore imports
 import { db } from "../firebase";
 import AdminNav from "./AdminNav";
-import { Spin } from 'antd';
+import { Spin,Button,Card } from 'antd';
 import { FaUsers, FaCheckCircle, FaTimesCircle, FaUserShield, FaUserTie } from 'react-icons/fa'; // Added Admin & Auditor icons
 import '../Styles/AdminHome.css';
 import dashboard from "../Assets/dashboard.png";
-
+import actsImage from "../Assets/image.png";
 function AdminHome() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
@@ -140,6 +140,22 @@ function AdminHome() {
 </div>
         </div>
         
+        <Card className="acts-card">
+      <div className="acts-card-wrapper">
+        {/* Left Side - Image */}
+        <div className="acts-card-image">
+          <img src={actsImage} alt="Acts" />
+        </div>
+
+        {/* Right Side - Content */}
+        <div className="acts-card-content">
+          <h2>Acts Management</h2>
+          <p>Manage and view all acts in the system. Click below to access the Acts page.</p>
+          <Button type="primary" size="large" className="acts-card-button" onClick={() => navigate("/acts")}> View All Acts</Button>
+
+        </div>
+      </div>
+    </Card>
       </div>
     </div>
   );

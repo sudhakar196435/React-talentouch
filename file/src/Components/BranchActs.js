@@ -5,8 +5,9 @@ import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Skeleton, Empty } from "antd";
+import { Skeleton, Empty,Breadcrumb } from "antd";
 import UserNav from "./UserNav";
+import { HomeOutlined,BankOutlined,FileTextOutlined } from '@ant-design/icons';
 
 const BranchActs = () => {
   const { branchId, userId } = useParams();
@@ -72,6 +73,17 @@ const BranchActs = () => {
       <UserNav />
       <div className="admin-container">
         <h1 className="admin-home-title">Branch Acts</h1>
+        <Breadcrumb style={{ marginBottom: '20px' }}>
+        <Breadcrumb.Item href="/home">
+          <HomeOutlined /> Home
+        </Breadcrumb.Item>
+        <Breadcrumb.Item href="/branches">
+          <BankOutlined /> Branches
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <FileTextOutlined /> Branch Acts
+        </Breadcrumb.Item>
+      </Breadcrumb>
         {loading ? (
           <Skeleton active />
         ) : acts.length > 0 ? (

@@ -103,15 +103,11 @@ const ActDetailsView = () => {
   return (
     <div>
       {userRole === "admin" ? <AdminNav /> : <UserNav />}
-
       <div className="admin-home-container">
-        {/* Back Button */}
-        <button onClick={handleBack} className="back-button">Back</button>
-
         {act ? (
           <div className="act-detail">
             <h2 className="detail-title">Details for {act.actName}</h2>
-
+            <button onClick={handleBack} className="back-button">Back</button>
             <div className="details-section">
               <table className="details-table">
                 <tbody>
