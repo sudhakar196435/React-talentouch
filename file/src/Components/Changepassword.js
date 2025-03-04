@@ -29,7 +29,7 @@ const ChangePassword = () => {
         setUser(currentUser);
         await fetchUserRole(currentUser.uid);
       } else {
-        navigate("/login"); // Redirect to login if no user
+        navigate("/AccessDenied"); // Redirect to login if no user
       }
       setLoading(false);
     });

@@ -4,9 +4,10 @@ import { db } from "../firebase";
 import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
 import AdminNav from "./AdminNav";
 import { FaSearch } from "react-icons/fa";
-import { Button, message, Popconfirm, Spin, Descriptions, Select, Empty,Drawer } from "antd";
+import { Button, message, Popconfirm, Spin, Descriptions, Select, Empty,Drawer,Breadcrumb } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import '../Styles/UserDetail.css';
+import { HomeOutlined,TeamOutlined,IdcardOutlined} from '@ant-design/icons';
 
 const UserDetail = () => {
   const { userId } = useParams();
@@ -125,6 +126,17 @@ const UserDetail = () => {
       <AdminNav />
       <div className="user-detail-container">
         <h1 className="admin-home-title">User Details</h1>
+        <Breadcrumb style={{ marginBottom: '20px' }}>
+          <Breadcrumb.Item href="/adminhome">
+            <HomeOutlined /> Home
+          </Breadcrumb.Item>
+          <Breadcrumb.Item href="/users">
+            <TeamOutlined /> Manage Users
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <IdcardOutlined /> User Details
+          </Breadcrumb.Item>
+        </Breadcrumb>
       
 <table className="acts-table">
       <thead>

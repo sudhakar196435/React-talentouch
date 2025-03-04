@@ -14,7 +14,7 @@ const SubUserProfile = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (!user) {
-        navigate("/login");
+        navigate("/AccessDenied");
       } else {
         try {
           const q = query(collection(db, "subUsers"), where("userId", "==", user.uid));

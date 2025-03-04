@@ -27,7 +27,7 @@ const AuditorHome = () => {
               setFullName(userData.fullName || "Auditor");
 
               if (userData.role !== "auditor") {
-                navigate("/login");
+                navigate("/AccessDenied");
               }
             } else {
               navigate("/login");

@@ -32,7 +32,7 @@ const Settings = () => {
         }
       } else {
         // Redirect to login page if no user is logged in
-        navigate("/login");
+        navigate("/AccessDenied");
       }
     };
 

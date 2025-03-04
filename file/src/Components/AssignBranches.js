@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { useParams, useNavigate } from "react-router-dom";
-import { Table, Checkbox, Button, Spin, message, Result } from "antd";
+import { Table, Checkbox, Button, Spin, message, Result,Breadcrumb } from "antd";
 import AdminNav from "./AdminNav";
+import {  HomeOutlined,ApartmentOutlined,AuditOutlined} from '@ant-design/icons';
 
 const AssignBranches = () => {
   const { auditorId } = useParams();
@@ -141,6 +142,18 @@ const AssignBranches = () => {
         ) : (
           <>
             <h1 className="admin-home-title">Assign Branches</h1>
+            <Breadcrumb style={{ marginBottom: '20px' }}>
+          <Breadcrumb.Item href="/adminhome">
+            <HomeOutlined /> Home
+          </Breadcrumb.Item>
+          <Breadcrumb.Item href="/aud">
+          <AuditOutlined /> Auditors List
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <ApartmentOutlined /> Assign Branches
+          </Breadcrumb.Item>
+        </Breadcrumb>
+            
             <Table dataSource={branches} columns={columns} rowKey="id" />
             <Button type="primary" onClick={handleSave} style={{ marginTop: "20px" }}>
               Save

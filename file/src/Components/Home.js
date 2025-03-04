@@ -41,7 +41,7 @@ const Home = () => {
         );
       } else {
         // If no user is logged in, redirect to the login page
-        navigate("/login");
+        navigate("/AccessDenied");
       }
     });
 

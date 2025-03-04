@@ -20,7 +20,7 @@ const Branches = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        navigate("/login");
+        navigate("/AccessDenied");
       } else {
         setCurrentUser(user);
         fetchBranches(user);

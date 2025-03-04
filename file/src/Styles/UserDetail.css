@@ -45,7 +45,6 @@
   padding: 12px;
   text-align: left;
   border: 1px solid #e1e4e8;
-  white-space: nowrap; /* Prevents text wrapping */
 }
 
 .acts-table th {

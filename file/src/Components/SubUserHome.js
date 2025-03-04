@@ -24,7 +24,7 @@ const SubUserHome = () => {
         setUserEmail(user.email);
       } else {
         setUserAuthenticated(false);
-        navigate("/login");
+        navigate("/AccessDenied");
       }
     });
     return () => unsubscribe();

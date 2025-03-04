@@ -6,20 +6,14 @@ const Unauthorized = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "100vh",
-      backgroundColor: "#f5f5f5"
-    }}>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
       <Result
         status="403"
-        title="403"
-        subTitle="Sorry, you are not authorized to access this page."
+        title="Unauthorized Access"
+        subTitle="You are not logged in. Please log in to continue."
         extra={
           <Button type="primary" onClick={() => navigate("/login")}>
-            Go to Home
+            Go to Login
           </Button>
         }
       />

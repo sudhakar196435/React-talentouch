@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { Table, Button, Spin } from "antd";
+import { Table, Button, Spin, Breadcrumb } from "antd";
 import { useNavigate } from "react-router-dom";
+import {  AuditOutlined,HomeOutlined} from '@ant-design/icons';
 import AdminNav from "./AdminNav";
 
 const AuditorsList = () => {
@@ -58,6 +59,14 @@ const AuditorsList = () => {
       <AdminNav />
       <div className="user-detail-container">
         <h1 className="admin-home-title">Auditors List</h1>
+        <Breadcrumb style={{ marginBottom: '20px' }}>
+          <Breadcrumb.Item href="/adminhome">
+            <HomeOutlined /> Home
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <AuditOutlined /> Auditors List
+          </Breadcrumb.Item>
+        </Breadcrumb>
         <Table dataSource={auditors} columns={columns} rowKey="id" />
       </div>
     </div>

@@ -6,8 +6,8 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import '../Styles/Users.css';
 import AdminNav from "./AdminNav";
 import { ToastContainer, toast } from 'react-toastify';
-import { Button, Modal, Spin } from 'antd';
-import { EyeOutlined } from '@ant-design/icons';
+import { Button, Modal, Spin,Tag,Breadcrumb } from 'antd';
+import { EyeOutlined ,HomeOutlined,TeamOutlined} from '@ant-design/icons';
 import emailjs from 'emailjs-com';
 import { FaSearch } from "react-icons/fa";
 
@@ -28,7 +28,7 @@ const Users = () => {
         setUserAuthenticated(true);
       } else {
         setUserAuthenticated(false);
-        navigate("/login");
+        navigate("/AccessDenied");
       }
     });
     return () => unsubscribe();
@@ -116,6 +116,14 @@ const Users = () => {
       <AdminNav />
       <div className="admin-container">
         <h1 className="admin-home-title">Manage Users</h1>
+        <Breadcrumb style={{ marginBottom: '20px' }}>
+          <Breadcrumb.Item href="/adminhome">
+            <HomeOutlined /> Home
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <TeamOutlined /> Manage Users
+          </Breadcrumb.Item>
+        </Breadcrumb>
         <div className="search-bar">
           <FaSearch className="search-icon" />
         <input
@@ -145,7 +153,11 @@ const Users = () => {
                 <td>{user.companyName}</td>
                 <td>{user.email}</td>
                 <td>{user.mobileNumber}</td>
-                <td>{user.role}</td>
+                <td>
+              <Tag color={user.role === "admin" ? "red": user.role === "auditor" ? "orange": "blue"}>
+                {user.role}
+              </Tag>
+                </td>
                 <td>{user.active ? "Active" : "Inactive"}</td>
                 <td>
                   {user.active ? (

@@ -20,7 +20,7 @@ const ActDetailsView = () => {
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        navigate("/login");
+        navigate("/AccessDenied");
       } else {
         fetchUserRole(user.uid);
       }

@@ -15,7 +15,7 @@ const AuditorSettings = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (!user) {
-        navigate('/login'); // Redirect if no user is logged in
+        navigate('/AccessDenied'); // Redirect if no user is logged in
         return;
       }
 

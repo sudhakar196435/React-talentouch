@@ -55,7 +55,7 @@ const SubUsers = () => {
         setCurrentUser(user);
       } else {
         toast.warning("You must be logged in!");
-        navigate("/login");
+        navigate("/AccessDenied");
       }
     });
 

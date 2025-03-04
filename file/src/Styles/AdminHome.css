@@ -9,7 +9,7 @@
     font-size: 1.4rem;  /* Increased size for emphasis */
     margin-bottom: 20px;
     color: #ffffff;  /* White text color for contrast */
-    background: linear-gradient(135deg, #3b82f6, #1e5393); /* Blue gradient */
+  background: linear-gradient(135deg, #3b82f6, #60a5fa); /* Blue gradient */
     padding: 10px;
     border-radius: 4px;  /* Rounded corners for a smoother look */
     font-family: 'Poppins', sans-serif;  /* Modern sans-serif font */
@@ -22,6 +22,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
+    padding: 20px;
     justify-items: center;
   }
   
@@ -50,37 +51,4 @@
     margin-top: 10px;
     font-weight: 600;
   }
-  .stat-card.active {
- 
-  border-left: 5px solid #28a745;  /* Green border */
-}
-.stat-card.active p{
- color: #28a745;
-  }
   
-
-.stat-card.inactive {
- 
-  border-left: 5px solid #ffc107;  /* Yellow border */
-}
-.stat-card.inactive p{
- 
-    color:  #ffc107;  /* Yellow border */
-  }
-
-.stat-card.blocked {
- 
-  border-left: 5px solid #dc3545;  /* Red border */
-}
-.stat-card.blocked p{
- 
-    color:  #dc3545;  /* Red border */
-  }
-.stat-card.total {
-   
-    border-left: 5px solid #007bff;  /* Blue border */
-  }
-  .stat-card.total p {
-   
-    color:  #007bff;  /* Blue border */
-  }

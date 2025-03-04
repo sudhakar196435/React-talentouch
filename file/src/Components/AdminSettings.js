@@ -18,7 +18,7 @@ const AdminSettings = () => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (!user) {
         // If there is no logged-in user, redirect to login page
-        navigate('/login');
+        navigate('/AccessDenied');
         return;
       }
 
