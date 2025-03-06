@@ -4,10 +4,10 @@ import { db } from "../firebase";
 import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
 import AdminNav from "./AdminNav";
 import { FaSearch } from "react-icons/fa";
-import { Button, message, Popconfirm, Spin, Descriptions, Select, Empty,Drawer,Breadcrumb } from "antd";
+import { Button, message, Popconfirm, Spin, Descriptions, Select, Empty, Drawer, Breadcrumb } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import '../Styles/UserDetail.css';
-import { HomeOutlined,TeamOutlined,IdcardOutlined} from '@ant-design/icons';
+import { HomeOutlined, TeamOutlined, IdcardOutlined } from '@ant-design/icons';
 
 const UserDetail = () => {
   const { userId } = useParams();
@@ -79,6 +79,7 @@ const UserDetail = () => {
       prevSelected.includes(actId) ? prevSelected.filter((id) => id !== actId) : [...prevSelected, actId]
     );
   };
+
   const showDrawer = () => {
     setDrawerVisible(true);
   };
@@ -138,52 +139,51 @@ const UserDetail = () => {
           </Breadcrumb.Item>
         </Breadcrumb>
       
-<table className="acts-table">
-      <thead>
-        <tr>
-          <th>Field</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Email</td>
-          <td>{user.email}</td>
-        </tr>
-        <tr>
-          <td>Company Name</td>
-          <td>{user.companyName}</td>
-        </tr>
-      </tbody>
-    </table>
-    <Button type="primary" onClick={showDrawer} style={{ marginBottom: "1rem" }}>
-        View Full Details
-</Button>
-       <Drawer
-  title="User Profile Preview"
-  width={800}
-  placement="right"
-  onClose={closeDrawer}
-  open={drawerVisible}
->
-  
-<Descriptions bordered column={1} size="large" >
-          <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
-          <Descriptions.Item label="Company Name">{user.companyName}</Descriptions.Item>
-          <Descriptions.Item label="Company Address">{user.companyAddress}</Descriptions.Item>
-          <Descriptions.Item label="Industry Type">{user.industryType}</Descriptions.Item>
-          <Descriptions.Item label="coordinatorName">{user.coordinatorName}</Descriptions.Item>
-          <Descriptions.Item label="directorName">{user.directorName}</Descriptions.Item>
-          <Descriptions.Item label="hazardous">{user.hazardous}</Descriptions.Item>
-          <Descriptions.Item label="hpAndManPower">{user.hpAndManPower}</Descriptions.Item>
-          <Descriptions.Item label="industryType">{user.industryType}</Descriptions.Item>
-          <Descriptions.Item label="licenseNo">{user.licenseNo}</Descriptions.Item>
-          <Descriptions.Item label="medicalAdvisorName">{user.medicalAdvisorName}</Descriptions.Item>
-          <Descriptions.Item label="occupierName">{user.occupierName}</Descriptions.Item>
-          <Descriptions.Item label="safetyOfficerName">{user.safetyOfficerName}</Descriptions.Item>
-          <Descriptions.Item label="welfareOfficerName">{user.welfareOfficerName}</Descriptions.Item>
-        </Descriptions>
-</Drawer>
+        <table className="acts-table">
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Email</td>
+              <td>{user.email}</td>
+            </tr>
+            <tr>
+              <td>Company Name</td>
+              <td>{user.companyName}</td>
+            </tr>
+          </tbody>
+        </table>
+        <Button type="primary" onClick={showDrawer} style={{ marginBottom: "1rem" }}>
+          View Full Details
+        </Button>
+        <Drawer
+          title="User Profile Preview"
+          width={800}
+          placement="right"
+          onClose={closeDrawer}
+          open={drawerVisible}
+        >
+          <Descriptions bordered column={1} size="large" >
+            <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
+            <Descriptions.Item label="Company Name">{user.companyName}</Descriptions.Item>
+            <Descriptions.Item label="Company Address">{user.companyAddress}</Descriptions.Item>
+            <Descriptions.Item label="Industry Type">{user.industryType}</Descriptions.Item>
+            <Descriptions.Item label="coordinatorName">{user.coordinatorName}</Descriptions.Item>
+            <Descriptions.Item label="directorName">{user.directorName}</Descriptions.Item>
+            <Descriptions.Item label="hazardous">{user.hazardous}</Descriptions.Item>
+            <Descriptions.Item label="hpAndManPower">{user.hpAndManPower}</Descriptions.Item>
+            <Descriptions.Item label="industryType">{user.industryType}</Descriptions.Item>
+            <Descriptions.Item label="licenseNo">{user.licenseNo}</Descriptions.Item>
+            <Descriptions.Item label="medicalAdvisorName">{user.medicalAdvisorName}</Descriptions.Item>
+            <Descriptions.Item label="occupierName">{user.occupierName}</Descriptions.Item>
+            <Descriptions.Item label="safetyOfficerName">{user.safetyOfficerName}</Descriptions.Item>
+            <Descriptions.Item label="welfareOfficerName">{user.welfareOfficerName}</Descriptions.Item>
+          </Descriptions>
+        </Drawer>
 
         <h3>Assign User Role</h3>
         <Select value={role} onChange={setRole} style={{ width: 200 }}>
@@ -216,9 +216,10 @@ const UserDetail = () => {
                   onChange={setAuditFrequency}
                   placeholder="Select Audit Frequency"
                 >
-                  <Select.Option value="1">1 min</Select.Option>
-                  <Select.Option value="2">2 min</Select.Option>
-                  <Select.Option value="3">3 min</Select.Option>
+                  <Select.Option value="Monthly">Monthly</Select.Option>
+                  <Select.Option value="Quarterly">Quarterly</Select.Option>
+                  <Select.Option value="Half Yearly">Half Yearly</Select.Option>
+                  <Select.Option value="Yearly">Yearly</Select.Option>
                 </Select>
               </div>
             </div>
@@ -238,31 +239,30 @@ const UserDetail = () => {
                 <h1 className="admin-home-title">Sub-Users</h1>
                 {subUsers.length > 0 ? (
                   <table className="acts-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Role</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {subUsers.map((user) => (
-                      <tr key={user.id}>
-                        <td>{user.name}</td>
-                        <td>{user.email}</td>
-                        <td>{user.role}</td>
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                
+                    </thead>
+                    <tbody>
+                      {subUsers.map((user) => (
+                        <tr key={user.id}>
+                          <td>{user.name}</td>
+                          <td>{user.email}</td>
+                          <td>{user.role}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 ) : (
                   <Empty description="No sub-users found for this branch." />
                 )}
               </>
             )}
-<br></br>
-<h1 className="admin-home-title">Assign Acts</h1>
+            <br></br>
+            <h1 className="admin-home-title">Assign Acts</h1>
             <div className="search-bar">
               <FaSearch className="search-icon" />
               <input
@@ -283,14 +283,14 @@ const UserDetail = () => {
                 </tr>
               </thead>
               <tbody>
-              {acts
-      .filter(
-        (act) =>
-          act.actName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          act.actCode.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      .map((act) => (
-        <tr key={act.id}>
+                {acts
+                  .filter(
+                    (act) =>
+                      act.actName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      act.actCode.toLowerCase().includes(searchQuery.toLowerCase())
+                  )
+                  .map((act) => (
+                    <tr key={act.id}>
                       <td>{act.actCode}</td>
                       <td>{act.actName}</td>
                       <td>

@@ -16,12 +16,15 @@ import {
   Breadcrumb,
   Collapse,
   Input,
+  DatePicker,
+  Select,
 } from "antd";
 import { HomeOutlined, AuditOutlined, BankOutlined } from "@ant-design/icons";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AuditorNav from "./AuditorNav";
 import "../Styles/AuditQuestions.css";
+import moment from "moment";
 
 const { Panel } = Collapse;
 const { Search } = Input;
@@ -34,16 +37,38 @@ const AuditQuestions = () => {
   const [branchDetails, setBranchDetails] = useState(null);
   const [acts, setActs] = useState([]);
   const [actQuestions, setActQuestions] = useState({}); // { actId: [questions] }
-  // auditResponses: { actId: { selectedStatus: { [questionId]: value }, remarks: { [questionId]: value } } }
   const [auditResponses, setAuditResponses] = useState({});
   const [combinedAlreadySubmitted, setCombinedAlreadySubmitted] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Use one single key for saving progress for all acts
+  // For Quarterly and Half Yearly, we store a string (selectedPeriod).
+  // For Monthly and Yearly, we now use separate state:
+  const [selectedYear, setSelectedYear] = useState(moment().year());
+  const [selectedMonth, setSelectedMonth] = useState(moment().month()); // 0-indexed (0=January)
+  const [selectedPeriod, setSelectedPeriod] = useState(null); // used for Quarterly/Half-Yearly
+
+  // Key for localStorage
   const storageKey = `auditProgress_${userId}_${branchId}`;
 
-  // Fetch branch details and acts (branch document is expected to have an 'acts' array)
+  // Helper function to get formatted period string based on frequency
+  const getFormattedPeriod = () => {
+    const frequency = branchDetails?.auditFrequency;
+    if (frequency === "Monthly") {
+      // Format month as two-digit string
+      const monthStr = String(selectedMonth + 1).padStart(2, "0");
+      return `${selectedYear}-${monthStr}`;
+    } else if (frequency === "Yearly") {
+      return String(selectedYear);
+    } else if (frequency === "Quarterly" && selectedPeriod) {
+      return selectedPeriod; // e.g., "2023-Q3"
+    } else if (frequency === "Half Yearly" && selectedPeriod) {
+      return selectedPeriod; // e.g., "2023-H1"
+    }
+    return null;
+  };
+
+  // Fetch branch details and acts
   const fetchBranchAndActs = useCallback(async () => {
     try {
       const branchRef = doc(db, `users/${userId}/branches/${branchId}`);
@@ -54,6 +79,20 @@ const AuditQuestions = () => {
       }
       const branchData = branchSnap.data();
       setBranchDetails(branchData);
+
+      // Set default period for Quarterly/Half-Yearly if not set
+      if (!selectedPeriod) {
+        const frequency = branchData.auditFrequency;
+        if (frequency === "Quarterly") {
+          const currentYear = new Date().getFullYear();
+          const currentQuarter = Math.ceil((new Date().getMonth() + 1) / 3);
+          setSelectedPeriod(`${currentYear}-Q${currentQuarter}`);
+        } else if (frequency === "Half Yearly") {
+          const currentYear = new Date().getFullYear();
+          const half = new Date().getMonth() < 6 ? "H1" : "H2";
+          setSelectedPeriod(`${currentYear}-${half}`);
+        }
+      }
       const actIds = branchData.acts || [];
       let actsData = [];
       for (const actId of actIds) {
@@ -70,13 +109,13 @@ const AuditQuestions = () => {
     } finally {
       setLoading(false);
     }
-  }, [db, userId, branchId]);
+  }, [db, userId, branchId, selectedPeriod]);
 
   useEffect(() => {
     fetchBranchAndActs();
   }, [fetchBranchAndActs]);
 
-  // Fetch questions for a given act and store in actQuestions
+  // Fetch questions for each act
   const fetchQuestionsForAct = useCallback(
     async (actId) => {
       try {
@@ -102,7 +141,6 @@ const AuditQuestions = () => {
     [db]
   );
 
-  // When acts are loaded, fetch questions for each act.
   useEffect(() => {
     if (acts.length > 0) {
       acts.forEach((act) => {
@@ -111,7 +149,7 @@ const AuditQuestions = () => {
     }
   }, [acts, fetchQuestionsForAct]);
 
-  // Load saved audit responses (for all acts) from localStorage
+  // Load saved progress
   useEffect(() => {
     const savedProgress = localStorage.getItem(storageKey);
     if (savedProgress) {
@@ -124,51 +162,41 @@ const AuditQuestions = () => {
     }
   }, [storageKey]);
 
-  // Frequency check for combined submission:
-  // Query the submissions collection for any combined submission and compare timestamp
+  // Check if a submission for the selected period already exists
   const checkCombinedSubmissionStatus = useCallback(async () => {
     try {
-      // Get frequency (in minutes) from branchDetails (default to 1 if not set)
-      const auditFrequency = branchDetails?.auditFrequency || "1";
-      const frequencyInMinutes = parseInt(auditFrequency, 10);
+      const periodStr = getFormattedPeriod();
+      if (!periodStr) {
+        setCombinedAlreadySubmitted(false);
+        return;
+      }
       const submissionsRef = collection(
         db,
         `users/${userId}/branches/${branchId}/submissions`
       );
       const submissionsSnapshot = await getDocs(submissionsRef);
-      let lastSubmissionTime = null;
+      let submissionFound = false;
       submissionsSnapshot.docs.forEach((doc) => {
-        if (doc.data().isCombinedSubmission) {
-          const timestamp = doc.data().timestamp.toDate();
-          if (!lastSubmissionTime || timestamp > lastSubmissionTime) {
-            lastSubmissionTime = timestamp;
-          }
+        if (
+          doc.data().isCombinedSubmission &&
+          doc.data().period === periodStr
+        ) {
+          submissionFound = true;
         }
       });
-      if (lastSubmissionTime) {
-        const currentTime = new Date();
-        const timeDifference = (currentTime - lastSubmissionTime) / (1000 * 60);
-        if (timeDifference < frequencyInMinutes) {
-          setCombinedAlreadySubmitted(true);
-        } else {
-          setCombinedAlreadySubmitted(false);
-        }
-      } else {
-        setCombinedAlreadySubmitted(false);
-      }
+      setCombinedAlreadySubmitted(submissionFound);
     } catch (error) {
       console.error("❌ Error checking combined submission status:", error);
     }
-  }, [db, userId, branchId, branchDetails]);
+  }, [db, userId, branchId, selectedPeriod, branchDetails, selectedYear, selectedMonth]);
 
   useEffect(() => {
     if (branchDetails) {
       checkCombinedSubmissionStatus();
     }
-  }, [branchDetails, checkCombinedSubmissionStatus]);
+  }, [branchDetails, selectedPeriod, selectedYear, selectedMonth, checkCombinedSubmissionStatus]);
 
-  // Update responses for a given act and question.
-  // field: "selectedStatus" or "remarks"
+  // Update responses for a question
   const handleResponseChange = (actId, questionId, field, value) => {
     setAuditResponses((prev) => {
       const actResponse = prev[actId] || { selectedStatus: {}, remarks: {} };
@@ -177,22 +205,23 @@ const AuditQuestions = () => {
     });
   };
 
-  // Save audit progress (for all acts) to localStorage
+  // Save progress
   const handleSaveAudit = () => {
     localStorage.setItem(storageKey, JSON.stringify(auditResponses));
     toast.success("Progress saved successfully!");
   };
 
-  // Submit combined audit responses for all acts
+  // Submit audit responses
   const handleSubmitAudit = async () => {
+    const periodStr = getFormattedPeriod();
     if (combinedAlreadySubmitted) {
       toast.warning(
-        "You have already submitted this audit recently. Please wait for the next allowed submission."
+        "You have already submitted this audit for the selected period. Please choose another period or wait for the next allowed submission."
       );
       return;
     }
 
-    // Validate that every question for every act has a selected status
+    // Validate all questions answered
     let allQuestionsAnswered = true;
     acts.forEach((act) => {
       const questionsForAct = actQuestions[act.id] || [];
@@ -214,13 +243,9 @@ const AuditQuestions = () => {
     }
 
     try {
-      // Combine answers from all acts
       let answers = [];
       acts.forEach((act) => {
-        const responses = auditResponses[act.id] || {
-          selectedStatus: {},
-          remarks: {},
-        };
+        const responses = auditResponses[act.id] || { selectedStatus: {}, remarks: {} };
         const questionsForAct = actQuestions[act.id] || [];
         questionsForAct.forEach((question) => {
           answers.push({
@@ -246,6 +271,7 @@ const AuditQuestions = () => {
         branchId,
         userId,
         timestamp: submissionTime,
+        period: periodStr,
         answers,
       };
       await setDoc(submissionDocRef, submissionData);
@@ -257,6 +283,103 @@ const AuditQuestions = () => {
       console.error("❌ Error submitting audit:", error);
       toast.error("Failed to submit audit.");
     }
+  };
+
+  // Render period picker based on audit frequency using Ant Design's Select components
+  const renderPeriodPicker = () => {
+    const frequency = branchDetails?.auditFrequency;
+    if (!frequency) return null;
+
+    const currentYear = moment().year();
+    const years = [];
+    for (let year = currentYear; year >= currentYear - 10; year--) {
+      years.push({ label: String(year), value: year });
+    }
+
+    if (frequency === "Monthly") {
+      const months = moment.months().map((m, idx) => ({ label: m, value: idx }));
+      return (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <Select
+            style={{ width: 100 }}
+            value={selectedYear}
+            onChange={(value) => setSelectedYear(value)}
+          >
+            {years.map((opt) => (
+              <Select.Option key={opt.value} value={opt.value}>
+                {opt.label}
+              </Select.Option>
+            ))}
+          </Select>
+          <Select
+            style={{ width: 120 }}
+            value={selectedMonth}
+            onChange={(value) => setSelectedMonth(value)}
+          >
+            {months.map((opt) => (
+              <Select.Option key={opt.value} value={opt.value}>
+                {opt.label}
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
+      );
+    } else if (frequency === "Yearly") {
+      return (
+        <Select
+          style={{ width: 120 }}
+          value={selectedYear}
+          onChange={(value) => setSelectedYear(value)}
+        >
+          {years.map((opt) => (
+            <Select.Option key={opt.value} value={opt.value}>
+              {opt.label}
+            </Select.Option>
+          ))}
+        </Select>
+      );
+    } else if (frequency === "Quarterly") {
+      const options = [];
+      for (let year = currentYear; year >= currentYear - 10; year--) {
+        options.push({ label: `${year} - Q1`, value: `${year}-Q1` });
+        options.push({ label: `${year} - Q2`, value: `${year}-Q2` });
+        options.push({ label: `${year} - Q3`, value: `${year}-Q3` });
+        options.push({ label: `${year} - Q4`, value: `${year}-Q4` });
+      }
+      return (
+        <Select
+          style={{ width: 200 }}
+          value={selectedPeriod || `${currentYear}-Q${Math.ceil((moment().month() + 1) / 3)}`}
+          onChange={(value) => setSelectedPeriod(value)}
+        >
+          {options.map((opt) => (
+            <Select.Option key={opt.value} value={opt.value}>
+              {opt.label}
+            </Select.Option>
+          ))}
+        </Select>
+      );
+    } else if (frequency === "Half Yearly") {
+      const options = [];
+      for (let year = currentYear; year >= currentYear - 10; year--) {
+        options.push({ label: `${year} - H1`, value: `${year}-H1` });
+        options.push({ label: `${year} - H2`, value: `${year}-H2` });
+      }
+      return (
+        <Select
+          style={{ width: 200 }}
+          value={selectedPeriod || `${currentYear}-${moment().month() < 6 ? "H1" : "H2"}`}
+          onChange={(value) => setSelectedPeriod(value)}
+        >
+          {options.map((opt) => (
+            <Select.Option key={opt.value} value={opt.value}>
+              {opt.label}
+            </Select.Option>
+          ))}
+        </Select>
+      );
+    }
+    return null;
   };
 
   if (submissionSuccess) {
@@ -297,6 +420,10 @@ const AuditQuestions = () => {
             <AuditOutlined /> Audit
           </Breadcrumb.Item>
         </Breadcrumb>
+        <div style={{ marginBottom: "20px" }}>
+          <label style={{ marginRight: "8px", fontWeight: "bold" }}>Select Period:</label>
+          {renderPeriodPicker()}
+        </div>
         {loading ? (
           <div>Loading...</div>
         ) : !branchDetails ? (
@@ -316,7 +443,6 @@ const AuditQuestions = () => {
                       <strong>Act Name:</strong> {act.actName || "N/A"}
                     </p>
                   </div>
-                  {/* (Optional) Search input for questions per act */}
                   <div className="search-container">
                     <Search placeholder="Search questions..." />
                   </div>
@@ -329,86 +455,61 @@ const AuditQuestions = () => {
                     />
                   )}
                   {!actQuestions[act.id] || actQuestions[act.id].length === 0 ? (
-                    <Empty
-                      description="No questions available"
-                      className="empty-state"
-                    />
+                    <Empty description="No questions available" className="empty-state" />
                   ) : (
                     <div className="table-container">
-                    <table className="acts-table">
-                      <thead>
-                        <tr>
-                          <th>S.No</th>
-                          <th>Question</th>
-                          <th>Register or Form</th>
-                          <th>Time Limit</th>
-                          <th>Risk</th>
-                          <th>Type</th>
-                          <th>Status</th>
-                          <th>Remarks</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {actQuestions[act.id].map((question, index) => (
-                          <tr key={question.id}>
-                            <td className="sno-cell">{index + 1}</td>
-                            <td>{question.text}</td>
-                            <td>{question.registerForm}</td>
-                            <td>{question.timeLimit}</td>
-                            <td>{question.risk}</td>
-                            <td>{question.type}</td>
-                            <td className="status-cell">
-                              <select
-                                value={
-                                  auditResponses[act.id]?.selectedStatus?.[
-                                    question.id
-                                  ] || ""
-                                }
-                                onChange={(e) =>
-                                  handleResponseChange(
-                                    act.id,
-                                    question.id,
-                                    "selectedStatus",
-                                    e.target.value
-                                  )
-                                }
-                                disabled={combinedAlreadySubmitted}
-                              >
-                                <option value="">Select Status</option>
-                                <option value="Complied">Complied</option>
-                                <option value="Not Complied">Not Complied</option>
-                                <option value="Partial Complied">
-                                  Partial Complied
-                                </option>
-                                <option value="Not Applicable">
-                                  Not Applicable
-                                </option>
-                              </select>
-                            </td>
-                            <td className="status-cell">
-                              <textarea
-                                value={
-                                  auditResponses[act.id]?.remarks?.[
-                                    question.id
-                                  ] || ""
-                                }
-                                onChange={(e) =>
-                                  handleResponseChange(
-                                    act.id,
-                                    question.id,
-                                    "remarks",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Add remarks"
-                                rows={3}
-                                disabled={combinedAlreadySubmitted}
-                              />
-                            </td>
+                      <table className="acts-table">
+                        <thead>
+                          <tr>
+                            <th>S.No</th>
+                            <th>Question</th>
+                            <th>Register or Form</th>
+                            <th>Time Limit</th>
+                            <th>Risk</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {actQuestions[act.id].map((question, index) => (
+                            <tr key={question.id}>
+                              <td className="sno-cell">{index + 1}</td>
+                              <td>{question.text}</td>
+                              <td>{question.registerForm}</td>
+                              <td>{question.timeLimit}</td>
+                              <td>{question.risk}</td>
+                              <td>{question.type}</td>
+                              <td className="status-cell">
+                                <select
+                                  value={auditResponses[act.id]?.selectedStatus?.[question.id] || ""}
+                                  onChange={(e) =>
+                                    handleResponseChange(act.id, question.id, "selectedStatus", e.target.value)
+                                  }
+                                  disabled={combinedAlreadySubmitted}
+                                >
+                                  <option value="">Select Status</option>
+                                  <option value="Complied">Complied</option>
+                                  <option value="Not Complied">Not Complied</option>
+                                  <option value="Partial Complied">Partial Complied</option>
+                                  <option value="Not Applicable">Not Applicable</option>
+                                </select>
+                              </td>
+                              <td className="status-cell">
+                                <textarea
+                                  value={auditResponses[act.id]?.remarks?.[question.id] || ""}
+                                  onChange={(e) =>
+                                    handleResponseChange(act.id, question.id, "remarks", e.target.value)
+                                  }
+                                  placeholder="Add remarks"
+                                  rows={3}
+                                  disabled={combinedAlreadySubmitted}
+                                />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   )}
                 </div>
@@ -418,8 +519,12 @@ const AuditQuestions = () => {
         )}
         {!combinedAlreadySubmitted && (
           <div className="action-buttons">
-            <Button type="primary" onClick={handleSaveAudit}>Save</Button>
-            <Button type="primary" onClick={handleSubmitAudit}>Submit Audit</Button>
+            <Button type="primary" onClick={handleSaveAudit}>
+              Save
+            </Button>
+            <Button type="primary" onClick={handleSubmitAudit}>
+              Submit Audit
+            </Button>
           </div>
         )}
       </div>
