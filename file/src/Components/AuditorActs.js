@@ -79,6 +79,8 @@ const AuditorActs = () => {
   return (
     <div>
       <AuditorNav />
+      <div className="admin-container">
+      <h1 className="admin-home-title">Assigned Branches</h1>
       <Breadcrumb style={{ marginBottom: '20px' }}>
         <Breadcrumb.Item href="/AuditorHome">
           <HomeOutlined /> Home
@@ -89,6 +91,7 @@ const AuditorActs = () => {
       </Breadcrumb>
       {loading ? <Skeleton active /> : error ? <Alert message={error} type="error" /> : <Table dataSource={branches} columns={branchColumns} rowKey="id" pagination={{ position: ['bottomCenter'] }} />}
       <ToastContainer />
+    </div>
     </div>
   );
 };

@@ -334,6 +334,7 @@ const AuditQuestions = () => {
                       className="empty-state"
                     />
                   ) : (
+                    <div className="table-container">
                     <table className="acts-table">
                       <thead>
                         <tr>
@@ -408,6 +409,7 @@ const AuditQuestions = () => {
                         ))}
                       </tbody>
                     </table>
+                    </div>
                   )}
                 </div>
               </Panel>
@@ -416,8 +418,8 @@ const AuditQuestions = () => {
         )}
         {!combinedAlreadySubmitted && (
           <div className="action-buttons">
-            <Button onClick={handleSaveAudit}>Save</Button>
-            <Button onClick={handleSubmitAudit}>Submit Audit</Button>
+            <Button type="primary" onClick={handleSaveAudit}>Save</Button>
+            <Button type="primary" onClick={handleSubmitAudit}>Submit Audit</Button>
           </div>
         )}
       </div>
