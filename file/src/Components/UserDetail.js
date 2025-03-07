@@ -4,10 +4,10 @@ import { db } from "../firebase";
 import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
 import AdminNav from "./AdminNav";
 import { FaSearch } from "react-icons/fa";
-import { Button, message, Popconfirm, Spin, Descriptions, Select, Empty, Drawer, Breadcrumb } from "antd";
+import { Button, message, Popconfirm, Spin, Descriptions, Select, Empty, Drawer, Breadcrumb,Card } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import '../Styles/UserDetail.css';
-import { HomeOutlined, TeamOutlined, IdcardOutlined } from '@ant-design/icons';
+import { HomeOutlined, TeamOutlined, IdcardOutlined,UserOutlined } from '@ant-design/icons';
 
 const UserDetail = () => {
   const { userId } = useParams();
@@ -60,13 +60,26 @@ const UserDetail = () => {
 
   const handleBranchChange = async (branchId) => {
     setSelectedBranch(branchId);
-    const branchDoc = await getDoc(doc(db, "users", userId, "branches", branchId));
-    if (branchDoc.exists()) {
-      setSelectedBranchDetails(branchDoc.data());
-      setSelectedActs(branchDoc.data().acts || []);
-      fetchSubUsers(branchId); // Fetch sub-users
+    
+    try {
+      const branchDoc = await getDoc(doc(db, "users", userId, "branches", branchId));
+      
+      if (branchDoc.exists()) {
+        const branchData = branchDoc.data();
+        
+        setSelectedBranchDetails(branchData);
+        setSelectedActs(branchData.acts || []);
+        setAuditFrequency(branchData.auditFrequency || ""); // Set existing audit frequency
+        
+        fetchSubUsers(branchId); // Fetch sub-users
+      } else {
+        setAuditFrequency(""); // Reset frequency if no data found
+      }
+    } catch (error) {
+      console.error("Error fetching branch data:", error);
     }
   };
+  
 
   const fetchSubUsers = async (branchId) => {
     const subUsersSnapshot = await getDocs(collection(db, "users", userId, "branches", branchId, "subUsers"));
@@ -185,44 +198,44 @@ const UserDetail = () => {
           </Descriptions>
         </Drawer>
 
-        <h3>Assign User Role</h3>
-        <Select value={role} onChange={setRole} style={{ width: 200 }}>
-          <Select.Option value="user">User</Select.Option>
-          <Select.Option value="admin">Admin</Select.Option>
-          <Select.Option value="auditor">Auditor</Select.Option>
-        </Select>
-        <Popconfirm title="Confirm Role Change" onConfirm={handleSaveRole} okText="Yes" cancelText="No">
-          <Button type="primary">Save Role</Button>
-        </Popconfirm>
+        <Card className="role-card">
+      <h3 className="role-title">
+        <UserOutlined /> Assign User Role
+      </h3>
+      <Select value={role} onChange={setRole} className="role-select">
+        <Select.Option value="user">User</Select.Option>
+        <Select.Option value="admin">Admin</Select.Option>
+        <Select.Option value="auditor">Auditor</Select.Option>
+      </Select>
+      <Popconfirm title="Confirm Role Change" onConfirm={handleSaveRole} okText="Yes" cancelText="No">
+        <Button type="primary" className="save-button">Save Role</Button>
+      </Popconfirm>
+    </Card>
 
         {role !== "auditor" && role !== "admin" && (
           <>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <div>
-                <h3>Select Branch</h3>
-                <Select style={{ width: 200 }} onChange={handleBranchChange} placeholder="Select a Branch">
-                  {branches.map((branch) => (
-                    <Select.Option key={branch.id} value={branch.id}>
-                      {branch.branchName}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </div>
-              <div>
-                <h3>Audit Frequency</h3>
-                <Select
-                  style={{ width: 200 }}
-                  value={auditFrequency}
-                  onChange={setAuditFrequency}
-                  placeholder="Select Audit Frequency"
-                >
-                  <Select.Option value="Monthly">Monthly</Select.Option>
-                  <Select.Option value="Quarterly">Quarterly</Select.Option>
-                  <Select.Option value="Half Yearly">Half Yearly</Select.Option>
-                  <Select.Option value="Yearly">Yearly</Select.Option>
-                </Select>
-              </div>
-            </div>
+           <div className="audit-container">
+  <div className="audit-box">
+    <h3 className="audit-title">🏢 Select Branch</h3>
+    <Select className="audit-dropdown" onChange={handleBranchChange} placeholder="Select a Branch">
+      {branches.map((branch) => (
+        <Select.Option key={branch.id} value={branch.id}>
+          {branch.branchName}
+        </Select.Option>
+      ))}
+    </Select>
+  </div>
+  <div className="audit-box">
+    <h3 className="audit-title">📅 Audit Frequency</h3>
+    <Select className="audit-dropdown" value={auditFrequency} onChange={setAuditFrequency} placeholder="Select Audit Frequency">
+      <Select.Option value="Monthly">Monthly</Select.Option>
+      <Select.Option value="Quarterly">Quarterly</Select.Option>
+      <Select.Option value="Half Yearly">Half Yearly</Select.Option>
+      <Select.Option value="Yearly">Yearly</Select.Option>
+    </Select>
+  </div>
+</div>
+
 
             {selectedBranchDetails && (
               <div className="branch-detail">

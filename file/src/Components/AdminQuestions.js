@@ -212,7 +212,7 @@ const AdminQuestions = () => {
                   <td>
                     {editMode === q.id ? (
                       <>
-                        <button onClick={() => handleSaveEdit(q.id)} className="save-button">Save</button>
+                        <button onClick={() => handleSaveEdit(q.id)} className="savebutton">Save</button>
                         <button onClick={handleCancelEdit} className="cancel-button">Cancel</button>
                       </>
                     ) : (

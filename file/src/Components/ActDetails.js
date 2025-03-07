@@ -62,8 +62,6 @@ const ActDetailPage = () => {
       <AdminNav />
       <div className="admin-home-container">
         <div className="act-detail-page">
-          {/* Back Button */}
-          <button onClick={handleBack} className="back-button">Back</button>
           
           <h1 className="page-title">Acts List</h1>
           <div className="action-buttons">

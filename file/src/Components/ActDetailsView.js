@@ -6,8 +6,8 @@ import "../Styles/View.css";
 import AdminNav from "./AdminNav";
 import UserNav from "./UserNav";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { Spin } from 'antd';
-
+import { Spin,Button } from 'antd';
+import '../Styles/Actdetailview.css'
 const ActDetailsView = () => {
   const { id } = useParams();
   const [act, setAct] = useState(null);
@@ -107,7 +107,7 @@ const ActDetailsView = () => {
         {act ? (
           <div className="act-detail">
             <h2 className="detail-title">Details for {act.actName}</h2>
-            <button onClick={handleBack} className="back-button">Back</button>
+            <Button type='default' onClick={handleBack}>Back</Button>
             <div className="details-section">
               <table className="details-table">
                 <tbody>
@@ -146,7 +146,7 @@ const ActDetailsView = () => {
               <div className="action-buttons">
                 {isEditing ? (
                   <>
-                    <button className="save-button" onClick={handleSave}>
+                    <button className="savebutton" onClick={handleSave}>
                       Save
                     </button>
                     <button className="cancel-button" onClick={() => setIsEditing(false)}>
