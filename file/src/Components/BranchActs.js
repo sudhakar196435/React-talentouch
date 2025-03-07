@@ -87,6 +87,7 @@ const BranchActs = () => {
         {loading ? (
           <Skeleton active />
         ) : acts.length > 0 ? (
+          <div className="table-container">
           <table className="acts-table">
             <thead>
               <tr>
@@ -111,6 +112,7 @@ const BranchActs = () => {
               ))}
             </tbody>
           </table>
+          </div>
         ) : (
           <Empty description="No Acts Are Assigned" />
         )}

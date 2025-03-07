@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Skeleton, Alert, Breadcrumb } from 'antd';
+import { Table, Skeleton, Alert, Breadcrumb,Button } from 'antd';
 import { HomeOutlined, BankOutlined } from '@ant-design/icons';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { getFirestore, doc, collection, getDocs, query, where } from 'firebase/firestore';
 import AuditorNav from './AuditorNav';
 
 const AuditorActs = () => {
@@ -69,9 +69,10 @@ const AuditorActs = () => {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
-        <a onClick={() => navigate(`/audit-acts/${record.userId}/${record.id}`)}>
-          Select Branch
-        </a>
+        <Button onClick={() => navigate(`/audit-acts/${record.userId}/${record.id}`)}>
+        Select Branch
+      </Button>
+      
       ),
     },
   ];
