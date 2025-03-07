@@ -68,6 +68,13 @@
   height: 20px;
   cursor: pointer;
 }
+/* Adjustments for small screens */
+@media (max-width: 600px) {
+  .status-cell select {
+    font-size: 12px; /* Smaller text for small screens */
+    padding: 4px; /* Reduce padding */
+  }
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {

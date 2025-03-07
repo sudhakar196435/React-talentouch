@@ -230,6 +230,7 @@ const UserDetail = () => {
                 <Descriptions bordered column={1}>
                   <Descriptions.Item label="Branch Name">{selectedBranchDetails.branchName}</Descriptions.Item>
                   <Descriptions.Item label="Location">{selectedBranchDetails.location}</Descriptions.Item>
+                  <Descriptions.Item label="Audit Frequency">{selectedBranchDetails.auditFrequency}</Descriptions.Item>
                 </Descriptions>
               </div>
             )}

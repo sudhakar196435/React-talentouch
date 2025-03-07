@@ -17,7 +17,7 @@ import {
   Collapse,
   Input,
   DatePicker,
-  Select,
+  Select,Skeleton,
 } from "antd";
 import { HomeOutlined, AuditOutlined, BankOutlined } from "@ant-design/icons";
 import { toast, ToastContainer } from "react-toastify";
@@ -297,7 +297,17 @@ const AuditQuestions = () => {
     }
 
     if (frequency === "Monthly") {
+      const currentYear = moment().year();
+      const currentMonth = moment().month(); // 0-based index (Jan = 0, Dec = 11)
+    
       const months = moment.months().map((m, idx) => ({ label: m, value: idx }));
+    
+      // Exclude next month if the selected year is the current year
+      const filteredMonths =
+        selectedYear === currentYear
+          ? months.filter((m) => m.value <= currentMonth)
+          : months;
+    
       return (
         <div style={{ display: "flex", gap: "8px" }}>
           <Select
@@ -316,7 +326,7 @@ const AuditQuestions = () => {
             value={selectedMonth}
             onChange={(value) => setSelectedMonth(value)}
           >
-            {months.map((opt) => (
+            {filteredMonths.map((opt) => (
               <Select.Option key={opt.value} value={opt.value}>
                 {opt.label}
               </Select.Option>
@@ -324,7 +334,8 @@ const AuditQuestions = () => {
           </Select>
         </div>
       );
-    } else if (frequency === "Yearly") {
+    }
+     else if (frequency === "Yearly") {
       return (
         <Select
           style={{ width: 120 }}
@@ -340,7 +351,7 @@ const AuditQuestions = () => {
       );
     } else if (frequency === "Quarterly") {
       const options = [];
-      for (let year = currentYear; year >= currentYear - 10; year--) {
+      for (let year = currentYear; year  >= currentYear - 10; year--) {
         options.push({ label: `${year} - Q1`, value: `${year}-Q1` });
         options.push({ label: `${year} - Q2`, value: `${year}-Q2` });
         options.push({ label: `${year} - Q3`, value: `${year}-Q3` });
@@ -425,12 +436,12 @@ const AuditQuestions = () => {
           {renderPeriodPicker()}
         </div>
         {loading ? (
-          <div>Loading...</div>
-        ) : !branchDetails ? (
-          <div>Branch details not available</div>
-        ) : acts.length === 0 ? (
-          <Empty description="No acts available" className="empty-state" />
-        ) : (
+  <Skeleton active className="skeleton-loader" />
+) : !branchDetails ? (
+  <div>Branch details not available</div>
+) : acts.length === 0 ? (
+  <Empty description="No acts available" className="empty-state" />
+) : (
           <Collapse accordion>
             {acts.map((act) => (
               <Panel header={`${act.actCode} - ${act.actName}`} key={act.id}>
@@ -447,12 +458,14 @@ const AuditQuestions = () => {
                     <Search placeholder="Search questions..." />
                   </div>
                   {combinedAlreadySubmitted && (
-                    <Alert
-                      message="Audit Already Submitted"
-                      description="You have already submitted this audit. Changes are not allowed."
-                      type="warning"
-                      showIcon
-                    />
+                   <Alert
+                   message="Audit Already Submitted"
+                   description="You have already submitted this audit. Changes are not allowed."
+                   type="warning"
+                   showIcon
+                   style={{ marginBottom: "16px" }} // Adjust the value as needed
+                 />
+                 
                   )}
                   {!actQuestions[act.id] || actQuestions[act.id].length === 0 ? (
                     <Empty description="No questions available" className="empty-state" />
