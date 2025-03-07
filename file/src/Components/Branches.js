@@ -71,6 +71,9 @@ const Branches = () => {
     }
   };
 
+  const handleViewSubmissions = () => {
+    navigate("/submissions");
+  };
   // Delete a branch
   const handleDeleteBranch = async (id) => {
     if (!currentUser) return;
@@ -116,6 +119,9 @@ const Branches = () => {
           </Button>
           <Button danger onClick={() => handleDeleteBranch(record.id)} style={{ marginLeft: 8 }}>
             Delete
+          </Button>
+          <Button type="primary" onClick={() => handleViewSubmissions(record.id)}>
+            View submissions
           </Button>
         </>
       ),
