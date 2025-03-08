@@ -4,7 +4,7 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "../Styles/Forgotpasword.css";
 import logo from "../Assets/logo.png";
-import Navbar from "./Navbar";
+import forgotIllustration from "../Assets/forgot.jpg";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -37,55 +37,55 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div>
-      <Navbar />
+    <div className="forgot-password-page">
+     
       <div className="forgot-password-container">
-        <form onSubmit={handleForgotPassword} className="forgot-password-form">
-          {/* Logo */}
-          <div className="logo-container">
-            <img src={logo} alt="Logo" className="forgot-password-logo" />
+        {/* Left Section - Form */}
+        <div className="forgot-password-left">
+          <form onSubmit={handleForgotPassword} className="forgot-password-form">
+            <div className="logo-container">
+              <img src={logo} alt="Logo" className="forgot-password-logo" />
+            </div>
+            <h2 className="forgot-password-heading">Forgot Password</h2>
+            <p className="forgot-password-instructions">
+              Enter your email address below and we'll send you a link to reset your password.
+            </p>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="input-field"
+            />
+            <button type="submit" className="forgot-password-button" disabled={isDisabled}>
+              {isDisabled ? "Sending..." : "Send Reset Email"}
+            </button>
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+            <p className="back-to-login">
+              Remembered your password? <a href="/login">Back to Login</a>
+            </p>
+          </form>
+        </div>
+
+        {/* Right Section - Illustration */}
+        <div className="forgot-password-right">
+          <img src={forgotIllustration} alt="Forgot Password" className="forgot-password-illustration" />
+        </div>
+      </div>
+
+      {/* Full-screen Success Popup */}
+      {showFullScreenPopup && (
+        <div className="full-screen-popup">
+          <div className="popup-content">
+            <div className="circle-tick">
+              <span className="tick-icon">✔</span>
+            </div>
+            <h3>{successMessage}</h3>
+            <button onClick={handleOkClick} className="ok-button">OK</button>
           </div>
-          <h2 className="forgot-password-heading">Forgot Password</h2>
-          <p className="forgot-password-instructions">
-            Enter your email address below and we'll send you a link to reset your password.
-          </p>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="input-field"
-          />
-          <button
-            type="submit"
-            className="forgot-password-button"
-            disabled={isDisabled} // Disable button if `isDisabled` is true
-          >
-            {isDisabled ? "Send Reset Email" : "Send Reset Email"}
-          </button>
-          {/* Error message */}
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
-          <p className="back-to-login">
-            Remembered your password? <a href="/login">Back to Login</a>
-          </p>
-        </form>
-
-        {/* Full-screen success popup */}
-        {showFullScreenPopup && (
-  <div className="full-screen-popup">
-    <div className="popup-content">
-      {/* Circular Success Tick Icon */}
-      <div className="circle-tick">
-        <span className="tick-icon">✔</span>
-      </div>
-      <h3>{successMessage}</h3>
-      <button onClick={handleOkClick} className="ok-button">OK</button>
-    </div>
-  </div>
-)}
-
-      </div>
+        </div>
+      )}
     </div>
   );
 };

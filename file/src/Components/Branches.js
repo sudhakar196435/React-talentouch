@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
-import { Table, Button, Modal, Input, Form, Skeleton, Breadcrumb} from "antd";
+import { Table, Button, Modal, Input, Form, Skeleton, Breadcrumb , Alert} from "antd";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -142,9 +142,25 @@ const Branches = () => {
         </Breadcrumb.Item>
       </Breadcrumb>
       
-      <Button type="primary" onClick={openModal} style={{ marginBottom: 16 }}>
-        Add Branch
-      </Button>
+      {!currentUser || !currentUser.active ? (
+  <Alert
+    message="Pending Account Approval"
+    description="Your account is under review. Activation is required to add a branch."
+    type="warning"
+    showIcon
+    style={{ marginBottom: 16 }}
+    closable
+  />
+) : null}
+
+<Button 
+  type="primary" 
+  onClick={openModal} 
+  style={{ marginBottom: 16 }} 
+  disabled={!currentUser || !currentUser.active}
+>
+  Add Branch
+</Button>
       {loading ? <Skeleton active /> : <Table dataSource={branches} columns={columns} rowKey="id" />}
 
       {/* Add Branch Modal */}

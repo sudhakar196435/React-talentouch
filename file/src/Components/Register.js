@@ -5,7 +5,7 @@ import { doc, setDoc } from "firebase/firestore";
 import "../Styles/Register.css"; // Import CSS for styling
 import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 import logo from '../Assets/logo.png';
-import Navbar from "./Navbar";
+import loginIllustration from "../Assets/signup.jpg"; // Update the path if needed
 import { serverTimestamp } from "firebase/firestore";
 
 const Register = () => {
@@ -55,29 +55,29 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <Navbar />
-      <div className="register-container">
-        <form className="register-form" onSubmit={handleRegister}>
-          {/* Logo Image */}
-          <div className="logo-container">
-            <img src={logo} alt="Logo" className="login-logo" />
-          </div>
-          <h2 className="register-heading">Register</h2>
-         
+    <div className="auth-page">
+    <div className="auth-container">
+      {/* Left Section - Register Form */}
+      <div className="auth-left">
+        <div className="auth-logo">
+          <img src={logo} alt="Logo" className="auth-logo-img" />
+        </div>
+        <form className="auth-form" onSubmit={handleRegister}>
+          <h2 className="auth-heading">Sign up</h2>
+
           {/* Mobile Number Input */}
           <input
             type="text"
             placeholder="Mobile Number"
             value={mobileNumber}
             onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, ""); 
+              const value = e.target.value.replace(/\D/g, "");
               if (value.length <= 10) {
                 setMobileNumber(value);
               }
             }}
             required
-            className="input-field"
+            className="auth-input"
           />
 
           {/* Email Input */}
@@ -87,7 +87,7 @@ const Register = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="input-field"
+            className="auth-input"
           />
 
           {/* Password Input */}
@@ -97,20 +97,28 @@ const Register = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="input-field"
+            className="auth-input"
           />
 
-
           {/* Register Button */}
-          <button type="submit" className="register-button">Register</button>
-          
+          <button type="submit" className="auth-button">Register</button>
           {/* Login Link */}
-          <p className="register-message">
+          <p className="auth-message">
             Already have an account? <a href="/login">Login</a>
           </p>
         </form>
       </div>
+
+      {/* Right Section - Login Illustration */}
+      <div className="auth-right">
+        <img
+          src={loginIllustration}
+          alt="Login Illustration"
+          className="auth-illustration"
+        />
+      </div>
     </div>
+  </div>
   );
 };
 

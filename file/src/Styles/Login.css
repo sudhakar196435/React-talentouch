@@ -1,112 +1,175 @@
-/* Login Page Styling */
-.login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 88.2vh;
-    background-color: #002161;
-  }
-  
-  .login-form {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    margin: 0 15px;
-  }
-  
- /* Styling for the Login heading (h2) */
-.login-heading {
-  font-size: 28px; /* Set the font size */
-  font-weight: bold; /* Make the text bold */
-  color: #002161; /* Set a dark text color */
-  text-align: center; /* Center-align the heading */
-  margin-bottom: 20px; /* Add space below the heading */
-  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif /* Use a clean, modern font */
-  
-}
-
-/* Optional: Responsive styling for smaller screens */
-@media (max-width: 768px) {
-  .login-heading {
-    font-size: 24px; /* Reduce the font size on smaller screens */
-    margin-bottom: 15px; /* Adjust bottom margin on smaller screens */
-  }
-}
-
-  
-  .input-field {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-  }
-  
-  .input-field:focus {
-    outline: none;
-    border-color: #002161;
-  }
-  .login-form{
-  .login-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #0c48c0;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  
-  .login-button:hover {
-    background-color: #002161;
-  }}
-  
-  .error-message {
-    color: red;
-    text-align: center;
-    margin-top: 1rem;
-  }
-  
-  .register-message {
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 1rem;
-  }
-  
-  .register-message a {
-    color: #007bff;
-    text-decoration: none;
-  }
-  
-  .register-message a:hover {
-    text-decoration: underline;
-  }
-  /* Container for the logo */
-.logo-container {
+/* General styles */
+.login-page {
   display: flex;
-  justify-content: center; /* Center the logo horizontally */
-  align-items: center; /* Center the logo vertically */
- 
-  height: 150px; /* Set a specific height for the logo container */
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f8f8;
+  padding: 10px;
 }
 
-/* Logo image styling */
+.login-container {
+  display: flex;
+  max-width: 800px;
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Left Section */
+.login-left {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.logo-container {
+  margin-bottom: 10px;
+}
+
 .login-logo {
-  max-width: 80%; /* Allow the logo to take up 80% of the container width */
-  max-height: 100%; /* Ensure the logo doesn't exceed the container's height */
-  object-fit: contain; /* Maintain aspect ratio and avoid stretching */
-  border-radius: 8px; /* Optional: Add rounded corners to the logo */
+  height: 60px;
+  margin: 0 auto 15px; /* Center horizontally */
+  display: block;
 }
 
-/* Optional: Media query for mobile responsiveness */
+.login-back {
+  font-size: 24px;
+  font-weight: bold;
+  color: #0056b3;
+  font-family: 'Poppins', sans-serif; /* Modern font */
+  margin-bottom: 10px;
+}
+
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.inputfield {
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 100%;
+}
+/* Flex container for Remember & Forgot Password */
+.remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* Allows wrapping on smaller screens */
+}
+
+/* Styling for Forgot Password link */
+.forgot-password {
+  color: #0056b3;
+  text-decoration: none;
+  transition: text-decoration 0.3s ease, color 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+  color: #003580; /* Darker blue on hover */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 500px) {
+  .remember-forgot {
+    flex-direction: column; /* Stack elements vertically */
+    align-items: flex-start;
+    gap: 8px; /* Adds spacing between Remember & Forgot links */
+  }
+
+  .forgot-password {
+    font-size: 13px; /* Slightly smaller font for smaller screens */
+  }
+}
+
+
+
+.login-button {
+  background-color: #0056b3;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-button:hover {
+  background-color: #3681d1;
+}
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.signup-text {
+  margin-top: 15px;
+  font-size: 14px;
+  text-align: center;
+  font-family: 'Poppins', sans-serif; /* Modern font */
+  
+}
+
+.signup-text a {
+  color: #0056b3;
+  text-decoration: none;
+  transition: text-decoration 0.3s ease;
+}
+
+.signup-text a:hover {
+  text-decoration: underline;
+}
+
+
+/* Right Section */
+.login-right {
+  flex: 1;
+ background-color: #EAF4FF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.login-illustration {
+  max-width: 100%;
+  height: auto;
+  background: none;
+  mix-blend-mode: multiply; /* Helps remove white backgrounds */
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .login-logo {
-    max-width: 60%; /* Adjust the logo size for smaller screens */
+  .login-container {
+    flex-direction: column;
+    max-width: 400px;
+  }
+
+  .login-right {
+    display: none;
   }
  
 }
+

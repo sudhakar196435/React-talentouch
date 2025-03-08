@@ -1,260 +1,233 @@
-/* Container for Forgot Password */
-.forgot-password-container {
+/* Full Page Layout */
+.forgot-password-page {
+    background-color: #f8f8f8;
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    height: 88.2vh;
-    background-color: #002161;
     padding: 10px;
-}
-
-/* Forgot Password Form */
-.forgot-password-form {
+    justify-content: center;
+  }
+  
+  /* Container for Left & Right */
+  .forgot-password-container {
+    display: flex;
+    max-width: 900px;
+    width: 100%;
     background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-    margin: 0 15px;
-}
-
-/* Logo Styling */
-.forgot-password-logo {
-    max-width: 80%; /* Allow the logo to take up 80% of the container width */
-    max-height: 100%; /* Ensure the logo doesn't exceed the container's height */
-    object-fit: contain; /* Maintain aspect ratio and avoid stretching */
-    border-radius: 8px; /* Optional: Add rounded corners to the logo */
-}
-
-/* Forgot Password Heading */
-.forgot-password-heading {
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  /* Left Section - Form */
+  .forgot-password-left {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .forgot-password-logo {
+    display: block;
+    margin: 0 auto 15px; /* Center horizontally */
+    height: 60px;
+  }
+  
+  
+  .forgot-password-heading {
     font-size: 24px;
-    color: #002161;
-    margin-bottom: 1rem;
-}
-
-/* Forgot Password Instructions */
-.forgot-password-instructions {
+    font-weight: bold;
+    color: #0056b3;
+    font-family: 'Poppins', sans-serif; /* Modern font */
+    margin-bottom: 10px;
+  }
+  
+  .forgot-password-instructions {
     font-size: 16px;
-    color: #666;
-    margin-bottom: 1.5rem;
-}
-
-/* Input Fields */
-.input-field {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .input-field {
     width: 100%;
-    padding: 0.8rem;
-    margin-bottom: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 12px;
+    border: 1px solid #d9e4ff;
+    border-radius: 8px;
     font-size: 16px;
-}
-
-/* Forgot Password Button */
-.forgot-password-form{
-.forgot-password-button {
-    width: 100%;
-    padding: 0.8rem;
-    background-color: #0c48c0;
+    margin-bottom: 15px;
+  }
+  
+  .forgot-password-button {
+    background-color: #0056b3;
     color: white;
     border: none;
-    border-radius: 4px;
-    font-size: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    width: 100%;
     cursor: pointer;
-}
-
-.forgot-password-button:hover {
-    background-color: #002161;
-}}
-
-/* Success/Error Messages */
-.success-message {
-    color: #28a745;
-    margin-top: 1rem;
+    transition: 0.3s;
+  }
+  
+  .forgot-password-button:hover {
+    background-color: #3681d1;
+  }
+  
+  .back-to-login {
+    margin-top: 10px;
     font-size: 14px;
-}
-
-.error-message {
-    color: #dc3545;
-    margin-top: 1rem;
-    font-size: 14px;
-}
-
-/* Back to Login Link */
-.back-to-login {
     text-align: center;
-    margin-top: 1rem;
-    font-size: 1rem;
-}
-
-.back-to-login a {
-    color: #002161;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .back-to-login a {
+    color: #0056b3;
     text-decoration: none;
-}
-
-.back-to-login a:hover {
+    
+  }
+  
+  .back-to-login a:hover {
     text-decoration: underline;
-}
-
+  }
+  
+  /* Right Section - Illustration */
+  .forgot-password-right {
+    flex: 1;
+    background-color: #EAF4FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .forgot-password-illustration {
+    max-width: 90%;
+    height: auto;
+    background: none;
+    mix-blend-mode: multiply; /* Helps remove white backgrounds */
+  }
+  
+  
 /* Full-Screen Popup */
 .full-screen-popup {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 20px;
-}
-
-/* Popup Content */
-.popup-content {
-    background-color: #fff;
-    padding: 40px;
-    border-radius: 20px;
-    text-align: center;
-    max-width: 650px;
     width: 100%;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-left: 10px solid #28a745;  /* Green border */
-}
-
-/* Circle for Tick */
-.circle-tick {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #4CAF50; /* Green background for success */
-    display: flex;
-    align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-}
-
-.tick-icon {
-    font-size: 25px;
-    color: white;
-}
-
-/* Popup Text */
-.popup-content h3 {
-    font-size: 16px;
-    margin-bottom: 20px;
-    color: #333;
-    font-weight: 500;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* OK Button */
-.ok-button {
-    padding: 8px 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-   
-}
-
-.ok-button:hover {
-    background-color: #0056b3;
-}
-
-/* Media Queries for Responsiveness */
-@media (max-width: 768px) {
-    .forgot-password-form {
-        padding: 1.5rem;
-    }
-
-    /* Adjusting popup content padding */
-    .popup-content {
-        padding: 30px;
-    }
-
-    /* Adjust circle tick size for smaller screens */
-    .circle-tick {
-        width: 70px;
-        height: 70px;
-    }
-
-    .tick-icon {
-        font-size: 40px;
-    }
-
-    /* Adjust heading font size */
-    .popup-content h3 {
-        font-size: 16px;
-    }
-
-    /* Button adjustments */
-    .ok-button {
-        padding: 10px 20px;
-        font-size: 14px;
-    }
-    
-.back-to-login {
+    align-items: center;
+    opacity: 0;
+    animation: fadeIn 0.3s forwards;
+    z-index: 9999;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Popup Content */
+  .popup-content {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 12px;
     text-align: center;
-    margin-top: 0.9rem;
-    font-size: 0.9rem;
-}
-}
-
-
-@media (max-width: 480px) {
-    /* Even smaller adjustments for mobile screens */
-    .forgot-password-form {
-        padding: 1.2rem;
-    }
-
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
+    transform: scale(0.85);
+    animation: popupAppear 0.3s forwards;
+    max-width: 450px;
+    width: 90%;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 600px) {
     .popup-content {
-        padding: 20px;
+      padding: 25px;
+      width: 95%;
+      max-width: 350px;
     }
-
-    .circle-tick {
-        width: 60px;
-        height: 60px;
-    }
-
-    .tick-icon {
-        font-size: 35px;
-    }
-
-    .popup-content h3 {
-        font-size: 14px;
-    }
-
-    .ok-button {
-        padding: 8px 16px;
-        font-size: 12px;
-        min-width: 100px;
-    }
-    
-.back-to-login {
-    text-align: center;
-    margin-top: 0.9rem;
-    font-size: 0.9rem;
-}
-}
-
-
-/* FadeIn Animation */
-@keyframes fadeIn {
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
     from {
-        opacity: 0;
+      opacity: 0;
     }
     to {
-        opacity: 1;
+      opacity: 1;
     }
-}
+  }
+  
+  @keyframes popupAppear {
+    from {
+      transform: scale(0.85);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  /* Success Checkmark */
+  .circle-tick {
+    width: 60px;
+    height: 60px;
+    background: green;
+    color: white;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .ok-button {
+    background: #6c47ff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .ok-button:hover {
+    background: #a38dff;
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes popupAppear {
+    from {
+      transform: scale(0.8);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .forgot-password-container {
+      flex-direction: column;
+      max-width: 400px;
+    }
+  
+    .forgot-password-right {
+      display: none;
+    }
+  }
+  

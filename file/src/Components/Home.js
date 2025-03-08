@@ -71,11 +71,12 @@ const Home = () => {
       {!user.active && (
         <Alert
           message="Your account is under verification"
-            description="Thank you for registering! Your account is currently being reviewed by our team. The verification process may take up to 24-48 hours. You will be notified once your account is activated."
+          description="Thank you for registering! Your account is being reviewed and may take 24-48 hours for verification. You will be notified once activated."
           type="warning"
           showIcon
           className="already-submitted-alert"
           style={{ marginBottom: "20px" }}  // Add bottom margin  
+          closable
         />
       )}
          <div className="dashboard-container">
