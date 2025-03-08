@@ -5,7 +5,7 @@ import { HomeOutlined, BankOutlined } from '@ant-design/icons';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, collection, getDocs, query, where } from 'firebase/firestore';
+import { getFirestore, doc, collection, getDocs, query } from 'firebase/firestore';
 import AuditorNav from './AuditorNav';
 
 const AuditorActs = () => {
@@ -26,7 +26,7 @@ const AuditorActs = () => {
       
       let branchData = [];
       let branchIds = assignedBranchesSnap.docs.map(doc => doc.data().branchId);
-      const adminQuery = query(collection(db, 'users'), where('role', '==', 'user'));
+      const adminQuery = query(collection(db, 'users'));
       const adminSnap = await getDocs(adminQuery);
 
       for (const adminDoc of adminSnap.docs) {

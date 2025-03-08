@@ -14,6 +14,8 @@ import {
 } from "recharts";
 import { format } from "date-fns";
 import { toast, ToastContainer } from "react-toastify";
+import { DownloadOutlined } from "@ant-design/icons";
+import * as XLSX from "xlsx";
 import "react-toastify/dist/ReactToastify.css";
 
 const { Option } = Select;
@@ -105,6 +107,40 @@ const SubmissionsView = () => {
       console.error("Error fetching submissions:", error);
     }
     setLoading(false);
+  };
+  const downloadExcel = () => {
+    if (!selectedSubmission || !groupedAnswers) {
+      toast.error("No submission data available for download.");
+      return;
+    }
+  
+    // Prepare data for export
+    const exportData = [];
+    Object.keys(groupedAnswers).forEach((actId) => {
+      const actName = actMapping[actId] || "Unknown Act";
+      const answersWithQuestions = mergeAnswersWithQuestions(actId, groupedAnswers[actId]);
+  
+      answersWithQuestions.forEach((answer) => {
+        exportData.push({
+          "Act Name": actName,
+          "Question": answer.questionText || "N/A",
+          "Register/Form": answer.registerForm || "N/A",
+          "Time Limit": answer.timeLimit || "N/A",
+          "Risk": answer.risk || "N/A",
+          "Type": answer.type || "N/A",
+          "Status": answer.status || "N/A",
+          "Remarks": answer.remarks || "N/A",
+        });
+      });
+    });
+  
+    // Convert data to a worksheet
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Submissions");
+  
+    // Download the file
+    XLSX.writeFile(workbook, `Audit_Submissions_${format(new Date(), "yyyyMMdd_HHmmss")}.xlsx`);
   };
 
   // Process a selected submission: group answers by actId and fetch act details.
@@ -310,20 +346,33 @@ const SubmissionsView = () => {
             </Select>
             {selectedSubmission && (
               <>
-                <Card style={{ marginBottom: 20 }}>
-                  <p>
-                    <strong>Combined Act Name(s):</strong>{" "}
-                    {Object.values(actMapping).length > 0
-                      ? Object.values(actMapping).join(", ")
-                      : "N/A"}
-                  </p>
-                  <p>
-                    <strong>Submission Timestamp:</strong>{" "}
-                    {selectedSubmission.timestamp
-                      ? new Date(selectedSubmission.timestamp.seconds * 1000).toLocaleString()
-                      : "N/A"}
-                  </p>
-                </Card>
+               {selectedCompany && selectedBranch && (
+  <Card style={{ marginBottom: 20, padding: 20 }}>
+    <p>
+      <strong>Company Name:</strong>{" "}
+      {companies.find((c) => c.id === selectedCompany)?.companyName || "N/A"}
+    </p>
+    <p>
+      <strong>Branch Name:</strong>{" "}
+      {branches.find((b) => b.id === selectedBranch)?.branchName || "N/A"}
+    </p>
+    <p>
+      <strong>Combined Act Name(s):</strong>{" "}
+      {Object.values(actMapping).length > 0
+        ? Object.values(actMapping).join(", ")
+        : "N/A"}
+    </p>
+    <p>
+      <strong>Submission Timestamp:</strong>{" "}
+      {selectedSubmission?.timestamp
+        ? new Date(selectedSubmission.timestamp.seconds * 1000).toLocaleString()
+        : "N/A"}
+    </p>
+  </Card>
+)}
+                <Button type="primary" icon={<DownloadOutlined />} onClick={downloadExcel} style={{ marginBottom: 20 }}>
+  Download as Excel
+</Button>
                 {/* Graph for aggregated status data */}
                 <Card style={{ marginBottom: 20 }}>
                   <div
