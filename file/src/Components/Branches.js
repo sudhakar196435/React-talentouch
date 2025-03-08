@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, addDoc, deleteDoc, doc,getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Table, Button, Modal, Input, Form, Skeleton, Breadcrumb , Alert} from "antd";
 import { useNavigate } from "react-router-dom";
@@ -13,16 +13,24 @@ const Branches = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isActive, setIsActive] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const auth = getAuth();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         navigate("/AccessDenied");
       } else {
         setCurrentUser(user);
+  
+        // Fetch active status from Firestore
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setIsActive(userDoc.data().active); // Assuming Firestore has an 'active' field
+        }
+        
         fetchBranches(user);
       }
     });
@@ -142,7 +150,7 @@ const Branches = () => {
         </Breadcrumb.Item>
       </Breadcrumb>
       
-      {!currentUser || !currentUser.active ? (
+      {!isActive && (
   <Alert
     message="Pending Account Approval"
     description="Your account is under review. Activation is required to add a branch."
@@ -151,16 +159,17 @@ const Branches = () => {
     style={{ marginBottom: 16 }}
     closable
   />
-) : null}
+)}
 
 <Button 
   type="primary" 
   onClick={openModal} 
   style={{ marginBottom: 16 }} 
-  disabled={!currentUser || !currentUser.active}
+  disabled={!isActive} // Use isActive state
 >
   Add Branch
 </Button>
+
       {loading ? <Skeleton active /> : <Table dataSource={branches} columns={columns} rowKey="id" />}
 
       {/* Add Branch Modal */}
