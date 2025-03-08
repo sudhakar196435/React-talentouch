@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { doc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
 import "../Styles/Login.css";
 import logo from "../Assets/logo.png";
+import { Button } from "antd";
 import login from "../Assets/login.jpg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -149,6 +150,10 @@ const Login = () => {
               Don't have an account? <a href="/register">Sign up</a>
             </p>
           </form>
+          <Button type="default" onClick={() => navigate("/")}>
+  Go to Home
+</Button>
+
         </div>
         <div className="login-right">
           <img src={login} alt="Login Illustration" className="login-illustration" />
