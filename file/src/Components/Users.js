@@ -155,7 +155,7 @@ const Users = () => {
                 <td>{user.mobileNumber}</td>
                 <td>
               <Tag color={user.role === "admin" ? "red": user.role === "auditor" ? "orange": "blue"}>
-              {user.role ? user.role : "User"}
+              {user.role ? user.role : "user"}
               </Tag>
                 </td>
                 <td>{user.active ? "Active" : "Inactive"}</td>
