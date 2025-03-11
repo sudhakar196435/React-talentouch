@@ -1,22 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  collectionGroup,
-  getDocs,
-  deleteDoc,
-  doc,
-  getDoc,
-  collection,
-} from "firebase/firestore";
+import { collectionGroup, getDocs, deleteDoc, doc, getDoc, collection } from "firebase/firestore";
 import { db, auth } from "../firebase";
-import {
-  Table,
-  Button,
-  Empty,
-  Skeleton,
-  Select,
-  DatePicker,
-  message,
-} from "antd";
+import { Table, Button, Empty, Skeleton, Select, DatePicker, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import AuditorNav from "./AuditorNav";
@@ -71,10 +56,11 @@ const AuditorSubmissions = () => {
         setLoading(false);
         return;
       }
-
+      // Fetch all submissions using collectionGroup
       const submissionsSnapshot = await getDocs(collectionGroup(db, "submissions"));
       const allSubmissions = submissionsSnapshot.docs.map((doc) => {
         const data = doc.data();
+        // Get branch id from path if available
         const branchIdFromPath = doc.ref.parent.parent ? doc.ref.parent.parent.id : null;
         const branchId = branchIdFromPath || data.branchId || "N/A";
         return {
@@ -83,16 +69,16 @@ const AuditorSubmissions = () => {
           branchId,
         };
       });
-
+      // Filter submissions for the branches assigned to this auditor.
       const relevantSubmissions = allSubmissions.filter((submission) =>
         assignedBranchIds.includes(submission.branchId)
       );
 
+      // Enhance submissions with user and branch details.
       const enhancedSubmissions = await Promise.all(
         relevantSubmissions.map(async (submission) => {
           let userName = "Unknown User";
           let branchName = "Unknown Branch";
-
           try {
             const userRef = doc(db, "users", submission.userId);
             const userSnap = await getDoc(userRef);
@@ -102,7 +88,6 @@ const AuditorSubmissions = () => {
           } catch (error) {
             console.error("Error fetching user:", error);
           }
-
           try {
             const branchRef = doc(db, "users", submission.userId, "branches", submission.branchId);
             const branchSnap = await getDoc(branchRef);
@@ -112,13 +97,11 @@ const AuditorSubmissions = () => {
           } catch (error) {
             console.error("Error fetching branch:", error);
           }
-
           const timestamp = submission.timestamp
             ? submission.timestamp.toDate
               ? submission.timestamp.toDate()
               : new Date(submission.timestamp)
             : null;
-
           return {
             ...submission,
             userName,
@@ -130,7 +113,7 @@ const AuditorSubmissions = () => {
 
       setSubmissions(enhancedSubmissions);
       setFilteredSubmissions(enhancedSubmissions);
-
+      // Extract unique branch names for filtering.
       const branchNames = [...new Set(enhancedSubmissions.map((sub) => sub.branchName))];
       setBranches(branchNames);
     } catch (error) {
@@ -188,11 +171,16 @@ const AuditorSubmissions = () => {
       key: "branchName",
     },
     {
+      title: "Period",
+      dataIndex: "period",
+      key: "period",
+      render: (period) => period || "N/A",
+    },
+    {
       title: "Timestamp",
       dataIndex: "timestamp",
       key: "timestamp",
-      render: (timestamp) =>
-        timestamp ? moment(timestamp).format("YYYY-MM-DD HH:mm:ss") : "N/A",
+      render: (timestamp) => (timestamp ? moment(timestamp).format("YYYY-MM-DD HH:mm:ss") : "N/A"),
     },
     {
       title: "Actions",
@@ -224,14 +212,7 @@ const AuditorSubmissions = () => {
       <AuditorNav />
       <div className="admin-home-container">
         <h1 className="admin-home-title">Submissions</h1>
-        <div
-          style={{
-            marginBottom: 16,
-            display: "flex",
-            gap: "10px",
-            alignItems: "center",
-          }}
-        >
+        <div style={{ marginBottom: 16, display: "flex", gap: "10px", alignItems: "center" }}>
           <Select
             placeholder="Filter by Branch"
             onChange={(value) => setSelectedBranch(value)}
