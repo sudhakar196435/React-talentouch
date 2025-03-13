@@ -307,11 +307,41 @@ const AuditQuestions = () => {
     });
   };
 
-  const handleSaveAudit = () => {
-    localStorage.setItem(storageKey, JSON.stringify(auditResponses));
+  // Updated handleSaveAudit: store progress in DB with submissionStatus "Saved" (and isCombinedSubmission false).
+  const handleSaveAudit = async () => {
+    const periodStr = getFormattedPeriod();
+    let answers = [];
+    acts.forEach((act) => {
+      const responses = auditResponses[act.id] || { selectedStatus: {}, remarks: {} };
+      const questionsForAct = actQuestions[act.id] || [];
+      questionsForAct.forEach((question) => {
+        answers.push({
+          actId: act.id,
+          questionId: question.id,
+          status: responses.selectedStatus[question.id],
+          remarks: responses.remarks[question.id] || "No remarks",
+        });
+      });
+    });
+    const submissionsRef = collection(db, `users/${userId}/branches/${branchId}/submissions`);
+    const saveTime = new Date();
+    const submissionDocRef = doc(submissionsRef, `saved_${saveTime.getTime()}`);
+    const submissionData = {
+      isCombinedSubmission: false,
+      submissionStatus: "Saved",
+      branchId,
+      userId,
+      auditorEmail: auth.currentUser?.email || "",
+      timestamp: saveTime,
+      period: periodStr,
+      answers,
+    };
+    await setDoc(submissionDocRef, submissionData);
+    localStorage.removeItem(storageKey);
     toast.success("Progress saved successfully!");
   };
 
+  // Updated handleSubmitAudit: store progress in DB with submissionStatus "Submitted".
   const handleSubmitAudit = async () => {
     const periodStr = getFormattedPeriod();
     if (combinedAlreadySubmitted) {
@@ -339,43 +369,38 @@ const AuditQuestions = () => {
       toast.error("Please select a status for all questions before submitting.");
       return;
     }
-    try {
-      let answers = [];
-      acts.forEach((act) => {
-        const responses = auditResponses[act.id] || { selectedStatus: {}, remarks: {} };
-        const questionsForAct = actQuestions[act.id] || [];
-        questionsForAct.forEach((question) => {
-          answers.push({
-            actId: act.id,
-            questionId: question.id,
-            status: responses.selectedStatus[question.id],
-            remarks: responses.remarks[question.id] || "No remarks",
-          });
+    let answers = [];
+    acts.forEach((act) => {
+      const responses = auditResponses[act.id] || { selectedStatus: {}, remarks: {} };
+      const questionsForAct = actQuestions[act.id] || [];
+      questionsForAct.forEach((question) => {
+        answers.push({
+          actId: act.id,
+          questionId: question.id,
+          status: responses.selectedStatus[question.id],
+          remarks: responses.remarks[question.id] || "No remarks",
         });
       });
-      const submissionsRef = collection(db, `users/${userId}/branches/${branchId}/submissions`);
-      const submissionTime = new Date();
-      // Retrieve the auditor's email from Firebase Auth.
-      const auditorEmail = auth.currentUser?.email || "";
-      const submissionDocRef = doc(submissionsRef, `combined_${submissionTime.getTime()}`);
-      const submissionData = {
-        isCombinedSubmission: true,
-        branchId,
-        userId,
-        auditorEmail, // Added auditor email here.
-        timestamp: submissionTime,
-        period: periodStr,
-        answers,
-      };
-      await setDoc(submissionDocRef, submissionData);
-      localStorage.removeItem(storageKey);
-      setCombinedAlreadySubmitted(true);
-      setSubmissionSuccess(true);
-      toast.success("Audit submitted successfully!");
-    } catch (error) {
-      console.error("❌ Error submitting audit:", error);
-      toast.error("Failed to submit audit.");
-    }
+    });
+    const submissionsRef = collection(db, `users/${userId}/branches/${branchId}/submissions`);
+    const submissionTime = new Date();
+    const auditorEmail = auth.currentUser?.email || "";
+    const submissionDocRef = doc(submissionsRef, `combined_${submissionTime.getTime()}`);
+    const submissionData = {
+      isCombinedSubmission: true,
+      submissionStatus: "Submitted",
+      branchId,
+      userId,
+      auditorEmail,
+      timestamp: submissionTime,
+      period: periodStr,
+      answers,
+    };
+    await setDoc(submissionDocRef, submissionData);
+    localStorage.removeItem(storageKey);
+    setCombinedAlreadySubmitted(true);
+    setSubmissionSuccess(true);
+    toast.success("Audit submitted successfully!");
   };
 
   const processSubmission = async (submission) => {
