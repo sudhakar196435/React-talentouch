@@ -8,6 +8,7 @@ import {
   getDoc,
   setDoc,
 } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import {
   Alert,
   Empty,
@@ -16,7 +17,6 @@ import {
   Breadcrumb,
   Collapse,
   Input,
-  DatePicker,
   Select,
   Skeleton,
 } from "antd";
@@ -35,6 +35,7 @@ const AuditQuestions = () => {
   const { userId, branchId } = useParams();
   const navigate = useNavigate();
   const db = getFirestore();
+  const auth = getAuth();
 
   const [branchDetails, setBranchDetails] = useState(null);
   const [acts, setActs] = useState([]);
@@ -43,6 +44,8 @@ const AuditQuestions = () => {
   const [combinedAlreadySubmitted, setCombinedAlreadySubmitted] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
+  // State for tracking the active panel (act)
+  const [activePanel, setActivePanel] = useState(null);
 
   // For Quarterly and Half Yearly, we store a string; for Monthly and Yearly, separate state.
   const [selectedYear, setSelectedYear] = useState(moment().year());
@@ -80,19 +83,24 @@ const AuditQuestions = () => {
     }
     if (frequency === "Monthly") {
       const months = moment.months().map((m, idx) => ({ label: m, value: idx }));
-      const filteredMonths = selectedYear === currentYear 
-        ? months.filter((m) => m.value <= currentMonth)
-        : months;
+      const filteredMonths =
+        selectedYear === currentYear
+          ? months.filter((m) => m.value <= currentMonth)
+          : months;
       return (
         <div style={{ display: "flex", gap: "8px" }}>
           <Select style={{ width: 100 }} value={selectedYear} onChange={setSelectedYear}>
             {years.map((opt) => (
-              <Select.Option key={opt.value} value={opt.value}>{opt.label}</Select.Option>
+              <Select.Option key={opt.value} value={opt.value}>
+                {opt.label}
+              </Select.Option>
             ))}
           </Select>
           <Select style={{ width: 120 }} value={selectedMonth} onChange={setSelectedMonth}>
             {filteredMonths.map((opt) => (
-              <Select.Option key={opt.value} value={opt.value}>{opt.label}</Select.Option>
+              <Select.Option key={opt.value} value={opt.value}>
+                {opt.label}
+              </Select.Option>
             ))}
           </Select>
         </div>
@@ -101,7 +109,9 @@ const AuditQuestions = () => {
       return (
         <Select style={{ width: 120 }} value={selectedYear} onChange={setSelectedYear}>
           {years.map((opt) => (
-            <Select.Option key={opt.value} value={opt.value}>{opt.label}</Select.Option>
+            <Select.Option key={opt.value} value={opt.value}>
+              {opt.label}
+            </Select.Option>
           ))}
         </Select>
       );
@@ -120,11 +130,17 @@ const AuditQuestions = () => {
           options.push({ label: `${year} - Q4`, value: `${year}-Q4` });
         }
       }
-      const defaultQuarter = `${currentYear}-Q${Math.ceil((moment().month() + 1) / 3)}`;
+      const currentQuarterDefault = `${currentYear}-Q${Math.ceil((moment().month() + 1) / 3)}`;
       return (
-        <Select style={{ width: 200 }} value={selectedPeriod || defaultQuarter} onChange={setSelectedPeriod}>
+        <Select
+          style={{ width: 200 }}
+          value={selectedPeriod || currentQuarterDefault}
+          onChange={setSelectedPeriod}
+        >
           {options.map((opt) => (
-            <Select.Option key={opt.value} value={opt.value}>{opt.label}</Select.Option>
+            <Select.Option key={opt.value} value={opt.value}>
+              {opt.label}
+            </Select.Option>
           ))}
         </Select>
       );
@@ -141,9 +157,15 @@ const AuditQuestions = () => {
       }
       const defaultHalf = `${currentYear}-${currentMonth < 6 ? "H1" : "H2"}`;
       return (
-        <Select style={{ width: 200 }} value={selectedPeriod || defaultHalf} onChange={setSelectedPeriod}>
+        <Select
+          style={{ width: 200 }}
+          value={selectedPeriod || defaultHalf}
+          onChange={setSelectedPeriod}
+        >
           {options.map((opt) => (
-            <Select.Option key={opt.value} value={opt.value}>{opt.label}</Select.Option>
+            <Select.Option key={opt.value} value={opt.value}>
+              {opt.label}
+            </Select.Option>
           ))}
         </Select>
       );
@@ -198,10 +220,12 @@ const AuditQuestions = () => {
   const fetchQuestionsForAct = useCallback(
     async (actId) => {
       try {
+        console.log("Fetching questions for act:", actId);
         const questionsCollection = collection(db, `acts/${actId}/questions`);
         const questionsSnapshot = await getDocs(questionsCollection);
         let questionsData = [];
         questionsSnapshot.docs.forEach((doc) => {
+          console.log("Question doc:", doc.id, doc.data());
           questionsData.push({
             id: doc.id,
             text: doc.data().text || "No text available",
@@ -211,19 +235,32 @@ const AuditQuestions = () => {
             type: doc.data().type || "N/A",
           });
         });
+        console.log("Fetched questions for act:", actId, questionsData);
         setActQuestions((prev) => ({ ...prev, [actId]: questionsData }));
       } catch (error) {
         toast.error("Error fetching questions.");
-        console.error("❌ Error:", error);
+        console.error("❌ Error fetching questions:", error);
       }
     },
     [db]
   );
 
-  // Defer fetching questions until panel expansion.
+  // When a panel is expanded, update activePanel.
+  const handlePanelChange = (activeKey) => {
+    if (!activeKey || (Array.isArray(activeKey) && activeKey.length === 0)) {
+      setActivePanel(null);
+      return;
+    }
+    const actId = Array.isArray(activeKey) ? activeKey[0] : activeKey;
+    setActivePanel(actId);
+  };
+
+  // Fetch questions when the active panel changes.
   useEffect(() => {
-    // Do not fetch questions immediately.
-  }, [acts, fetchQuestionsForAct]);
+    if (activePanel) {
+      fetchQuestionsForAct(activePanel);
+    }
+  }, [activePanel, fetchQuestionsForAct]);
 
   useEffect(() => {
     const savedProgress = localStorage.getItem(storageKey);
@@ -237,38 +274,30 @@ const AuditQuestions = () => {
     }
   }, [storageKey]);
 
+  // Check submission status for current period.
   const checkCombinedSubmissionStatus = useCallback(async () => {
     try {
-      const auditFrequency = branchDetails?.auditFrequency || "1";
-      const frequencyInMinutes = parseInt(auditFrequency, 10);
+      const periodStr = getFormattedPeriod();
       const submissionsRef = collection(db, `users/${userId}/branches/${branchId}/submissions`);
       const submissionsSnapshot = await getDocs(submissionsRef);
-      let lastSubmissionTime = null;
+      let foundSubmissionForPeriod = false;
       submissionsSnapshot.docs.forEach((doc) => {
-        if (doc.data().isCombinedSubmission) {
-          const timestamp = doc.data().timestamp.toDate();
-          if (!lastSubmissionTime || timestamp > lastSubmissionTime) {
-            lastSubmissionTime = timestamp;
-          }
+        const data = doc.data();
+        if (data.isCombinedSubmission && data.period === periodStr) {
+          foundSubmissionForPeriod = true;
         }
       });
-      if (lastSubmissionTime) {
-        const currentTime = new Date();
-        const timeDifference = (currentTime - lastSubmissionTime) / (1000 * 60);
-        setCombinedAlreadySubmitted(timeDifference < frequencyInMinutes);
-      } else {
-        setCombinedAlreadySubmitted(false);
-      }
+      setCombinedAlreadySubmitted(foundSubmissionForPeriod);
     } catch (error) {
       console.error("❌ Error checking combined submission status:", error);
     }
-  }, [db, userId, branchId, branchDetails]);
+  }, [db, userId, branchId, branchDetails, selectedYear, selectedMonth, selectedPeriod]);
 
   useEffect(() => {
     if (branchDetails) {
       checkCombinedSubmissionStatus();
     }
-  }, [branchDetails, checkCombinedSubmissionStatus]);
+  }, [branchDetails, selectedYear, selectedMonth, selectedPeriod, checkCombinedSubmissionStatus]);
 
   const handleResponseChange = (actId, questionId, field, value) => {
     setAuditResponses((prev) => {
@@ -326,11 +355,14 @@ const AuditQuestions = () => {
       });
       const submissionsRef = collection(db, `users/${userId}/branches/${branchId}/submissions`);
       const submissionTime = new Date();
+      // Retrieve the auditor's email from Firebase Auth.
+      const auditorEmail = auth.currentUser?.email || "";
       const submissionDocRef = doc(submissionsRef, `combined_${submissionTime.getTime()}`);
       const submissionData = {
         isCombinedSubmission: true,
         branchId,
         userId,
+        auditorEmail, // Added auditor email here.
         timestamp: submissionTime,
         period: periodStr,
         answers,
@@ -353,35 +385,36 @@ const AuditQuestions = () => {
     processStatusData(submission.answers);
   };
 
+  // If no submission answers exist, return fetched questions with default values.
   const mergeAnswersWithQuestions = (actId, answersForAct) => {
-    if (!actQuestions[actId]) return answersForAct;
+    if (!actQuestions[actId]) return [];
+    if (!answersForAct || answersForAct.length === 0) {
+      return actQuestions[actId].map((question) => ({
+        id: question.id,
+        questionText: question.text,
+        registerForm: question.registerForm,
+        timeLimit: question.timeLimit,
+        risk: question.risk,
+        type: question.type,
+        status: "",
+        remarks: "",
+      }));
+    }
     return answersForAct.map((answer) => {
       const question = actQuestions[actId].find((q) => q.id === answer.questionId);
       return {
         ...answer,
         questionText: question ? question.text : "N/A",
-        risk: question ? question.risk : "N/A",
-        type: question ? question.type : "N/A",
         registerForm: question ? question.registerForm : "N/A",
         timeLimit: question ? question.timeLimit : "N/A",
+        risk: question ? question.risk : "N/A",
+        type: question ? question.type : "N/A",
       };
     });
   };
 
-  const handlePanelChange = (activeKey) => {
-    if (!activeKey || (Array.isArray(activeKey) && activeKey.length === 0)) return;
-    const actId = Array.isArray(activeKey) ? activeKey[0] : activeKey;
-    if (actId) {
-      fetchQuestionsForAct(actId);
-    }
-  };
-
   useEffect(() => {
     processSubmission(branchDetails && branchDetails.submission ? branchDetails.submission : null);
-  }, []);
-
-  useEffect(() => {
-    // Original code did not use company/branch dropdowns.
   }, []);
 
   const columns = [
@@ -411,8 +444,51 @@ const AuditQuestions = () => {
       key: "type",
       render: (_, record) => record.type || "N/A",
     },
-    { title: "Status", dataIndex: "status", key: "status" },
-    { title: "Remarks", dataIndex: "remarks", key: "remarks" },
+    {
+      title: "Status",
+      key: "status",
+      render: (_, record) =>
+        combinedAlreadySubmitted ? (
+          record.status
+        ) : (
+          <Select
+            value={
+              auditResponses[act.id]?.selectedStatus?.[record.id] ||
+              record.status ||
+              ""
+            }
+            onChange={(value) =>
+              handleResponseChange(act.id, record.id, "selectedStatus", value)
+            }
+            style={{ width: 150 }}
+          >
+            <Option value="Complied">Complied</Option>
+            <Option value="Not Complied">Not Complied</Option>
+            <Option value="Partially Complied">Partially Complied</Option>
+            <Option value="Not Applicable">Not Applicable</Option>
+          </Select>
+        ),
+    },
+    {
+      title: "Remarks",
+      key: "remarks",
+      render: (_, record) =>
+        combinedAlreadySubmitted ? (
+          record.remarks
+        ) : (
+          <Input.TextArea
+            value={
+              auditResponses[act.id]?.remarks?.[record.id] ||
+              record.remarks ||
+              ""
+            }
+            onChange={(e) =>
+              handleResponseChange(act.id, record.id, "remarks", e.target.value)
+            }
+            rows={2}
+          />
+        ),
+    },
   ];
 
   return (
@@ -457,13 +533,15 @@ const AuditQuestions = () => {
                   <div className="search-container">
                     <Search placeholder="Search questions..." />
                   </div>
-                  <Alert
-                    message="Audit Already Submitted"
-                    description="You have already submitted this audit. Changes are not allowed."
-                    type="warning"
-                    showIcon
-                    style={{ marginBottom: "16px" }}
-                  />
+                  {combinedAlreadySubmitted && (
+                    <Alert
+                      message="Audit Already Submitted"
+                      description="You have already submitted this audit. Changes are not allowed."
+                      type="warning"
+                      showIcon
+                      style={{ marginBottom: "16px" }}
+                    />
+                  )}
                   {!actQuestions[act.id] || actQuestions[act.id].length === 0 ? (
                     <Empty description="No questions available" className="empty-state" />
                   ) : (
@@ -482,20 +560,62 @@ const AuditQuestions = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {mergeAnswersWithQuestions(act.id, branchDetails && branchDetails.submission ? branchDetails.submission.answers : []).map(
-                            (record, index) => (
-                              <tr key={record.questionId ? record.questionId : index}>
-                                <td className="sno-cell">{index + 1}</td>
-                                <td>{record.questionText}</td>
-                                <td>{record.registerForm}</td>
-                                <td>{record.timeLimit}</td>
-                                <td>{record.risk}</td>
-                                <td>{record.type}</td>
-                                <td className="status-cell">{record.status}</td>
-                                <td className="status-cell">{record.remarks}</td>
-                              </tr>
-                            )
-                          )}
+                          {mergeAnswersWithQuestions(
+                            act.id,
+                            branchDetails &&
+                              branchDetails.submission &&
+                              branchDetails.submission.period === getFormattedPeriod()
+                              ? branchDetails.submission.answers
+                              : []
+                          ).map((record, index) => (
+                            <tr key={record.id}>
+                              <td className="sno-cell">{index + 1}</td>
+                              <td>{record.questionText}</td>
+                              <td>{record.registerForm}</td>
+                              <td>{record.timeLimit}</td>
+                              <td>{record.risk}</td>
+                              <td>{record.type}</td>
+                              <td className="status-cell">
+                                {combinedAlreadySubmitted ? (
+                                  record.status
+                                ) : (
+                                  <Select
+                                    value={
+                                      auditResponses[act.id]?.selectedStatus?.[record.id] ||
+                                      record.status ||
+                                      ""
+                                    }
+                                    onChange={(value) =>
+                                      handleResponseChange(act.id, record.id, "selectedStatus", value)
+                                    }
+                                    style={{ width: 150 }}
+                                  >
+                                    <Option value="Complied">Complied</Option>
+                                    <Option value="Not Complied">Not Complied</Option>
+                                    <Option value="Partially Complied">Partially Complied</Option>
+                                    <Option value="Not Applicable">Not Applicable</Option>
+                                  </Select>
+                                )}
+                              </td>
+                              <td className="status-cell">
+                                {combinedAlreadySubmitted ? (
+                                  record.remarks
+                                ) : (
+                                  <Input.TextArea
+                                    value={
+                                      auditResponses[act.id]?.remarks?.[record.id] ||
+                                      record.remarks ||
+                                      ""
+                                    }
+                                    onChange={(e) =>
+                                      handleResponseChange(act.id, record.id, "remarks", e.target.value)
+                                    }
+                                    rows={2}
+                                  />
+                                )}
+                              </td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     </div>

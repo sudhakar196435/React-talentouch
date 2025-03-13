@@ -108,6 +108,7 @@ const SubmissionsView = () => {
     }
     setLoading(false);
   };
+
   const downloadExcel = () => {
     if (!selectedSubmission || !groupedAnswers) {
       toast.error("No submission data available for download.");
@@ -338,9 +339,7 @@ const SubmissionsView = () => {
             >
               {submissionsData.map((sub) => (
                 <Option key={sub.id} value={sub.id}>
-                  {sub.timestamp
-                    ? new Date(sub.timestamp.seconds * 1000).toLocaleString()
-                    : "No Timestamp"}
+                  {sub.period ? sub.period : "No Period"}
                 </Option>
               ))}
             </Select>
@@ -363,16 +362,24 @@ const SubmissionsView = () => {
         : "N/A"}
     </p>
     <p>
+      <strong>Submission Period:</strong>{" "}
+      {selectedSubmission?.period || "N/A"}
+    </p>
+    <p>
       <strong>Submission Timestamp:</strong>{" "}
       {selectedSubmission?.timestamp
         ? new Date(selectedSubmission.timestamp.seconds * 1000).toLocaleString()
         : "N/A"}
     </p>
+    <p>
+      <strong>Auditor Email:</strong>{" "}
+      {selectedSubmission?.auditorEmail || "N/A"}
+    </p>
   </Card>
 )}
                 <Button type="primary" icon={<DownloadOutlined />} onClick={downloadExcel} style={{ marginBottom: 20 }}>
-  Download as Excel
-</Button>
+                  Download as Excel
+                </Button>
                 {/* Graph for aggregated status data */}
                 <Card style={{ marginBottom: 20 }}>
                   <div
