@@ -299,6 +299,38 @@ const AuditQuestions = () => {
     }
   }, [branchDetails, selectedYear, selectedMonth, selectedPeriod, checkCombinedSubmissionStatus]);
 
+  // New useEffect to load saved audit progress from Firestore (submissionStatus "Saved") so that the auditor can continue progress.
+  useEffect(() => {
+    if (branchDetails) {
+      const periodStr = getFormattedPeriod();
+      const submissionsRef = collection(db, `users/${userId}/branches/${branchId}/submissions`);
+      getDocs(submissionsRef)
+        .then((snapshot) => {
+          let savedSubmission = null;
+          snapshot.docs.forEach((doc) => {
+            const data = doc.data();
+            if (data.submissionStatus === "Saved" && data.period === periodStr) {
+              savedSubmission = data;
+            }
+          });
+          if (savedSubmission && savedSubmission.answers) {
+            const responsesByAct = {};
+            savedSubmission.answers.forEach((answer) => {
+              if (!responsesByAct[answer.actId]) {
+                responsesByAct[answer.actId] = { selectedStatus: {}, remarks: {} };
+              }
+              responsesByAct[answer.actId].selectedStatus[answer.questionId] = answer.status;
+              responsesByAct[answer.actId].remarks[answer.questionId] = answer.remarks;
+            });
+            setAuditResponses(responsesByAct);
+          }
+        })
+        .catch((error) => {
+          console.error("Error loading saved submission from Firestore:", error);
+        });
+    }
+  }, [branchDetails, selectedYear, selectedMonth, selectedPeriod]);
+
   const handleResponseChange = (actId, questionId, field, value) => {
     setAuditResponses((prev) => {
       const actResponse = prev[actId] || { selectedStatus: {}, remarks: {} };
