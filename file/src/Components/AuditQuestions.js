@@ -7,6 +7,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import {
   Alert,
@@ -17,7 +18,8 @@ import {
   Collapse,
   Input,
   DatePicker,
-  Select,Skeleton,
+  Select,
+  Skeleton,
 } from "antd";
 import { HomeOutlined, AuditOutlined, BankOutlined } from "@ant-design/icons";
 import { toast, ToastContainer } from "react-toastify";
@@ -47,9 +49,6 @@ const AuditQuestions = () => {
   const [selectedYear, setSelectedYear] = useState(moment().year());
   const [selectedMonth, setSelectedMonth] = useState(moment().month()); // 0-indexed (0=January)
   const [selectedPeriod, setSelectedPeriod] = useState(null); // used for Quarterly/Half-Yearly
-
-  // Key for localStorage
-  const storageKey = `auditProgress_${userId}_${branchId}`;
 
   // Helper function to get formatted period string based on frequency
   const getFormattedPeriod = () => {
@@ -149,19 +148,31 @@ const AuditQuestions = () => {
     }
   }, [acts, fetchQuestionsForAct]);
 
-  // Load saved progress
+  // Load saved draft progress from Firestore so that progress can be continued on another system.
   useEffect(() => {
-    const savedProgress = localStorage.getItem(storageKey);
-    if (savedProgress) {
+    const loadDraftAudit = async () => {
+      const periodStr = getFormattedPeriod();
+      if (!periodStr) return;
       try {
-        const progress = JSON.parse(savedProgress);
-        setAuditResponses(progress);
+        const draftDocRef = doc(
+          db,
+          `users/${userId}/branches/${branchId}/draftSubmissions`,
+          `draft_${periodStr}`
+        );
+        const draftSnap = await getDoc(draftDocRef);
+        if (draftSnap.exists()) {
+          const draftData = draftSnap.data();
+          if (draftData.auditResponses) {
+            setAuditResponses(draftData.auditResponses);
+          }
+        }
       } catch (error) {
-        console.error("Error loading saved progress", error);
+        console.error("Error loading draft audit", error);
       }
-    }
-  }, [storageKey]);
-
+    };
+    loadDraftAudit();
+  }, [db, userId, branchId, branchDetails, selectedPeriod, selectedYear, selectedMonth]);
+  
   // Check if a submission for the selected period already exists
   const checkCombinedSubmissionStatus = useCallback(async () => {
     try {
@@ -205,10 +216,31 @@ const AuditQuestions = () => {
     });
   };
 
-  // Save progress
-  const handleSaveAudit = () => {
-    localStorage.setItem(storageKey, JSON.stringify(auditResponses));
-    toast.success("Progress saved successfully!");
+  // Save progress to Firestore draft collection
+  const handleSaveAudit = async () => {
+    const periodStr = getFormattedPeriod();
+    if (!periodStr) {
+      toast.error("Invalid period");
+      return;
+    }
+    try {
+      const draftDocRef = doc(
+        db,
+        `users/${userId}/branches/${branchId}/draftSubmissions`,
+        `draft_${periodStr}`
+      );
+      const draftData = {
+        period: periodStr,
+        auditResponses,
+        timestamp: new Date(),
+        isDraft: true,
+      };
+      await setDoc(draftDocRef, draftData, { merge: true });
+      toast.success("Progress saved successfully!");
+    } catch (error) {
+      console.error("Error saving draft", error);
+      toast.error("Failed to save progress.");
+    }
   };
 
   // Submit audit responses
@@ -275,7 +307,10 @@ const AuditQuestions = () => {
         answers,
       };
       await setDoc(submissionDocRef, submissionData);
-      localStorage.removeItem(storageKey);
+      // Remove the draft once final submission is done
+      await deleteDoc(
+        doc(db, `users/${userId}/branches/${branchId}/draftSubmissions`, `draft_${periodStr}`)
+      );
       setCombinedAlreadySubmitted(true);
       setSubmissionSuccess(true);
       toast.success("Audit submitted successfully!");
@@ -334,8 +369,7 @@ const AuditQuestions = () => {
           </Select>
         </div>
       );
-    }
-     else if (frequency === "Yearly") {
+    } else if (frequency === "Yearly") {
       return (
         <Select
           style={{ width: 120 }}
@@ -351,16 +385,17 @@ const AuditQuestions = () => {
       );
     } else if (frequency === "Quarterly") {
       const options = [];
-      for (let year = currentYear; year  >= currentYear - 10; year--) {
-        options.push({ label: `${year} - Q1`, value: `${year}-Q1` });
-        options.push({ label: `${year} - Q2`, value: `${year}-Q2` });
-        options.push({ label: `${year} - Q3`, value: `${year}-Q3` });
-        options.push({ label: `${year} - Q4`, value: `${year}-Q4` });
+      const currentQuarter = Math.ceil((moment().month() + 1) / 3);
+      for (let year = currentYear; year >= currentYear - 10; year--) {
+        const maxQuarter = year === currentYear ? currentQuarter : 4;
+        for (let q = 1; q <= maxQuarter; q++) {
+          options.push({ label: `${year} - Q${q}`, value: `${year}-Q${q}` });
+        }
       }
       return (
         <Select
           style={{ width: 200 }}
-          value={selectedPeriod || `${currentYear}-Q${Math.ceil((moment().month() + 1) / 3)}`}
+          value={selectedPeriod || `${currentYear}-Q${currentQuarter}`}
           onChange={(value) => setSelectedPeriod(value)}
         >
           {options.map((opt) => (
@@ -373,8 +408,17 @@ const AuditQuestions = () => {
     } else if (frequency === "Half Yearly") {
       const options = [];
       for (let year = currentYear; year >= currentYear - 10; year--) {
-        options.push({ label: `${year} - H1`, value: `${year}-H1` });
-        options.push({ label: `${year} - H2`, value: `${year}-H2` });
+        if (year === currentYear) {
+          if (moment().month() < 6) {
+            options.push({ label: `${year} - H1`, value: `${year}-H1` });
+          } else {
+            options.push({ label: `${year} - H1`, value: `${year}-H1` });
+            options.push({ label: `${year} - H2`, value: `${year}-H2` });
+          }
+        } else {
+          options.push({ label: `${year} - H1`, value: `${year}-H1` });
+          options.push({ label: `${year} - H2`, value: `${year}-H2` });
+        }
       }
       return (
         <Select
@@ -436,12 +480,12 @@ const AuditQuestions = () => {
           {renderPeriodPicker()}
         </div>
         {loading ? (
-  <Skeleton active className="skeleton-loader" />
-) : !branchDetails ? (
-  <div>Branch details not available</div>
-) : acts.length === 0 ? (
-  <Empty description="No acts available" className="empty-state" />
-) : (
+          <Skeleton active className="skeleton-loader" />
+        ) : !branchDetails ? (
+          <div>Branch details not available</div>
+        ) : acts.length === 0 ? (
+          <Empty description="No acts available" className="empty-state" />
+        ) : (
           <Collapse accordion>
             {acts.map((act) => (
               <Panel header={`${act.actCode} - ${act.actName}`} key={act.id}>
@@ -458,14 +502,13 @@ const AuditQuestions = () => {
                     <Search placeholder="Search questions..." />
                   </div>
                   {combinedAlreadySubmitted && (
-                   <Alert
-                   message="Audit Already Submitted"
-                   description="You have already submitted this audit. Changes are not allowed."
-                   type="warning"
-                   showIcon
-                   style={{ marginBottom: "16px" }} // Adjust the value as needed
-                 />
-                 
+                    <Alert
+                      message="Audit Already Submitted"
+                      description="You have already submitted this audit. Changes are not allowed."
+                      type="warning"
+                      showIcon
+                      style={{ marginBottom: "16px" }}
+                    />
                   )}
                   {!actQuestions[act.id] || actQuestions[act.id].length === 0 ? (
                     <Empty description="No questions available" className="empty-state" />

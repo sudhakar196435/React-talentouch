@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Table, Empty, Skeleton, Button, Select, Collapse, Card } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -108,6 +108,7 @@ const SubmissionsView = () => {
     }
     setLoading(false);
   };
+
   const downloadExcel = () => {
     if (!selectedSubmission || !groupedAnswers) {
       toast.error("No submission data available for download.");
@@ -252,6 +253,67 @@ const SubmissionsView = () => {
     }
   }, [selectedCompany, selectedBranch]);
 
+  // Delete submission from the database.
+  const handleDeleteSubmission = async () => {
+    if (!selectedSubmission) {
+      toast.error("No submission selected.");
+      return;
+    }
+    try {
+      await deleteDoc(doc(db, "users", selectedCompany, "branches", selectedBranch, "submissions", selectedSubmission.id));
+      toast.success("Submission deleted successfully.");
+      fetchSubmissions(selectedCompany, selectedBranch);
+      setSelectedSubmission(null);
+    } catch (error) {
+      console.error("Error deleting submission", error);
+      toast.error("Failed to delete submission.");
+    }
+  };
+
+  // Move submission to draft.
+  const handleDraftSubmission = async () => {
+    if (!selectedSubmission) {
+      toast.error("No submission selected.");
+      return;
+    }
+    try {
+      // Convert answers array to auditResponses object.
+      const convertAnswersToAuditResponses = (answers) => {
+        const responses = {};
+        answers.forEach((answer) => {
+          const { actId, questionId, status, remarks } = answer;
+          if (!responses[actId]) {
+            responses[actId] = { selectedStatus: {}, remarks: {} };
+          }
+          responses[actId].selectedStatus[questionId] = status;
+          responses[actId].remarks[questionId] = remarks;
+        });
+        return responses;
+      };
+      const auditResponses = convertAnswersToAuditResponses(selectedSubmission.answers);
+      const draftData = {
+        period: selectedSubmission.period,
+        auditResponses,
+        timestamp: new Date(),
+        isDraft: true,
+      };
+      // Save to drafts collection with document id based on period.
+      await setDoc(
+        doc(db, "users", selectedCompany, "branches", selectedBranch, "draftSubmissions", `draft_${selectedSubmission.period}`),
+        draftData,
+        { merge: true }
+      );
+      // Delete the original submission.
+      await deleteDoc(doc(db, "users", selectedCompany, "branches", selectedBranch, "submissions", selectedSubmission.id));
+      toast.success("Submission moved to draft successfully.");
+      fetchSubmissions(selectedCompany, selectedBranch);
+      setSelectedSubmission(null);
+    } catch (error) {
+      console.error("Error moving submission to draft", error);
+      toast.error("Failed to move submission to draft.");
+    }
+  };
+
   const columns = [
     { title: "S.No", key: "sno", render: (_, __, index) => index + 1 },
     {
@@ -328,7 +390,7 @@ const SubmissionsView = () => {
         ) : (
           <>
             <Select
-              placeholder="Select Submission"
+              placeholder="Select Period"
               style={{ width: 300, marginBottom: 20 }}
               onChange={(value) => {
                 const sub = submissionsData.find((s) => s.id === value);
@@ -338,41 +400,47 @@ const SubmissionsView = () => {
             >
               {submissionsData.map((sub) => (
                 <Option key={sub.id} value={sub.id}>
-                  {sub.timestamp
-                    ? new Date(sub.timestamp.seconds * 1000).toLocaleString()
-                    : "No Timestamp"}
+                  {sub.period || "N/A"}
                 </Option>
               ))}
             </Select>
             {selectedSubmission && (
               <>
-               {selectedCompany && selectedBranch && (
-  <Card style={{ marginBottom: 20, padding: 20 }}>
-    <p>
-      <strong>Company Name:</strong>{" "}
-      {companies.find((c) => c.id === selectedCompany)?.companyName || "N/A"}
-    </p>
-    <p>
-      <strong>Branch Name:</strong>{" "}
-      {branches.find((b) => b.id === selectedBranch)?.branchName || "N/A"}
-    </p>
-    <p>
-      <strong>Combined Act Name(s):</strong>{" "}
-      {Object.values(actMapping).length > 0
-        ? Object.values(actMapping).join(", ")
-        : "N/A"}
-    </p>
-    <p>
-      <strong>Submission Timestamp:</strong>{" "}
-      {selectedSubmission?.timestamp
-        ? new Date(selectedSubmission.timestamp.seconds * 1000).toLocaleString()
-        : "N/A"}
-    </p>
-  </Card>
-)}
-                <Button type="primary" icon={<DownloadOutlined />} onClick={downloadExcel} style={{ marginBottom: 20 }}>
-  Download as Excel
-</Button>
+                {selectedCompany && selectedBranch && (
+                  <Card style={{ marginBottom: 20, padding: 20 }}>
+                    <p>
+                      <strong>Company Name:</strong>{" "}
+                      {companies.find((c) => c.id === selectedCompany)?.companyName || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Branch Name:</strong>{" "}
+                      {branches.find((b) => b.id === selectedBranch)?.branchName || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Combined Act Name(s):</strong>{" "}
+                      {Object.values(actMapping).length > 0
+                        ? Object.values(actMapping).join(", ")
+                        : "N/A"}
+                    </p>
+                    <p>
+                      <strong>Submission Timestamp:</strong>{" "}
+                      {selectedSubmission?.timestamp
+                        ? new Date(selectedSubmission.timestamp.seconds * 1000).toLocaleString()
+                        : "N/A"}
+                    </p>
+                  </Card>
+                )}
+                <div style={{ marginBottom: 20 }}>
+                  <Button type="primary" icon={<DownloadOutlined />} onClick={downloadExcel}>
+                    Download as Excel
+                  </Button>
+                  <Button type="primary" danger onClick={handleDeleteSubmission} style={{ marginLeft: 10 }}>
+                    Delete Submission
+                  </Button>
+                  <Button type="primary" onClick={handleDraftSubmission} style={{ marginLeft: 10 }}>
+                    Draft Submission
+                  </Button>
+                </div>
                 {/* Graph for aggregated status data */}
                 <Card style={{ marginBottom: 20 }}>
                   <div
