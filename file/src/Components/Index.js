@@ -1,21 +1,32 @@
-import React from 'react'
-import Navbar from './Navbar'
-import '../Styles/Index.css'
+import React from 'react';
+import Navbar from './Navbar';
+import Footer from './Footer';
+import PartnerLogos from './PartnerLogos';
+import '../Styles/Index.css';
+import heroImage from '../Assets/hero1.png';
+import servicesImage from '../Assets/image.png';
+import testimonialsImage from '../Assets/hero1.png';
+import contactImage from '../Assets/hero1.png';
+
 function Index() {
   return (
     <div>
-         <Navbar />
-<div className="index-container">
-   
-      <div className="full-width-card">
-        <div className="card-content">
-          <h1 className="card-title">Welcome to Talentouch!</h1>
-          <p className="card-description">At Talentouch, we are committed to providing top-notch talent management solutions for companies worldwide.</p>
+      <Navbar />
+      <div className="index-container">
+        {/* Hero Section */}
+        <div className="hero-section">
+          <img src={heroImage} alt="Welcome" className="hero-image" />
+          <div className="hero-overlay">
+            <h1 className="hero-title">Welcome to Talentouch!</h1>
+            <p className="hero-subtitle">Providing top-notch talent management solutions for companies worldwide.</p>
+            <button className="cta-button">Learn More</button>
+          </div>
+        </div>  
 
-        
-
-          {/* Our Services */}
-          <div className="card-details">
+        {/* Services Section */}
+        <div className="section">
+          <img src={servicesImage} alt="Our Services" className="section-image" />
+          <div className="section-content">
             <h2>Our Services</h2>
             <ul className="services-list">
               <li>Talent Acquisition</li>
@@ -26,35 +37,33 @@ function Index() {
               <li>Employee Engagement Programs</li>
             </ul>
           </div>
+        </div>
 
-          {/* Testimonials */}
-          <div className="card-details">
+        {/* Testimonials Section */}
+        <div className="section alternate">
+          <div className="section-content">
             <h2>What Our Clients Say</h2>
-            <p className="testimonial">
-              "Talentouch helped us streamline our hiring process and build a stronger, more cohesive team. Their insights and professionalism are unmatched!"
-              <br />
-              <span>- John Doe, CEO, XYZ Corp.</span>
-            </p>
-            <p className="testimonial">
-              "The training programs provided by Talentouch have been a game changer for our organization. Our employees are more engaged and productive."
-              <br />
-              <span>- Jane Smith, HR Director, ABC Ltd.</span>
-            </p>
+            <p className="testimonial">"Talentouch helped us streamline our hiring process and build a stronger, more cohesive team."<br /><span>- John Doe, CEO, XYZ Corp.</span></p>
+            <p className="testimonial">"The training programs provided by Talentouch have been a game changer for our organization."<br /><span>- Jane Smith, HR Director, ABC Ltd.</span></p>
           </div>
+          <img src={testimonialsImage} alt="Testimonials" className="section-image" />
+        </div>
 
-          {/* Contact Info */}
-          <div className="card-footer">
+        {/* Contact Section */}
+        <div className="section">
+          <img src={contactImage} alt="Contact Us" className="section-image" />
+          <div className="section-content">
             <h2>Contact Us</h2>
             <p>If you're interested in learning more about our services, feel free to reach out!</p>
             <button className="cta-button">Get in Touch</button>
           </div>
         </div>
       </div>
+      
+      <PartnerLogos />
+      <Footer />
     </div>
-
-   
-    </div>
-  )
+  );
 }
 
-export default Index
+export default Index;

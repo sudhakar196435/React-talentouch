@@ -1,0 +1,86 @@
+/* Parent container */
+.partners-container {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+  }
+  .partners-heading {
+    font-size: 28px;
+    font-weight: 600;
+    color: #2d0665;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* Scrolling wrapper */
+  .logos {
+    display: flex;
+    align-items: center;
+    gap: 40px; /* Space between logos */
+    animation: scroll-left 25s linear infinite; /* Smooth scrolling */
+  }
+  /* Logo styling */
+.partner-logo {
+    width: 400px; /* Adjust for professional look */
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease-in-out;
+    pointer-events: none; /* Prevent dragging */
+    user-select: none; /* Prevent text/image selection */
+}
+
+/* Disable right-click on images */
+.partner-logo img {
+    pointer-events: none;
+    -webkit-user-drag: none;
+}
+ 
+  
+  /* Infinite scrolling animation (Right to Left) */
+  @keyframes scroll-left {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 1024px) {
+    .partner-logo {
+      width: 120px;
+    }
+    .logos {
+      animation: scroll-left 20s linear infinite; /* Faster for tablets */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .partner-logo {
+      width: 150px;
+    }
+    .logos {
+      animation: scroll-left 18s linear infinite;
+    }
+    .partners-heading {
+        font-size: 24px;
+      }
+  }
+  
+  @media (max-width: 480px) {
+    .partner-logo {
+      width: 200px;
+    }
+    .partners-heading {
+        font-size: 20px;
+      }
+    .logos {
+      animation: scroll-left 15s linear infinite;
+    }
+  }
+  
