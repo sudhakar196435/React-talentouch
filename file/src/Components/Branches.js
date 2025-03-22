@@ -80,10 +80,12 @@ const Branches = () => {
     }
   };
 
-  // Delete a branch
   const handleDeleteBranch = async (id) => {
     if (!currentUser) return;
-
+  
+    const isConfirmed = window.confirm("Are you sure you want to delete this branch?");
+    if (!isConfirmed) return;
+  
     try {
       await deleteDoc(doc(db, `users/${currentUser.uid}/branches`, id));
       setBranches((prev) => prev.filter((b) => b.id !== id));
@@ -93,6 +95,7 @@ const Branches = () => {
       toast.error("Error deleting branch!");
     }
   };
+  
 
   const openModal = () => {
     form.resetFields();

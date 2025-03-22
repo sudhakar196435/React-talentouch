@@ -57,23 +57,6 @@
 
 
 
-/* View Details button */
-.view-details-button {
-  padding: 8px 12px;
-  background-color: #007BFF;
-  color: white;
-  text-decoration: none;
-  border-radius: 4px;
-  font-size: 1rem;
-
-  display: inline-block;
-}
-
-.view-details-button:hover {
-  background-color: #0056b3;
-
-}
-
 /* Responsive table styling for mobile */
 @media (max-width: 768px) {
   .act-detail-page {
@@ -89,31 +72,9 @@
     font-size: 1.8rem;
   }
 
-  .view-details-button {
-    padding: 6px 14px;
-    font-size: 0.9rem;
-  }
+  
 }
 
-.view-details-button,
-.view-questions-button {
-  margin-right: 10px;
-  /* Space between buttons */
-  padding: 8px 12px;
-  text-decoration: none;
-  color: white;
-  background-color: #007bff;
-  /* Blue color */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.view-details-button:hover,
-.view-questions-button:hover {
-  background-color: #0056b3;
-  /* Darker blue on hover */
-}
 /* Search input styling */
 .search-input {
   padding: 8px 15px;
@@ -129,25 +90,60 @@
   border-color: #1890ff;
   box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
-
-.action-buttons {
+.action-buttons-container {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.back-button {
-  margin-top: 20px;
-  margin-left: 20px;
+  flex-wrap: wrap; /* Ensures buttons wrap on smaller screens */
+  gap: 10px; /* Spacing between buttons */
+  justify-content: center; /* Centers buttons */
   padding: 10px;
-  font-size: 16px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
 }
 
-.back-button:hover {
-  background-color: #45a049;
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .action-buttons-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+
+}
+
+.button-container {
+  display: flex;
+  gap: 8px; /* Space between buttons */
+  justify-content: center; /* Centers buttons */
+  flex-wrap: wrap; /* Ensures responsiveness */
+  margin-top: 8px;
+}
+
+.btn {
+  display: inline-block;
+  width: 120px; /* Same width for both buttons */
+  padding: 6px 10px; /* Small padding */
+  font-size: 14px; /* Small text */
+  font-weight: 500;
+  color: #fff;
+  background: #007bff; /* Blue color */
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+  background: #0056b3;
+}
+
+.small-btn {
+  width: 110px; /* Ensures same width */
+}
+
+.btn:nth-child(2) {
+  background: #28a745; /* Green color for the second button */
+}
+
+.btn:nth-child(2):hover {
+  background: #218838;
 }

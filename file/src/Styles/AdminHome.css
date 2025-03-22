@@ -54,7 +54,7 @@
   .acts-card {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    background: linear-gradient(135deg, #f9f9f9, #f7c8ff);
+    background: linear-gradient(135deg, #a8988e, #721b1b);
     padding: 20px;
   }
   
@@ -89,13 +89,13 @@
     font-size: 24px;
     font-weight: 600;
     text-align: left;
-    color: #333;
+    color: #eac300;
     font-family: "Poppins", "Lora", sans-serif;
   }
   
   .acts-card-content p {
     font-size: 16px;
-    color: #555;
+    color: #ffffff;
     margin-bottom: 15px;
   }
   

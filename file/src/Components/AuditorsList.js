@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { Table, Button, Spin, Breadcrumb } from "antd";
+import { Table, Button, Spin, Breadcrumb, Tag } from "antd";
 import { useNavigate } from "react-router-dom";
-import {  AuditOutlined,HomeOutlined} from '@ant-design/icons';
+import { AuditOutlined, HomeOutlined } from "@ant-design/icons";
 import AdminNav from "./AdminNav";
 
 const AuditorsList = () => {
@@ -13,7 +13,10 @@ const AuditorsList = () => {
 
   useEffect(() => {
     const fetchAuditors = async () => {
-      const auditorsQuery = query(collection(db, "users"), where("role", "==", "auditor"));
+      const auditorsQuery = query(
+        collection(db, "users"),
+        where("role", "==", "auditor")
+      );
       const querySnapshot = await getDocs(auditorsQuery);
       const auditorList = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -36,12 +39,16 @@ const AuditorsList = () => {
       title: "Role",
       dataIndex: "role",
       key: "role",
+      render: (role) => <Tag color="orange">{role}</Tag>, // Role displayed as is
     },
     {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
-        <Button type="primary" onClick={() => navigate(`/assign-branches/${record.id}`)}>
+        <Button
+          type="primary"
+          onClick={() => navigate(`/assign-branches/${record.id}`)}
+        >
           Assign Branches
         </Button>
       ),
@@ -49,9 +56,11 @@ const AuditorsList = () => {
   ];
 
   if (loading) {
-    return <div className="loading-container">
-             <Spin size="large" />
-           </div> ;
+    return (
+      <div className="loading-container">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (
@@ -59,7 +68,7 @@ const AuditorsList = () => {
       <AdminNav />
       <div className="user-detail-container">
         <h1 className="admin-home-title">Auditors List</h1>
-        <Breadcrumb style={{ marginBottom: '20px' }}>
+        <Breadcrumb style={{ marginBottom: "20px" }}>
           <Breadcrumb.Item href="/adminhome">
             <HomeOutlined /> Home
           </Breadcrumb.Item>
@@ -67,7 +76,13 @@ const AuditorsList = () => {
             <AuditOutlined /> Auditors List
           </Breadcrumb.Item>
         </Breadcrumb>
-        <Table dataSource={auditors} columns={columns} rowKey="id" />
+        <Table
+          bordered
+          dataSource={auditors}
+          columns={columns}
+          rowKey="id"
+          pagination={{ pageSize: 10 }}
+        />
       </div>
     </div>
   );

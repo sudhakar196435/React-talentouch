@@ -51,7 +51,8 @@ const UserDetail = () => {
     if (role !== "auditor" && role !== "admin") {
       const fetchActs = async () => {
         const querySnapshot = await getDocs(collection(db, "acts"));
-        const actData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const actData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        .filter((act) => act.status === "active"); // Only show acts with status "active";
         setActs(actData);
       };
       fetchActs();
@@ -289,35 +290,38 @@ const UserDetail = () => {
             </div>
               
             <table className="acts-table">
-              <thead>
-                <tr>
-                  <th>Act Code</th>
-                  <th>Act Name</th>
-                  <th>Assign</th>
-                </tr>
-              </thead>
-              <tbody>
-                {acts
-                  .filter(
-                    (act) =>
-                      act.actName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                      act.actCode.toLowerCase().includes(searchQuery.toLowerCase())
-                  )
-                  .map((act) => (
-                    <tr key={act.id}>
-                      <td>{act.actCode}</td>
-                      <td>{act.actName}</td>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={selectedActs.includes(act.id)}
-                          onChange={() => handleCheckboxChange(act.id)}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+  <thead>
+    <tr>
+      <th>S.No</th>
+      <th>Act Code</th>
+      <th>Act Name</th>
+      <th>Assign</th>
+    </tr>
+  </thead>
+  <tbody>
+    {acts
+      .filter(
+        (act) =>
+          act.actName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          act.actCode.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .map((act, index) => (
+        <tr key={act.id}>
+          <td>{index + 1}</td> {/* Adding serial number */}
+          <td>{act.actCode}</td>
+          <td>{act.actName}</td>
+          <td>
+            <input
+              type="checkbox"
+              checked={selectedActs.includes(act.id)}
+              onChange={() => handleCheckboxChange(act.id)}
+            />
+          </td>
+        </tr>
+      ))}
+  </tbody>
+</table>
+
             <Button type="primary" onClick={handleSaveActs} disabled={!selectedBranch || !auditFrequency}>
               Save Selected Acts
             </Button>

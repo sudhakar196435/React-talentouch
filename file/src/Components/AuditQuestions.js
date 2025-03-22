@@ -498,9 +498,7 @@ const AuditQuestions = () => {
                       <strong>Act Name:</strong> {act.actName || "N/A"}
                     </p>
                   </div>
-                  <div className="search-container">
-                    <Search placeholder="Search questions..." />
-                  </div>
+                 
                   {combinedAlreadySubmitted && (
                     <Alert
                       message="Audit Already Submitted"

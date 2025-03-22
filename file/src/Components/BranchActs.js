@@ -5,7 +5,7 @@ import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Skeleton, Empty,Breadcrumb } from "antd";
+import { Skeleton, Empty,Breadcrumb,Typography } from "antd";
 import UserNav from "./UserNav";
 import { HomeOutlined,BankOutlined,FileTextOutlined } from '@ant-design/icons';
 
@@ -104,9 +104,9 @@ const BranchActs = () => {
                   <td>{act.actCode}</td>
                   <td>{act.actName}</td>
                   <td>
-                    <a href={`/act/${act.id}`} className="view-link">
-                      View Act Details
-                    </a>
+                  <Typography.Link href={`/act/${act.id}`}>
+  View Act Details
+</Typography.Link>
                   </td>
                 </tr>
               ))}

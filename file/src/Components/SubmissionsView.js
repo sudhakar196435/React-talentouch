@@ -3,7 +3,6 @@ import { collection, getDocs, doc, getDoc, setDoc, deleteDoc } from "firebase/fi
 import { db } from "../firebase";
 import { Table, Empty, Skeleton, Button, Select, Collapse, Card } from "antd";
 import { useNavigate } from "react-router-dom";
-import AuditorNav from "./AuditorNav";
 import {
   PieChart,
   Pie,
@@ -17,6 +16,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { DownloadOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 import "react-toastify/dist/ReactToastify.css";
+import AdminNav from "./AdminNav";
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -253,12 +253,15 @@ const SubmissionsView = () => {
     }
   }, [selectedCompany, selectedBranch]);
 
-  // Delete submission from the database.
   const handleDeleteSubmission = async () => {
     if (!selectedSubmission) {
       toast.error("No submission selected.");
       return;
     }
+  
+    const isConfirmed = window.confirm("Are you sure you want to delete this submission?");
+    if (!isConfirmed) return;
+  
     try {
       await deleteDoc(doc(db, "users", selectedCompany, "branches", selectedBranch, "submissions", selectedSubmission.id));
       toast.success("Submission deleted successfully.");
@@ -269,6 +272,7 @@ const SubmissionsView = () => {
       toast.error("Failed to delete submission.");
     }
   };
+  
 
   // Move submission to draft.
   const handleDraftSubmission = async () => {
@@ -347,7 +351,7 @@ const SubmissionsView = () => {
 
   return (
     <div>
-      <AuditorNav />
+      <AdminNav />
       <div className="admin-home-container">
         <h1 className="admin-home-title">Audit Submissions</h1>
         <Select
