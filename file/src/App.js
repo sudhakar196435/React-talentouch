@@ -37,9 +37,11 @@ import AuditorActs from "./Components/AuditorActs";
 import AuditQuestions from "./Components/AuditQuestions";
 import Submissions from "./Components/Submissions";
 import AuditorSubmissions from "./Components/AuditorSubmission";
-import SubUserSubmission from "./Components/SubUserSubmission";
+import SubUserSubmission from "./Components/SubUserSubmissions";
 import BranchUserDetails from "./Components/BranchUserDetails";
 import SubmissionsView from "./Components/SubmissionsView";
+import SubUserSubmissionDetails from "./Components/3. SubUserSubmissionDetails";
+import SubUserSubmissions from "./Components/SubUserSubmissions";
 
 const App = () => {
   return (
@@ -90,7 +92,8 @@ const App = () => {
         <Route path="/audit-acts/:userId/:branchId" element={<AuditQuestions />} />
         <Route path="/submissions/:uid/:branchId/:submissionId" element={<Submissions />} />
         <Route path="/AuditorSubmissions" element={<AuditorSubmissions />} />
-        <Route path="/ss" element={<SubUserSubmission />} />
+        <Route path="/submissions/:parentUid/:branchId" element={<SubUserSubmissions />} />
+        <Route path="/submissions/:parentUid/:branchId/:submissionId" element={<SubUserSubmissionDetails />} />
         <Route path="/branch-user/:userId" element={<BranchUserDetails />} />
         <Route path="/submissionsview" element={<SubmissionsView/>}/>
         </Routes>

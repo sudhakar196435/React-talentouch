@@ -1,12 +1,13 @@
+// SubUserHome.js
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import '../Styles/SubUserHome.css';
+import "../Styles/SubUserHome.css";
 import auditImage from "../Assets/image.png";
-import { ToastContainer, toast } from 'react-toastify';
-import { Spin,Button } from 'antd';
+import { ToastContainer, toast } from "react-toastify";
+import { Spin, Button } from "antd";
 import Subusernav from "./Subusernav";
 
 const SubUserHome = () => {
@@ -34,17 +35,16 @@ const SubUserHome = () => {
     if (userAuthenticated && userEmail) {
       const fetchBranch = async () => {
         setIsLoading(true);
-        
         const usersSnapshot = await getDocs(collection(db, "users"));
         for (const userDoc of usersSnapshot.docs) {
           const branchesSnapshot = await getDocs(collection(userDoc.ref, "branches"));
           for (const branchDoc of branchesSnapshot.docs) {
             const subUsersRef = collection(branchDoc.ref, "subUsers");
             const subUsersSnapshot = await getDocs(subUsersRef);
-            
             for (const subUser of subUsersSnapshot.docs) {
               if (subUser.data().email === userEmail) {
-                setBranch({ id: branchDoc.id, ...branchDoc.data() });
+                // Store parent's UID (userDoc.id) along with branch data
+                setBranch({ id: branchDoc.id, ...branchDoc.data(), parentUid: userDoc.id });
                 setIsLoading(false);
                 return;
               }
@@ -56,7 +56,7 @@ const SubUserHome = () => {
       };
       fetchBranch();
     }
-  }, [userAuthenticated, userEmail]);
+  }, [userAuthenticated, userEmail, navigate]);
 
   if (isLoading) {
     return (
@@ -68,36 +68,33 @@ const SubUserHome = () => {
 
   return (
     <div>
-      <Subusernav/>
-
-    
+      <Subusernav />
       <div className="auditor-home">
-
         {/* Left Content */}
         <div className="auditor-info">
-        <div className="subuser-container">
-       
-       {branch ? (
-         <div className="branch-details">
-           <h2>Branch Name: {branch.branchName}</h2>
-           <p>Location: {branch.location}</p>
-          
-         </div>
-       ) : (
-         <p>No branch assigned.</p>
-       )}
-     </div>
-       
-
-        <p className="auditor-description">
-  Easily manage your audit tasks with a user-friendly dashboard.  
-  View detailed reports, analyze key data, and track performance.  
-  Stay organized and make informed decisions with real-time insights.  
-</p>
-
-         
+          <div className="subuser-container">
+            {branch ? (
+              <div className="branch-details">
+                <h2>Branch Name: {branch.branchName}</h2>
+                <p>Location: {branch.location}</p>
+              </div>
+            ) : (
+              <p>No branch assigned.</p>
+            )}
+          </div>
+          <p className="auditor-description">
+            Easily manage your audit tasks with a user-friendly dashboard.  
+            View detailed reports, analyze key data, and track performance.  
+            Stay organized and make informed decisions with real-time insights.
+          </p>
           <div className="auditor-buttons">
-            <Button type="primary" className="start-audit-btn" onClick={() => navigate("/ss")}>
+            <Button
+              type="primary"
+              className="start-audit-btn"
+              onClick={() =>
+                navigate(`/submissions/${branch.parentUid}/${branch.id}`)
+              }
+            >
               My Branch Audits
             </Button>
           </div>
@@ -108,8 +105,6 @@ const SubUserHome = () => {
           <img src={auditImage} alt="Audit Process" className="auditor-image" />
         </div>
       </div>
-      
-
       <ToastContainer />
     </div>
   );
